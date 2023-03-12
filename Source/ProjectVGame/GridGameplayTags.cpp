@@ -71,7 +71,7 @@ void FGridGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(GameplayEvent_BreakDefense, "GameplayEvent.BreakDefense", "单位被破防时触发事件");
 	AddTag(GameplayEvent_Death, "GameplayEvent.Death", "单位死亡时触发事件");
 	AddTag(GameplayEvent_Reset, "GameplayEvent.Reset", "单位重置时触发事件");
-	AddTag(GameplayEvent_AbilityCardInput, "GameplayEvent.AbilityCardInput.", "卡牌输入事件");
+	AddTag(GameplayEvent_AbilityCardInput, "GameplayEvent.AbilityCardInput", "卡牌输入事件");
 	AddTag(GameplayEvent_PopAttackInput, "GameplayEvent.PopAttackInput", "抛出攻击输入事件");
 	AddTag(GameplayTag_Save, "GameplayEvent.Save", "保存游戏");
 

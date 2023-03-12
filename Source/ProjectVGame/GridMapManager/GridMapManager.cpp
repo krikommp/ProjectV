@@ -99,12 +99,11 @@ TArray<int32> AGridMapManager::PathFinding(int32 InStartIndex, int32 InMoveRange
 			return OutTileIndex;
 		}
 		OpenList.Add({CurrentIndex, 0, CurrentIndex});
-		ReachablePawnsArray.Add(CurrentIndex);
 	}
 	// todo.. pathfinding type, current is standard
 	for (int32 SearchStep = CurrentSearchStep; SearchStep < PathfindingMove; ++SearchStep)
 	{
-		SearchAndAddAdjacentTiles();
+		SearchAndAddAdjacentTiles(bShowStartIndex, InStartIndex);
 		// 完成上一步寻路
 		OpenList.Empty();
 		IndexCanMoveToArray.Append(OpenListChildren);
@@ -288,7 +287,7 @@ TArray<int32> AGridMapManager::K2_GetIndexCanMove() const
 	return OutIndexArray;
 }
 
-void AGridMapManager::SearchAndAddAdjacentTiles()
+void AGridMapManager::SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 StartIndex)
 {
 	for (const auto& OpenListElem : OpenList)
 	{
@@ -304,10 +303,17 @@ void AGridMapManager::SearchAndAddAdjacentTiles()
 					// 接着判断在这个位置上，是否有棋子
 					if (!PawnArray.IsEmpty() && PawnArray[Edge.Index] != nullptr)
 					{
-						// 如果有，就将棋子加入到ReachablePawnsArray，方便AI查询
-						ReachablePawnsArray.Add(Edge.Index);
-						OpenListChildren.Add({Edge.Index, Edge.Cost + OpenListElem.Cost, OpenListElem.Index});
-						CanMoveToArray[Edge.Index] = {0, Edge.Cost + OpenListElem.Cost, OpenListElem.Index};
+						if (Edge.Index == StartIndex && !bShowStartIndex)
+						{
+							//OpenListChildren.Add({Edge.Index, Edge.Cost + OpenListElem.Cost, OpenListElem.Index});
+							CanMoveToArray[Edge.Index] = {0, Edge.Cost + OpenListElem.Cost, OpenListElem.Index};
+						}else
+						{
+							// 如果有，就将棋子加入到ReachablePawnsArray，方便AI查询
+							ReachablePawnsArray.Add(Edge.Index);
+							//OpenListChildren.Add({Edge.Index, Edge.Cost + OpenListElem.Cost, OpenListElem.Index});
+							CanMoveToArray[Edge.Index] = {0, Edge.Cost + OpenListElem.Cost, OpenListElem.Index};
+						}
 					}
 					else
 					{

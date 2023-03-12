@@ -118,12 +118,15 @@ public:
 	UFUNCTION(BlueprintPure, Category="Grid|Path Finding", meta=(DisplayName="GetDiscoverableTileIndex"))
 	FORCEINLINE TArray<int32> K2_GetDiscoverableTileIndex() const { return DiscoverableTileIndexArray; }
 
+	UFUNCTION(BlueprintPure, Category="Grid|Path Finding", meta=(DisplayName="GetReachablePawnsArray"))
+	FORCEINLINE TArray<int32> K2_GetReachablePawnsArray() const { return ReachablePawnsArray; }
+
 	UFUNCTION(BlueprintPure, Category="Grid|Path Finding", meta=(DisplayName="GetIndexCanMove"))
 	TArray<int32> K2_GetIndexCanMove() const;
 
 private:
 	// 检查 OpenList 中所有的 Tile, 如果可以移动到，那么就加入到合适的数组中，等待下一次移动
-	void SearchAndAddAdjacentTiles();
+	void SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 StartIndex);
 
 	// 根据输入位置索引，创建一条可到达的Path
 	const TArray<int32>& FindPathToIndex(const TArray<FStructPathFinding>& InCanMoveToArray, int32 InEndIndex,

@@ -42,6 +42,9 @@ public:
 
 	void TickAbilityTurn(int32 Delta);
 
+	UFUNCTION(BlueprintCallable, Category="Grid|Buff")
+	TMap<UGridAbilityBuffUIData*, float> GetAllActiveBuffInfos();
+
 protected:
 
 	virtual void NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability, bool bWasCancelled) override;

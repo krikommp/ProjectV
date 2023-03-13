@@ -2,6 +2,8 @@
 
 #include "GridGameplayTags.h"
 #include "AbilitySystem/GridAbilitySystemComponent.h"
+#include "AbilitySystem/Attributes/GridActionSet.h"
+#include "ChessPieces/GridChessPiece.h"
 #include "GridMapManager/GridMapFunctionLibrary.h"
 #include "GridMapManager/GridMapManager.h"
 
@@ -61,8 +63,20 @@ const FGameplayTagContainer* UGridGameplayAbility_Card::GetCooldownTags() const
 	return MutableTags;
 }
 
+bool UGridGameplayAbility_Card::CheckCost(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	const bool OriginCostCheck = Super::CheckCost(Handle, ActorInfo, OptionalRelevantTags);
+	const UAbilitySystemComponent* const AbilitySystemComponent = ActorInfo->AbilitySystemComponent.Get();
+	check(AbilitySystemComponent != nullptr);
+	const float CardCost = GetCardAbilityCost(GetAbilityLevel());
+	const UGridActionSet* ActionSet = AbilitySystemComponent->GetSet<UGridActionSet>();
+	const bool CardCostCheck = ActionSet->GetActionPoint() >= CardCost;
+	return OriginCostCheck && CardCostCheck;
+}
+
 void UGridGameplayAbility_Card::ApplyCooldown(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
+                                              const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
 {
 	UGameplayEffect* CooldownGE = GetCooldownGameplayEffect();
 	if (CooldownGE)

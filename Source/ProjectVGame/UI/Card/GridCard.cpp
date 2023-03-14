@@ -5,9 +5,11 @@
 
 #include "GridLogChannel.h"
 #include "SMInstance.h"
+#include "AbilitySystem/GridAbilitySystemComponent.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/SizeBox.h"
+#include "Heros/GridCardInfo.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -128,6 +130,15 @@ bool UGridCard::MoveToSuggestedTransform(const FWidgetTransform& InSuggestedTran
 FVector2D UGridCard::GetMousePosition()
 {
 	return UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
+}
+
+bool UGridCard::CheckCardCanBeUse()
+{
+	if (CardInfo && CardInfo->AbilitySystemComponent)
+	{
+		return CardInfo->CheckAbilityCanActivate();
+	}
+	return false;
 }
 
 void UGridCard::SetCardSize(const FVector2D& NewCardSize) const

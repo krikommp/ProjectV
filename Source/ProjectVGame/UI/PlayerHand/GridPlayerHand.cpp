@@ -197,6 +197,14 @@ void UGridPlayerHand::GateAllCardsInputState()
 	}
 }
 
+void UGridPlayerHand::ChangeAllCardsInHandState(ECardState NewCardState)
+{
+	for (const auto& Card : Cards)
+	{
+		Card->CardState = NewCardState;
+	}
+}
+
 FVector2D UGridPlayerHand::GetCardAnchorLocation() const
 {
 	const auto Geometry = CardAnchor->GetTickSpaceGeometry();

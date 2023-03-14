@@ -77,7 +77,7 @@ UGridGameplayAbility_Card* UGridCardInfo::GetCardAbilityInstance(UGridAbilitySys
 	return nullptr;
 }
 
-bool UGridCardInfo::CheckAbilityCanActivate() const
+bool UGridCardInfo::CheckAbilityCanActivate(FGameplayTagContainer& OptionalRelevantTags) const
 {
 	if (AbilitySystemComponent)
 	{
@@ -86,7 +86,7 @@ bool UGridCardInfo::CheckAbilityCanActivate() const
 		{
 			if (AbilitySpec->Ability)
 			{
-				return AbilitySpec->Ability->CanActivateAbility(SpecHandle, AbilitySystemComponent->AbilityActorInfo.Get());
+				return AbilitySpec->Ability->CanActivateAbility(SpecHandle, AbilitySystemComponent->AbilityActorInfo.Get(), nullptr, nullptr, &OptionalRelevantTags);
 			}
 		}
 	}

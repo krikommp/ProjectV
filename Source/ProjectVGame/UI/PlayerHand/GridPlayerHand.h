@@ -6,6 +6,7 @@
 #include "CardPileInterface.h"
 #include "UI/GridActivatableWidget.h"
 #include "UI/GridHUDLayout.h"
+#include "UI/Card/GridCard.h"
 #include "GridPlayerHand.generated.h"
 
 class UGridCardDrawPile;
@@ -97,6 +98,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
 	void GateAllCardsInputState();
+
+	UFUNCTION(BlueprintCallable)
+	void ChangeAllCardsInHandState(ECardState NewCardState);
 
 	// 获取卡牌中心锚点位置
 	UFUNCTION(BlueprintPure, Category="Grid|PlayerHand")

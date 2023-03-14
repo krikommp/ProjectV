@@ -67,15 +67,16 @@ bool UGridTurnManagerComponent::SetCurrentUnit(AGridChessPiece* InChessPiece)
 	if (InChessPiece == nullptr) return false;
 	if (CurrentActionPiece != InChessPiece)
 	{
-		FGridGlobalDelegates::OnChessPieceSelectChanged.Broadcast(CurrentActionPiece, InChessPiece);
 		if (!GetCurrentActionQueue().ChessPieces.Contains(InChessPiece)) return false;
 		if (CurrentActionPiece != nullptr)
 		{
 			CurrentActionPiece->OnChessPieceUnSelect();
 		}
+		AGridChessPiece* OldChessPiece = CurrentActionPiece;
 		CurrentActionPiece = InChessPiece;
 		CurrentActionPiece->OnChessPieceSelect();
 		OnSwitchChessPieceSelect.Broadcast();
+		FGridGlobalDelegates::OnChessPieceSelectChanged.Broadcast(OldChessPiece, CurrentActionPiece);
 		return true;
 	}
 	return false;

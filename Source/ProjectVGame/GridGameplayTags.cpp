@@ -45,7 +45,11 @@ void FGridGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 {
 	AddTag(Ability_ActivateFail_IsDead, "Ability.ActivateFail.IsDead", "由于目标死亡，技能使用失败");
 	AddTag(Ability_ActivateFail_Cost, "Ability.ActivateFail.Cost", "由于消耗不足，技能使用失败");
+	AddTag(Ability_ActivateFail_Cooldown, "Ability.ActivateFail.Cooldown", "正在冷却，技能使用失败");
+	AddTag(Ability_ActivateFail_TagsMissing, "Ability.ActivateFail.TagsMissing", "缺少所需 Tag, 技能使用失败");
+	AddTag(Ability_ActivateFail_Networking, "Ability.ActivateFail.Networking", "没有通过网络检测，技能使用失败");
 	AddTag(Ability_ActivateFail_TagsBlocked, "Ability.ActivateFail.TagsBlocked", "由于 Tag 被阻塞，技能使用失败");
+	AddTag(Ability_ActivateFail_NotOwner, "Ability.ActivateFail.NotOwner", "不是技能的持有者，技能使用失敗");
 
 	AddTag(Ability_Behavior_SurvivesDeath, "Ability.Behavior.SurvivesDeath", "该技能不随单位死亡而中止");
 	AddTag(Ability_Behavior_Move, "Ability.Behavior.Move", "移动");

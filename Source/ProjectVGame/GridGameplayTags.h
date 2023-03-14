@@ -16,7 +16,11 @@ public:
 public:
 	FGameplayTag Ability_ActivateFail_IsDead;
 	FGameplayTag Ability_ActivateFail_Cost;
+	FGameplayTag Ability_ActivateFail_Cooldown;
 	FGameplayTag Ability_ActivateFail_TagsBlocked;
+	FGameplayTag Ability_ActivateFail_TagsMissing;
+	FGameplayTag Ability_ActivateFail_Networking;
+	FGameplayTag Ability_ActivateFail_NotOwner;
 
 	FGameplayTag Ability_Behavior_SurvivesDeath;
 	FGameplayTag Ability_Behavior_Move;

@@ -96,10 +96,6 @@ public:
 	UFUNCTION(BlueprintPure, Category="Grid|Motion")
 	FVector2D GetMousePosition();
 
-	// 判断卡牌是否可以被使用
-	UFUNCTION(BlueprintCallable, Category="Grid|State")
-	bool CheckCardCanBeUse();
-
 	// 设置卡牌大小
 	void SetCardSize(const FVector2D& NewCardSize) const;
 
@@ -127,6 +123,9 @@ protected:
 	USMInstance* CardStateMachineInstance;
 
 	void CreateCardStateMachineInstance();
+
+	// 判断卡牌是否可以被使用
+	void CheckCardCanBeUse();
 public:
 	// 当前持有该卡牌的 Hand
 	// 可能为空

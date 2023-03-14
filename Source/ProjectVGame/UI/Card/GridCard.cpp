@@ -3,6 +3,7 @@
 
 #include "GridCard.h"
 
+#include "GridGlobalDelegates.h"
 #include "GridLogChannel.h"
 #include "SMInstance.h"
 #include "AbilitySystem/GridAbilitySystemComponent.h"
@@ -57,6 +58,7 @@ FReply UGridCard::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPo
 void UGridCard::RecycleCard()
 {
 	StopStateMachine();
+	FGridGlobalDelegates::OnChessPieceActionOver.RemoveAll(this);
 	PlayerHand = nullptr;
 	CardInfo = nullptr;
 }
@@ -74,6 +76,8 @@ void UGridCard::SetupCardInfo(UGridCardInfo* InCardInfo)
 	{
 		UE_LOG(LogGrid, Error, TEXT("[UGridCard::SetupCardInfo]: Cannot initialize Card Info for [%s] with NULL CardInfo"), *GetNameSafe(this));
 	}
+
+	FGridGlobalDelegates::OnChessPieceActionOver.AddUObject(this, &ThisClass::CheckCardCanBeUse);
 	ReceiveSetupCardInfo(CardInfo);
 }
 
@@ -132,13 +136,14 @@ FVector2D UGridCard::GetMousePosition()
 	return UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
 }
 
-bool UGridCard::CheckCardCanBeUse()
+void UGridCard::CheckCardCanBeUse()
 {
+	bool bCanUse = false;
 	if (CardInfo && CardInfo->AbilitySystemComponent)
 	{
-		return CardInfo->CheckAbilityCanActivate();
+		bCanUse = CardInfo->CheckAbilityCanActivate();
 	}
-	return false;
+	UE_LOG(LogTemp, Error, TEXT("Card Ability Can Use: [%hs]"), bCanUse ? "True" : "False");
 }
 
 void UGridCard::SetCardSize(const FVector2D& NewCardSize) const

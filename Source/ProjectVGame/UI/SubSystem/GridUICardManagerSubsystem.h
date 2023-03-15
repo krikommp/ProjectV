@@ -70,6 +70,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector2D CardSizeInHand = { 384 * 0.6f, 512 * 0.6f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float HoverOtherCardMoveX = 5000.0f;
 };
 
 /**

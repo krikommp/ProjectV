@@ -131,7 +131,7 @@ private:
 	void NotifyCardSelect(UGridCard* InSelectedCard) const;
 	void NotifyPlayCardPlaneMouseButtonDown(const FPointerEvent& InMouseEvent) const;
 
-	TArray<FWidgetTransform> CalculateCardTransform(const TArray<UGridCard*>& InCards)
+	TArray<FWidgetTransform> CalculateCardTransform(const TArray<UGridCard*>& InCards);
 public:
 	// 抽牌堆
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))

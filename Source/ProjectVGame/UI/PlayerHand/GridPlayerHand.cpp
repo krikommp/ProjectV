@@ -138,10 +138,26 @@ void UGridPlayerHand::HoverCard(UGridCard* InCard)
 		if (Card != InCard)
 		{
 			FWidgetTransform NewTransform = Card->GetRenderTransform();
-			NewTransform.Translation.X += 2.0f;
-			Card->RequestDesiredTransformUpdate(NewTransform, true);
+			const float Direction = NewTransform.Translation.X - InCard->GetRenderTransform().Translation.X;
+			if (Direction < 0.0f)
+			{
+				// left
+				NewTransform.Translation.X -= 20.0f;
+			}else
+			{
+				// right
+				NewTransform.Translation.X += 20.0f;
+			}
+			Card->RequestDesiredTransformUpdate(NewTransform);
+			Card->CardState = ECardState::Draw;
 		}
 	}
+}
+
+void UGridPlayerHand::UnHoverCard(UGridCard* InCard)
+{
+	InCard->CheckCardStyle();
+	NotifyCardPileChanged();
 }
 
 void UGridPlayerHand::PlaySelectCard()

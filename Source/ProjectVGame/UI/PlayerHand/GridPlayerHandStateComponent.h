@@ -32,7 +32,7 @@ public:
 
 	// 判断当前手牌中的所有卡牌是否运动完成
 	UFUNCTION(BlueprintPure, Category="Grid|PlayerHand")
-	bool CheckAllCardInHandMotionEnded() const;
+	bool CheckAllCardInHandMotionEnded();
 
 	// 重置手牌状态
 	UFUNCTION(BlueprintCallable, Category="Grid|PLayerHand")
@@ -46,6 +46,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
 	void HidePlayerHand();
 
+	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
+	void StartToCheckMotion() { bStartToCheckMotion = true; }
+
 protected:
 	virtual void OnRegister() override;
 	void OnExperienceLoaded(const UGridExperienceDefinition* Experience);
@@ -58,4 +61,6 @@ protected:
 
 	UPROPERTY(Config)
 	TSoftClassPtr<UCommonActivatableWidget> PlayerHandClass;
+
+	bool bStartToCheckMotion;
 };

@@ -34,6 +34,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnCardSelected, UGridCard* SelectedCard);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCardSelectedDynamic, UGridCard*, SelectedCard);
 DECLARE_MULTICAST_DELEGATE(FOnCardUnSelected);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardUnSelectedDynamic);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerHandMotionEnded)
 
 /**
  * UGridPlayerHand
@@ -189,6 +190,9 @@ public:
 	// 卡牌点击事件
 	UPROPERTY(BlueprintAssignable, Category="Grid|PlayerHand", meta=(DisplayName="OnCardPlayPlaneMouseButtonDown"))
 	FOnCardPlayPlaneMouseButtonDownDynamic OnCardPlayPlaneMouseButtonDownDynamic;
+
+	UPROPERTY(BlueprintAssignable, Category="Grid|PlayerHand")
+	FOnPlayerHandMotionEnded OnPlayerHandMotionEnded;
 protected:
 	// 当前持有手牌对象
 	UPROPERTY(BlueprintReadWrite, Category="Grid|PlayerHand")

@@ -147,7 +147,6 @@ FWidgetTransform UGridPlayerHand::HoverCard(UGridCard *InCard)
 	const TArray<FWidgetTransform> CardTransformList = CalculateCardTransform(Cards);
 	const UGridUICardManagerSubsystem *UICardManagerSubsystem = GetGameInstance()->GetSubsystem<UGridUICardManagerSubsystem>();
 	const float HoverOtherCardMoveX = UICardManagerSubsystem->GetValue<float>("HoverOtherCardMoveX");
-	const FVector2D CardSize = UICardManagerSubsystem->GetValue<FVector2D>("CardSizeInHand");
 	check(CardTransformList.Num() == Cards.Num());
 	FWidgetTransform HoverTargetTransform;
 	for (int32 Index = 0; Index < Cards.Num(); ++Index)

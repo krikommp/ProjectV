@@ -3,10 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CommonInputModeTypes.h"
 #include "Components/GameStateComponent.h"
 #include "GameModes/GridExperienceDefinition.h"
-#include "UObject/Object.h"
 #include "GridPlayerHandStateComponent.generated.h"
 
 class UGridPlayerHand;

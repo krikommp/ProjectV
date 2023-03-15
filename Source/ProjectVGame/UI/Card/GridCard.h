@@ -48,6 +48,9 @@ enum class ECardState : uint8
 
 	// 使用状态
 	Use,
+
+	// 取消Hover
+	UnHover,
 	
 	Unknown UMETA(Hidden),
 };

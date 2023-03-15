@@ -77,7 +77,7 @@ public:
 
 	// ~PlayerHand Card Operator Functions
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
-	void HoverCard(UGridCard* InCard);
+	FWidgetTransform HoverCard(UGridCard* InCard);
 
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
 	void UnHoverCard(UGridCard* InCard);

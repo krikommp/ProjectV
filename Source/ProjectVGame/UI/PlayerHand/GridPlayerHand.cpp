@@ -142,13 +142,14 @@ void UGridPlayerHand::UnRegister_OnCardPlayPlaneMouseButtonDown(const UObject *I
 	OnCardPlayPlaneMouseButtonDown.RemoveAll(InUser);
 }
 
-void UGridPlayerHand::HoverCard(UGridCard *InCard)
+FWidgetTransform UGridPlayerHand::HoverCard(UGridCard *InCard)
 {
 	const TArray<FWidgetTransform> CardTransformList = CalculateCardTransform(Cards);
 	const UGridUICardManagerSubsystem *UICardManagerSubsystem = GetGameInstance()->GetSubsystem<UGridUICardManagerSubsystem>();
 	const float HoverOtherCardMoveX = UICardManagerSubsystem->GetValue<float>("HoverOtherCardMoveX");
+	const FVector2D CardSize = UICardManagerSubsystem->GetValue<FVector2D>("CardSizeInHand");
 	check(CardTransformList.Num() == Cards.Num());
-	InCard->CardState = ECardState::Hover;
+	FWidgetTransform HoverTargetTransform;
 	for (int32 Index = 0; Index < Cards.Num(); ++Index)
 	{
 		UGridCard* Card = Cards[Index];
@@ -168,8 +169,12 @@ void UGridPlayerHand::HoverCard(UGridCard *InCard)
 			}
 			Card->RequestDesiredTransformUpdate(NewTransform);
 			Card->CardState = ECardState::Draw;
+		}else
+		{
+			HoverTargetTransform = CardTransformList[Index];
 		}
 	}
+	return HoverTargetTransform;
 }
 
 void UGridPlayerHand::UnHoverCard(UGridCard* InCard)

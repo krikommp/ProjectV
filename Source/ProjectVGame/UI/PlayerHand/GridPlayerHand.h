@@ -77,6 +77,9 @@ public:
 
 	// ~PlayerHand Card Operator Functions
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
+	void HoverCard(UGridCard* InCard);
+	
+	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
 	void PlaySelectCard();
 
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")

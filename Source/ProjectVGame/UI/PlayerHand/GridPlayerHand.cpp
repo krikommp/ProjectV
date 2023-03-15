@@ -130,6 +130,20 @@ void UGridPlayerHand::UnRegister_OnCardPlayPlaneMouseButtonDown(const UObject* I
 	OnCardPlayPlaneMouseButtonDown.RemoveAll(InUser);
 }
 
+void UGridPlayerHand::HoverCard(UGridCard* InCard)
+{
+	InCard->CardState = ECardState::Hover;
+	for (const auto& Card : Cards)
+	{
+		if (Card != InCard)
+		{
+			FWidgetTransform NewTransform = Card->GetRenderTransform();
+			NewTransform.Translation.X += 2.0f;
+			Card->RequestDesiredTransformUpdate(NewTransform, true);
+		}
+	}
+}
+
 void UGridPlayerHand::PlaySelectCard()
 {
 	PlayCard(SelectedCard);

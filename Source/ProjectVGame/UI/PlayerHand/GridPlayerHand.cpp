@@ -6,7 +6,6 @@
 #include "GridCardGraveyard.h"
 #include "GridCardPlayPlane.h"
 #include "GridCardSelectPlane.h"
-#include "GridLogChannel.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Character/GridPlayerHandComponent.h"
 #include "Components/CanvasPanel.h"
@@ -159,11 +158,9 @@ FWidgetTransform UGridPlayerHand::HoverCard(UGridCard *InCard)
  			const float MoveDistance = HoverOtherCardMoveX / FMath::Abs(Direction);
 			if (Direction < 0.0f)
 			{
-				// left
 				NewTransform.Translation.X -= MoveDistance;
 			}else
 			{
-				// right
 				NewTransform.Translation.X += MoveDistance;
 			}
 			Card->RequestDesiredTransformUpdate(NewTransform);

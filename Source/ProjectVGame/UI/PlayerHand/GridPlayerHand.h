@@ -34,7 +34,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnCardSelected, UGridCard* SelectedCard);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCardSelectedDynamic, UGridCard*, SelectedCard);
 DECLARE_MULTICAST_DELEGATE(FOnCardUnSelected);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardUnSelectedDynamic);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerHandMotionEnded)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerHandMotionEnded);
 
 /**
  * UGridPlayerHand

@@ -56,6 +56,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Grid|Card")
 	void SendCardInputEvent(const FGridAbilityInputEvent& InputEvent);
+
+	UFUNCTION(BlueprintPure, Category="Grid|Card")
+	FText GetCardDescription();
 public:
 	// 卡牌ID，用以区分相同类型的卡牌
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Grid|CardInfo")

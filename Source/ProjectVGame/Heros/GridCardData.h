@@ -3,13 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AttributeSet.h"
 #include "Engine/DataTable.h"
 #include "Templates/SubclassOf.h"
+#include "GameplayTagContainer.h"
 #include "GridCardData.generated.h"
 
 class UTexture2D;
 class UUserWidget;
 class UGridGameplayAbility_Card;
+
+USTRUCT(BlueprintType)
+struct FGridCardAbilityDescriptionArg
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayAttribute Attribute;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag GameplayTag;
+};
 
 /**
  * 
@@ -27,9 +41,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GridCardData")
 	FText CardName;
 
-	/**  */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GridCardData")
+	FGameplayTag ContainerTag;
+
+	/** 卡牌描述 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GridCardData")
 	FText CardDescription;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GridCardData")
+	TArray<FGridCardAbilityDescriptionArg> AbilityEffectArgs;
 
 	/** 卡面资产 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category="GridCardData")

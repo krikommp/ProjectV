@@ -23,6 +23,7 @@ class PROJECTVGAME_API UGridGameplayAbility_ChessPiece : public UGridGameplayAbi
 	GENERATED_BODY()
 
 	friend class UGridAbilitySystemComponent;
+	friend class UGridCardInfo;
 public:
 
 	UGridGameplayAbility_ChessPiece(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

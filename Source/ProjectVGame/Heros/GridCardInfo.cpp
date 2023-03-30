@@ -130,3 +130,46 @@ void UGridCardInfo::SendCardInputEvent(const FGridAbilityInputEvent& InputEvent)
 		}
 	}
 }
+
+FText UGridCardInfo::GetCardDescription()
+{
+	check(AbilitySystemComponent);
+
+	if (const FGameplayAbilitySpec* AbilitySpec = AbilitySystemComponent->FindAbilitySpecFromHandle(GrantedHandle))
+	{
+		if (UGridGameplayAbility_Card* CardAbility = Cast<UGridGameplayAbility_Card>(AbilitySpec->Ability))
+		{
+			if (const FGridGameplayEffectContainer* FoundContainer = CardAbility->EffectContainers.Find(CardData.ContainerTag))
+			{
+				FFormatOrderedArguments Args;
+				int32 ArgIndex = 0;
+				for (const TSubclassOf<UGameplayEffect>& EffectClass : FoundContainer->TargetGameplayEffects)
+				{
+					if (ArgIndex >= CardData.AbilityEffectArgs.Num()) break;
+					FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, AbilityLevel, CardAbility->MakeEffectContext(GrantedHandle, AbilitySystemComponent->AbilityActorInfo.Get()));
+					FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+					FGameplayTagContainer TagContainer;
+					Spec->GetAllAssetTags(TagContainer);
+					if (TagContainer.HasTagExact(CardData.AbilityEffectArgs[ArgIndex].GameplayTag))
+					{
+						float Result = 0.0f;
+						Spec->CalculateModifierMagnitudes();
+						for (int32 ModIdx = 0; ModIdx < Spec->Modifiers.Num();  ++ModIdx)
+						{
+							if (Spec->Def->Modifiers[ModIdx].Attribute == CardData.AbilityEffectArgs[ArgIndex].Attribute)
+							{
+								Result = Spec->Modifiers[ModIdx].GetEvaluatedMagnitude();
+								break;
+							}
+						}
+						Args.Add(Result);
+						++ArgIndex;
+					}
+				}
+				return FText::Format(CardData.CardDescription, Args);
+			}
+		}
+	}
+
+	return FText::GetEmpty();
+}

@@ -72,6 +72,11 @@ void UGridPlayerHandComponent::AddNewCardToPlayerHand(UGridCardInfo* InNewCardIn
 
 	CardsHoldInHand.Add(InNewCardInfo);
 
+	if (UGridPlayerHandStateComponent* PlayerHandStateComponent = GetWorld()->GetGameState()->FindComponentByClass<UGridPlayerHandStateComponent>())
+	{
+		PlayerHandStateComponent->StartToCheckMotion();
+	}
+
 	FGridGlobalDelegates::OnGridNewCardAdded.Broadcast(InNewCardInfo);
 }
 

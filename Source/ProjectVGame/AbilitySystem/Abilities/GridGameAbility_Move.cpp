@@ -120,20 +120,22 @@ void UGridGameAbility_Move::EndMovement()
 
 	if (!GridMapManager.IsValid()) return;
 
-	if (UGridChessPieceExtensionComponent* ChessPieceExtComponent =
-		UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(ChessPiece))
+	if (!GridMapManager->GetPathIndexArray().IsEmpty())
 	{
-		ChessPieceExtComponent->SetTileIndex(GridMapManager->GetPathIndexArray()[0]);
-		const FVector TargetLocation = GridMapManager->
-			IndexToVectorOnGrid(ChessPieceExtComponent->GetTileIndex(), 0.0f);
+		if (UGridChessPieceExtensionComponent* ChessPieceExtComponent =
+		UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(ChessPiece))
+		{
+			ChessPieceExtComponent->SetTileIndex(GridMapManager->GetPathIndexArray()[0]);
+			const FVector TargetLocation = GridMapManager->
+				IndexToVectorOnGrid(ChessPieceExtComponent->GetTileIndex(), 0.0f);
 
-		ChessPiece->SetActorLocation(TargetLocation);
+			ChessPiece->SetActorLocation(TargetLocation);
 
-		GridMapManager->PawnArray[ChessPieceExtComponent->GetTileIndex()] = ChessPiece;
-
-		bEndMovement = true;
-		MovementComponent->SetCurrentSpeed(0.0f);
+			GridMapManager->PawnArray[ChessPieceExtComponent->GetTileIndex()] = ChessPiece;
+		}
 	}
 
+	bEndMovement = true;
+	MovementComponent->SetCurrentSpeed(0.0f);
 	MovementComponent->Internal_EndMovement();
 }

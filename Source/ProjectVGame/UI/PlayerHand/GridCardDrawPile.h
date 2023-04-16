@@ -36,6 +36,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Grid|CardDrawPile")
 	TArray<UGridCard*> DrawCardFromPlayerHand();
+	
+	void OnNewCardAddToHand(UGridCardInfo* InNewCardInfo);
 
 protected:
 	// 抽一张牌

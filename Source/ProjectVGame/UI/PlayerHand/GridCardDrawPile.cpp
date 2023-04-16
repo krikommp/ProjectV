@@ -3,7 +3,9 @@
 
 #include "GridCardDrawPile.h"
 
+#include "GridGlobalDelegates.h"
 #include "GridPlayerHand.h"
+#include "GridPlayerHandStateComponent.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Character/GridPlayerHandComponent.h"
@@ -25,6 +27,8 @@ void UGridCardDrawPile::SetupCardDrawPile(UGridPlayerHand* InPlayerHand)
 		return;
 	}
 	PlayerHand = InPlayerHand;
+
+	FGridGlobalDelegates::OnGridNewCardAdded.AddUObject(this, &ThisClass::OnNewCardAddToHand);
 }
 
 void UGridCardDrawPile::AddCard(UGridCard* Card)
@@ -105,4 +109,14 @@ TArray<UGridCard*> UGridCardDrawPile::DrawCardFromPlayerHand()
 	}
 
 	return OutCards;
+}
+
+void UGridCardDrawPile::OnNewCardAddToHand(UGridCardInfo* InNewCardInfo)
+{
+	if (const UGridPlayerHandStateComponent* PlayerHandStateComponent = GetWorld()->GetGameState()->FindComponentByClass<UGridPlayerHandStateComponent>())
+	{
+		UGridCard* NewCard = DrawCard();
+		NewCard->SetupCardInfo(InNewCardInfo);
+		PlayerHandStateComponent->GetPlayerHand()->AddCard(NewCard);
+	}
 }

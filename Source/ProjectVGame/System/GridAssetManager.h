@@ -48,6 +48,7 @@ public:
 	const UGridGameData& GetGameData();
 	const UGridPawnData* GetDefaultPawnData() const;
 	const FGridHeroData& GetHeroData(int32 HeroID) const;
+	bool CheckCardData(const FString& CardId) const;
 	const FGridCardData& GetCardData(const FString& CardId) const;
 	const FGridSkillData& GetSkillData(const FName& SkillId) const;
 

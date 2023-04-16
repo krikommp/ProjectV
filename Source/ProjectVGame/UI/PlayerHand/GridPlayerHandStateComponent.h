@@ -26,7 +26,7 @@ public:
 
 	// 获取手牌窗口
 	UFUNCTION(BlueprintPure, Category="Grid|PlayerHand")
-	FORCEINLINE UGridPlayerHand* GetPlayerHand() const { return PlayerHand; }
+	FORCEINLINE UGridPlayerHand* GetPlayerHand() const { ensureAlwaysMsgf(PlayerHand, TEXT("Player Hand Class In InValid!")); return PlayerHand; }
 
 	// 判断当前手牌中的所有卡牌是否运动完成
 	UFUNCTION(BlueprintPure, Category="Grid|PlayerHand")

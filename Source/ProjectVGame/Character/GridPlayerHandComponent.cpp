@@ -3,6 +3,7 @@
 
 #include "GridPlayerHandComponent.h"
 
+#include "GridGlobalDelegates.h"
 #include "AbilitySystem/GridAbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/GridGameplayAbility_Card.h"
 #include "ChessPieces/GridChessPiece.h"
@@ -57,6 +58,21 @@ void UGridPlayerHandComponent::MoveCardToGraveyard(UGridCardInfo* InCardInfo)
 		const FGameplayAbilitySpecHandle& SpecHandle = InCardInfo->GrantedHandle;
 		InCardInfo->AbilitySystemComponent->SetRemoveAbilityOnEnd(SpecHandle);
 	}
+}
+
+void UGridPlayerHandComponent::AddNewCardToPlayerHand(UGridCardInfo* InNewCardInfo)
+{
+	check(InNewCardInfo);
+	
+	// add gameplay ability
+	UGridGameplayAbility_Card* CardAbilityCOD = InNewCardInfo->CardData.GrantedAbility->GetDefaultObject<UGridGameplayAbility_Card>();
+	FGameplayAbilitySpec CardAbilitySpec(CardAbilityCOD, InNewCardInfo->AbilityLevel);
+	CardAbilitySpec.SourceObject = nullptr;
+	InNewCardInfo->GrantedHandle = InNewCardInfo->AbilitySystemComponent->GiveAbility(CardAbilitySpec);
+
+	CardsHoldInHand.Add(InNewCardInfo);
+
+	FGridGlobalDelegates::OnGridNewCardAdded.Broadcast(InNewCardInfo);
 }
 
 UGridCard* UGridPlayerHandComponent::GetCurrentCard() const

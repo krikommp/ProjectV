@@ -62,6 +62,19 @@ public:
 
 	// Actor/Component 准备完毕
 	FGameplayTag InitState_GameplayReady;
+
+	// 水元素
+	FGameplayTag Element_Water;
+	// 冰元素
+	FGameplayTag Element_Ice;
+	// 火元素
+	FGameplayTag Element_Fire;
+	// 雷元素
+	FGameplayTag Element_Thunder;
+	// 油元素
+	FGameplayTag Element_Oil;
+	// 毒元素
+	FGameplayTag Element_Toxic;
 	
 	TMap<uint8, FGameplayTag> MovementModeTagMap;
 	TMap<uint8, FGameplayTag> CustomMovementModeTagMap;

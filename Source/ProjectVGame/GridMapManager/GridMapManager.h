@@ -56,7 +56,7 @@ public:
 	// 根据输入的当前位置和移动范围大小，计算出可移动到的Tiles
 	// 通过指定 DisplayTiles 来决定是否显示出可移动范围
 	UFUNCTION(BlueprintCallable, Category="Grid|Path Finding")
-	TArray<int32> PathFinding(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange, bool bDisplayTiles,
+	TArray<int32> PathFinding(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange, bool bExcludeFriendly,
 	                          bool bContinueFromLastPathfinding, bool bShowStartIndex = false);
 
 	// 查找所有可视范围网格
@@ -126,7 +126,7 @@ public:
 
 private:
 	// 检查 OpenList 中所有的 Tile, 如果可以移动到，那么就加入到合适的数组中，等待下一次移动
-	void SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 StartIndex);
+	void SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly);
 
 	// 根据输入位置索引，创建一条可到达的Path
 	const TArray<int32>& FindPathToIndex(const TArray<FStructPathFinding>& InCanMoveToArray, int32 InEndIndex,

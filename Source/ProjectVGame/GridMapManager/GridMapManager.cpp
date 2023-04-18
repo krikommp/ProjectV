@@ -58,7 +58,7 @@ void AGridMapManager::BeginPlay()
 }
 
 TArray<int32> AGridMapManager::PathFinding(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange,
-                                           bool bDisplayTiles,
+                                           bool bExcludeFriendly,
                                            bool bContinueFromLastPathfinding, bool bShowStartIndex)
 {
 	TArray<int32> OutTileIndex;
@@ -103,7 +103,7 @@ TArray<int32> AGridMapManager::PathFinding(int32 InStartIndex, int32 InMoveRange
 	// todo.. pathfinding type, current is standard
 	for (int32 SearchStep = CurrentSearchStep; SearchStep < PathfindingMove; ++SearchStep)
 	{
-		SearchAndAddAdjacentTiles(bShowStartIndex, InStartIndex);
+		SearchAndAddAdjacentTiles(bShowStartIndex, InStartIndex, bExcludeFriendly);
 		// 完成上一步寻路
 		OpenList.Empty();
 		IndexCanMoveToArray.Append(OpenListChildren);
@@ -288,7 +288,7 @@ TArray<int32> AGridMapManager::K2_GetIndexCanMove() const
 	return OutIndexArray;
 }
 
-void AGridMapManager::SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 StartIndex)
+void AGridMapManager::SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly)
 {
 	for (const auto& OpenListElem : OpenList)
 	{
@@ -311,7 +311,22 @@ void AGridMapManager::SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 Star
 						}else
 						{
 							// 如果有，就将棋子加入到ReachablePawnsArray，方便AI查询
-							ReachablePawnsArray.Add(Edge.Index);
+							// 同时判断是否为同盟
+							if (bExcludeFriendly && PawnArray[StartIndex] != nullptr)
+							{
+								const AGridChessPiece* LHS = PawnArray[StartIndex];
+								const AGridChessPiece* RHS = PawnArray[Edge.Index];
+								if (const UGridChessPieceExtensionComponent* ChessPieceExtComp = UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(LHS))
+								{
+									if (!ChessPieceExtComp->IsFaction(RHS))
+									{
+										ReachablePawnsArray.Add(Edge.Index);
+									}
+								}
+							}else
+							{
+								ReachablePawnsArray.Add(Edge.Index);
+							}
 							//OpenListChildren.Add({Edge.Index, Edge.Cost + OpenListElem.Cost, OpenListElem.Index});
 							CanMoveToArray[Edge.Index] = {0, Edge.Cost + OpenListElem.Cost, OpenListElem.Index};
 						}

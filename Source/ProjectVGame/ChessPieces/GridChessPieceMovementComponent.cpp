@@ -156,9 +156,37 @@ void UGridChessPieceMovementComponent::BeginMovement(int32 InTileIndex, int32 In
 
 	GridMapManager->FindPathWithinPathfindingArray(InTileIndex, true, false, false, InStopXFromTarget);
 
+	ActivateMovement(InTileIndex, InStopXFromTarget);
+}
+
+void UGridChessPieceMovementComponent::ActivateMovement(int32 InTileIndex, int32 InStopXFromTarget)
+{
+	check(GridMapManager.IsValid());
+
+	AGridChessPiece* Owner = GetPawnChecked<AGridChessPiece>();
+
 	const FGridGameplayTags GameplayTags = FGridGameplayTags::Get();
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, GameplayTags.Ability_Behavior_Move, FGameplayEventData());
 }
+
+bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget)
+{
+	check(GridMapManager.IsValid());
+
+	AGridChessPiece* Owner = GetPawnChecked<AGridChessPiece>();
+
+	if (const UGridChessPieceExtensionComponent* ChessPieceExtComp = UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(Owner))
+	{
+		const int32 Distance = GridMapManager->FindDistanceInTilesBetweenIndexes(ChessPieceExtComp->GetTileIndex(), InTileIndex);
+		if (Distance > GetMoveRange())
+		{
+			GridMapManager->PathFinding(ChessPieceExtComp->GetTileIndex(), Distance, Distance, true, false, false);
+		}
+	}
+
+	return GridMapManager->FindPathWithinPathfindingArray(InTileIndex, true, false, false, InStopXFromTarget);
+}
+
 
 bool UGridChessPieceMovementComponent::CheckMove(TSubclassOf<UGridGameAbility_Move> InMoveAbility) const
 {

@@ -79,7 +79,7 @@ public:
 
 	// 根据输入位置索引，创建一条可到达的Path,并决定是否渲染出路径
 	UFUNCTION(BlueprintCallable, Category="Grod|Path Finding")
-	void FindPathWithinPathfindingArray(int32 IndexPathEnd, bool bCreatePathSpline, bool bDisplayPath,
+	bool FindPathWithinPathfindingArray(int32 IndexPathEnd, bool bCreatePathSpline, bool bDisplayPath,
 	                                    bool bDisplayPathAsSpline, int32 StopFromTarget = 0);
 
 	// 计算两个索引之间的距离

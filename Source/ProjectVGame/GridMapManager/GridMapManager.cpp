@@ -181,11 +181,13 @@ TArray<int32> AGridMapManager::FindChessPieceInRange(const TArray<FStructRange>&
 	return OutTileIndexArray;
 }
 
-void AGridMapManager::FindPathWithinPathfindingArray(int32 IndexPathEnd, bool bCreatePathSpline,
+bool AGridMapManager::FindPathWithinPathfindingArray(int32 IndexPathEnd, bool bCreatePathSpline,
                                                      bool bDisplayPath,
                                                      bool bDisplayPathAsSpline, int32 StopFromTarget)
 {
 	const TArray<int32>& LocalPathIndexArray = FindPathToIndex(CanMoveToArray, IndexPathEnd, StopFromTarget);
+	if (LocalPathIndexArray.IsEmpty() || LocalPathIndexArray.Num() == 1)
+		return false;
 	if (bCreatePathSpline)
 	{
 		CreateSplinePath(LocalPathIndexArray);
@@ -202,6 +204,7 @@ void AGridMapManager::FindPathWithinPathfindingArray(int32 IndexPathEnd, bool bC
 			       TEXT("[AGridMapManager::FindPathWithinPathfindingArray]: DisplayPathAsInstancedMeshes."));
 		}
 	}
+	return true;
 }
 
 int32 AGridMapManager::FindDistanceInTilesBetweenIndexes(int32 Index1, int32 Index2)

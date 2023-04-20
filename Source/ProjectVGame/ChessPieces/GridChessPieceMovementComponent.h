@@ -75,6 +75,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Grid|ChessPieceMovement")
 	void BeginMovement(int32 InTileIndex, int32 InStopXFromTarget = 0);
 
+	// 激活移动技能
+	UFUNCTION(BlueprintCallable, Category="Grid|ChessPieceMovement")
+	void ActivateMovement(int32 InTileIndex, int32 InStopXFromTarget = 0);
+
+	// 判断是否需要执行移动
+	UFUNCTION(BlueprintCallable, Category="Grid|ChessPieceMovement")
+	bool CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget = 0);
+
+	// 判断是否允许移动
 	UFUNCTION(BlueprintPure, Category="Grid|ChessPieceMovement")
 	bool CheckMove(TSubclassOf<UGridGameAbility_Move> InMoveAbility) const;
 

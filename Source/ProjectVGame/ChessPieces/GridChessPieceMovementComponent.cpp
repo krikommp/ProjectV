@@ -72,7 +72,7 @@ void UGridChessPieceMovementComponent::StartToPathFinding(bool bDisplayTiles)
 		UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(Pawn))
 	{
 		const auto VisibleTileIndexArray = GridMapManager->FindTilesInRange(ChessPieceExtComp->GetTileIndex(),
-		                                                                    GetVisibleRange(), true, false, true,
+		                                                                    GetVisibleRange(), false, true,
 		                                                                    (GridMapManager->TileBoundsX +
 			                                                                    GridMapManager->
 			                                                                    TileBoundsY) * 0.5f * 0.5f,

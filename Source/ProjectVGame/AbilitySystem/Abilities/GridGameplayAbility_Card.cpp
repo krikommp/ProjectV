@@ -24,7 +24,7 @@ void UGridGameplayAbility_Card::BeginDisplayCardAbilityRange(int32 StartIndex, i
 	if (AGridMapManager* GridMapManager = GetGridMapManager())
 	{
 		const float Z = ((GridMapManager->TileBoundsX + GridMapManager->TileBoundsY) * 0.5f) * 0.5f;
-		GridMapManager->FindTilesInRange(StartIndex, Range, true, false, bDisplay, Z, MinimumRange, bExcludeFriendly);
+		GridMapManager->FindTilesInRange(StartIndex, Range, false, bDisplay, Z, MinimumRange, bExcludeFriendly);
 	}
 }
 

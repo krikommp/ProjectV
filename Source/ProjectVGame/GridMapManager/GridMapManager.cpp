@@ -138,7 +138,7 @@ TArray<int32> AGridMapManager::PathFinding(int32 InStartIndex, int32 InMoveRange
 
 const TArray<int32>& AGridMapManager::FindTilesInRange(int32 StartIndex, int32 InRange, bool bCheckVisibility,
                                                        bool bFindOnlyPawns,
-                                                       bool bDisplayTiles, float MaxZDifference, int32 MinimumRange,
+                                                       float MaxZDifference, int32 MinimumRange,
                                                        bool bExcludeFriendly)
 {
 	DiscoverableTileIndexArray.Empty();
@@ -418,15 +418,35 @@ void AGridMapManager::GetIndexesInRange(int32 StartIndex, int32 Range)
 	{
 		const int32 CurrentRangeIndexHeightMap = (Index * GridSizeX * GridSizeY) + (CurrentRangeIndex % (GridSizeX *
 			GridSizeY));
-		for (int32 Vertical = RangeCheckNorth * -1; Vertical <= RangeCheckSouth; ++Vertical)
+		if (IsDiagonalMovement())
 		{
-			for (int32 Horizontal = RangeCheckWest * -1; Horizontal <= RangeCheckEast; ++Horizontal)
+			for (int32 Vertical = RangeCheckNorth * -1; Vertical <= RangeCheckSouth; ++Vertical)
 			{
-				const int32 CheckIndex = Vertical * GridSizeX + CurrentRangeIndexHeightMap + Horizontal;
-				if (CheckIndex >= 0 && CheckIndex <= (GridSizeX * GridSizeY * GridSizeZ))
+				for (int32 Horizontal = RangeCheckWest * -1; Horizontal <= RangeCheckEast; ++Horizontal)
 				{
-					const int32 Distance = FMath::Abs(Vertical) + FMath::Abs(Horizontal);
-					TilesInRangeArray.Add(FStructRange(CheckIndex, Distance));
+					const int32 CheckIndex = Vertical * GridSizeX + CurrentRangeIndexHeightMap + Horizontal;
+					if (CheckIndex >= 0 && CheckIndex <= (GridSizeX * GridSizeY * GridSizeZ))
+					{
+						const int32 Distance = FMath::Max(FMath::Abs(Vertical), FMath::Abs(Horizontal));
+						TilesInRangeArray.Add(FStructRange(CheckIndex, Distance));
+					}
+				}
+			}
+			
+		}else
+		{
+			for (int32 Vertical = RangeCheckNorth * -1; Vertical <= RangeCheckSouth; ++Vertical)
+			{
+				int32 A = FMath::Max(CurrentRange - RangeCheckWest - FMath::Abs(Vertical), 0.0f) + (RangeCheckWest * -1 + FMath::Abs(Vertical) - (CurrentRange - RangeCheckWest));
+				int32 B = (CurrentRangeIndexHeightMap / GridSizeX % 2 - 1 + FMath::Abs(Vertical) * -1) / 2 + RangeCheckEast + (CurrentRange - RangeCheckEast) - FMath::Max(CurrentRange - RangeCheckEast - FMath::Abs(Vertical), 0);
+				for (int32 Horizontal = A; Horizontal <= B; ++Horizontal)
+				{
+					const int32 CheckIndex = GridSizeX * Vertical + CurrentRangeIndexHeightMap + Horizontal;
+					if (CheckIndex >= 0 && CheckIndex <= (GridSizeX * GridSizeY * GridSizeZ))
+					{
+						const int32 Distance = FMath::Abs(Vertical) +  FMath::Abs(Horizontal);
+						TilesInRangeArray.Add(FStructRange(CheckIndex, Distance));
+					}
 				}
 			}
 		}

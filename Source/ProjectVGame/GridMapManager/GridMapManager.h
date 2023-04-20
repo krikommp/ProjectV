@@ -69,7 +69,7 @@ public:
 	// 查找所有可视范围网格
 	UFUNCTION(BlueprintCallable, Category="Grid|Path Finding")
 	const TArray<int32>& FindTilesInRange(int32 StartIndex, int32 InRange, bool bCheckVisibility, bool bFindOnlyPawns,
-	                                      bool bDisplayTiles, float MaxZDifference, int32 MinimumRange,
+	                                      float MaxZDifference, int32 MinimumRange,
 	                                      bool bExcludeFriendly);
 
 	// 根据发起对象，在可视范围内查找是否有满足距离条件的棋子对象

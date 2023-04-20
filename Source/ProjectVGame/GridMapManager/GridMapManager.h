@@ -51,6 +51,13 @@ public:
 	FORCEINLINE const TArray<FStructRange>& GetTileInRangeArray() const { return TilesInRangeArray; }
 	FORCEINLINE const TArray<int32>& GetDiscoverableTileIndex() const { return DiscoverableTileIndexArray; }
 	FORCEINLINE const TArray<FStructPathFinding>& GetIndexCanMove() const { return IndexCanMoveToArray; }
+
+	/**
+	 * @brief 是否支持斜角移动，即八方向移动
+	 * @return ture: 支持八方向移动；false: 支持四方向移动
+	 */
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool IsDiagonalMovement() const { return bDiagonalMovement; }
 	
 public:
 	// 根据输入的当前位置和移动范围大小，计算出可移动到的Tiles
@@ -512,4 +519,7 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UInstancedStaticMeshComponent> DisplayEdgeInstancedMeshComponent;
+
+	UPROPERTY(Config)
+	bool bDiagonalMovement = true;
 };

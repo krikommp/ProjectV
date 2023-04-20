@@ -89,7 +89,7 @@ private:
 	
 	void static PrepareForCreateMultiLevelGrids(AGridMapManager* GridMapManager);
 
-	TArray<int32> static GetAdjacentIndexes(AGridMapManager* GridMapManager, int32 Index);
+	TArray<int32> static GetAdjacentIndexes(AGridMapManager* GridMapManager, int32 Index, bool bDiagonal);
 
 	int32 static GetEdgeCostFromZDifferent(AGridMapManager* GridMapManager, float ParentZ, int32 ChildIndex);
 

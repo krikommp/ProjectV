@@ -13,6 +13,8 @@ class UGridCardDrawPile;
 class UGridCardGraveyard;
 class UGridCardInfo;
 class UCanvasPanel;
+class UGridCardSelectPlane;
+class UGridCardPlayPlane;
 
 DECLARE_MULTICAST_DELEGATE(FOnEnterCardSelectPlane);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnterCardSelectPlaneDynamic);

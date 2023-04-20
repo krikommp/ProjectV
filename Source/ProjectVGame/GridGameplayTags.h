@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Object.h"
+#include "GameplayTagsManager.h"
 
 struct FGridGameplayTags
 {

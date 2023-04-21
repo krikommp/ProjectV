@@ -81,7 +81,7 @@ public:
 
 	// 判断是否需要执行移动
 	UFUNCTION(BlueprintCallable, Category="Grid|ChessPieceMovement")
-	bool CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget = 0);
+	bool CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget, bool bDisplayPath, int32& OutEndTileIndex);
 
 	// 判断是否允许移动
 	UFUNCTION(BlueprintPure, Category="Grid|ChessPieceMovement")

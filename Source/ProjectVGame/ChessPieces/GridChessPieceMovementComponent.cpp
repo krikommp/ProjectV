@@ -169,7 +169,7 @@ void UGridChessPieceMovementComponent::ActivateMovement(int32 InTileIndex, int32
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, GameplayTags.Ability_Behavior_Move, FGameplayEventData());
 }
 
-bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget)
+bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget, bool bDisplayPath, int32& OutEndTileIndex)
 {
 	check(GridMapManager.IsValid());
 
@@ -184,7 +184,20 @@ bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 In
 		}
 	}
 
-	return GridMapManager->FindPathWithinPathfindingArray(InTileIndex, true, false, false, InStopXFromTarget);
+	const TArray<int32>& LocalPathIndexArray = GridMapManager->FindPathToIndex(GridMapManager->CanMoveToArray, InTileIndex, InStopXFromTarget);
+	if (LocalPathIndexArray.IsEmpty() || LocalPathIndexArray.Num() == 1)
+		return false;
+	
+	GridMapManager->CreateSplinePath(LocalPathIndexArray);
+	
+	if (bDisplayPath)
+	{
+		GridMapManager->DisplayPathAsSpline();
+	}
+
+	OutEndTileIndex = LocalPathIndexArray[0];
+
+	return true;
 }
 
 

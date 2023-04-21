@@ -186,8 +186,6 @@ bool AGridMapManager::FindPathWithinPathfindingArray(int32 IndexPathEnd, bool bC
                                                      bool bDisplayPathAsSpline, int32 StopFromTarget)
 {
 	const TArray<int32>& LocalPathIndexArray = FindPathToIndex(CanMoveToArray, IndexPathEnd, StopFromTarget);
-	if (LocalPathIndexArray.IsEmpty() || LocalPathIndexArray.Num() == 1)
-		return false;
 	if (bCreatePathSpline)
 	{
 		CreateSplinePath(LocalPathIndexArray);

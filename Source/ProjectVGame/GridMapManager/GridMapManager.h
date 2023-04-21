@@ -131,7 +131,6 @@ public:
 	UFUNCTION(BlueprintPure, Category="Grid|Path Finding", meta=(DisplayName="GetIndexCanMove"))
 	TArray<int32> K2_GetIndexCanMove() const;
 
-private:
 	// 检查 OpenList 中所有的 Tile, 如果可以移动到，那么就加入到合适的数组中，等待下一次移动
 	void SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly);
 
@@ -160,7 +159,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Grid|Visible")
 	void InitializeDecalAndPathComponent();
 
-private:
 	// 计算格子贴画的大小
 	void ScaleDecalRelativeToDefaultTile(UDecalComponent* DecalComponent) const;
 
@@ -174,7 +172,6 @@ private:
 	// 清理Path
 	void DestroyAndClearSplinePath();
 
-public:
 	UPROPERTY(BlueprintReadWrite, Category="Unit")
 	TArray<AGridChessPiece*> PawnArray;
 
@@ -262,7 +259,6 @@ public:
 		meta=(AllowPrivateAccess="true", ToolTip="寻路Spline材质"))
 	TObjectPtr<UMaterialInterface> PathMaterial;
 
-public:
 	/**
 	 * @brief 地图大小
 	 */
@@ -434,7 +430,6 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Grid sized arrays")
 	TArray<TObjectPtr<AGridTileParent>> TileParents;
 
-public:
 	// Hover Comp
 	UPROPERTY(BlueprintReadWrite, Category="Grid|Components")
 	TObjectPtr<UDecalComponent> HoverMarkerDecal;

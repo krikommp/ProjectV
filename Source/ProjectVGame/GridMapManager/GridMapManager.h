@@ -58,7 +58,7 @@ public:
 	 */
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool IsDiagonalMovement() const { return bDiagonalMovement; }
-	
+
 public:
 	// 根据输入的当前位置和移动范围大小，计算出可移动到的Tiles
 	// 通过指定 DisplayTiles 来决定是否显示出可移动范围
@@ -132,7 +132,11 @@ public:
 	TArray<int32> K2_GetIndexCanMove() const;
 
 	// 检查 OpenList 中所有的 Tile, 如果可以移动到，那么就加入到合适的数组中，等待下一次移动
-	void SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly);
+	void SearchAndAddAdjacentTiles(TArray<FStructPathFinding>& InDelayedSpiltPathfindingList,
+	                               TArray<FStructPathFinding>& InOpenList,
+	                               TArray<FStructPathFinding>& InOpenListChildren,
+	                               TArray<FStructPathFinding>& InDelaySearchList
+	                               , bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly);
 
 	// 根据输入位置索引，创建一条可到达的Path
 	const TArray<int32>& FindPathToIndex(const TArray<FStructPathFinding>& InCanMoveToArray, int32 InEndIndex,
@@ -145,6 +149,12 @@ public:
 	void CheckIfTileIsVisibleFromOtherTile(int32 Index, int32 TargetIndex, bool bFindOnlyPawns, float MaxZDifference,
 	                                       int32 Distance, int32 MinimumRange, bool bCheckVisibility,
 	                                       bool bExcludeFriendly);
+
+	void PathFinding_Internal(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange, bool bExcludeFriendly,
+	                          bool bContinueFromLastPathfinding, bool bShowStartIndex,
+	                          OUT TArray<FStructPathFinding>& OutCanMoveToArray,
+	                          OUT TArray<FStructPathFinding>& OutIndexCanMoveToArray,
+	                          OUT TArray<int32>& OutTileIndexes);
 
 private:
 	void DisplayTileIndexesInternal();
@@ -455,18 +465,6 @@ protected:
 
 	// 最大移动范围
 	int32 MaxMove;
-
-	// 保存当前寻路中移动消耗过高的tile,如果继续上一次寻路，那么这些tile将会被寻路到
-	TArray<FStructPathFinding> DelayedSpiltPathfindingList;
-
-	// 本次寻路中等待搜索的Tile队列
-	TArray<FStructPathFinding> OpenList;
-
-	// 下次待搜索的Tile队列
-	TArray<FStructPathFinding> OpenListChildren;
-
-	// 消耗过大的Tile,可能会在下次寻路时加入搜索
-	TArray<FStructPathFinding> DelaySearchList;
 
 	// 只包含寻路路径的Tile队列，CanMoveToArray包含了整个地图，在只希望获取到路径的地方使用该变量
 	TArray<FStructPathFinding> IndexCanMoveToArray;

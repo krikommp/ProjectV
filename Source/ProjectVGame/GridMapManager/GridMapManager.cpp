@@ -34,8 +34,6 @@ AGridMapManager::AGridMapManager(const FObjectInitializer& ObjectInitializer)
 	CollisionPlane->SetMobility(EComponentMobility::Static);
 	Heightmap->SetMobility(EComponentMobility::Static);
 
-	DelayedSpiltPathfindingList.Empty();
-	OpenList.Empty();
 	DisplayIndexesTextRenderArray.Empty();
 
 	PrimaryActorTick.bCanEverTick = false;
@@ -61,6 +59,11 @@ TArray<int32> AGridMapManager::PathFinding(int32 InStartIndex, int32 InMoveRange
                                            bool bExcludeFriendly,
                                            bool bContinueFromLastPathfinding, bool bShowStartIndex)
 {
+	TArray<FStructPathFinding> DelayedSpiltPathfindingList;
+	TArray<FStructPathFinding> OpenList;
+	TArray<FStructPathFinding> OpenListChildren;
+	TArray<FStructPathFinding> DelaySearchList;
+
 	TArray<int32> OutTileIndex;
 	CurrentIndex = InStartIndex;
 	MaxMove = FMath::Max(InMoveRange, InMaxMoveRange);
@@ -103,7 +106,8 @@ TArray<int32> AGridMapManager::PathFinding(int32 InStartIndex, int32 InMoveRange
 	// todo.. pathfinding type, current is standard
 	for (int32 SearchStep = CurrentSearchStep; SearchStep < PathfindingMove; ++SearchStep)
 	{
-		SearchAndAddAdjacentTiles(bShowStartIndex, InStartIndex, bExcludeFriendly);
+		SearchAndAddAdjacentTiles(DelayedSpiltPathfindingList, OpenList, OpenListChildren, DelaySearchList,
+		                          bShowStartIndex, InStartIndex, bExcludeFriendly);
 		// 完成上一步寻路
 		OpenList.Empty();
 		IndexCanMoveToArray.Append(OpenListChildren);
@@ -288,9 +292,13 @@ TArray<int32> AGridMapManager::K2_GetIndexCanMove() const
 	return OutIndexArray;
 }
 
-void AGridMapManager::SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly)
+void AGridMapManager::SearchAndAddAdjacentTiles(TArray<FStructPathFinding>& InDelayedSpiltPathfindingList,
+                                                TArray<FStructPathFinding>& InOpenList,
+                                                TArray<FStructPathFinding>& InOpenListChildren,
+                                                TArray<FStructPathFinding>& InDelaySearchList
+                                                , bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly)
 {
-	for (const auto& OpenListElem : OpenList)
+	for (const auto& OpenListElem : InOpenList)
 	{
 		// 判断这个Tile的移动消耗是否满足当前SearchStep,如果不是，就将他加入到下一次寻路中
 		if (CurrentSearchStep == OpenListElem.Cost)
@@ -308,7 +316,8 @@ void AGridMapManager::SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 Star
 						{
 							//OpenListChildren.Add({Edge.Index, Edge.Cost + OpenListElem.Cost, OpenListElem.Index});
 							CanMoveToArray[Edge.Index] = {0, Edge.Cost + OpenListElem.Cost, OpenListElem.Index};
-						}else
+						}
+						else
 						{
 							// 如果有，就将棋子加入到ReachablePawnsArray，方便AI查询
 							// 同时判断是否为同盟
@@ -316,14 +325,16 @@ void AGridMapManager::SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 Star
 							{
 								const AGridChessPiece* LHS = PawnArray[StartIndex];
 								const AGridChessPiece* RHS = PawnArray[Edge.Index];
-								if (const UGridChessPieceExtensionComponent* ChessPieceExtComp = UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(LHS))
+								if (const UGridChessPieceExtensionComponent* ChessPieceExtComp =
+									UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(LHS))
 								{
 									if (!ChessPieceExtComp->IsFaction(RHS))
 									{
 										ReachablePawnsArray.Add(Edge.Index);
 									}
 								}
-							}else
+							}
+							else
 							{
 								ReachablePawnsArray.Add(Edge.Index);
 							}
@@ -336,14 +347,14 @@ void AGridMapManager::SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 Star
 						// 否则就尝试加入到下次搜索
 						if ((Edge.Cost + OpenListElem.Cost) <= MaxMove)
 						{
-							OpenListChildren.Add({Edge.Index, Edge.Cost + OpenListElem.Cost, OpenListElem.Index});
+							InOpenListChildren.Add({Edge.Index, Edge.Cost + OpenListElem.Cost, OpenListElem.Index});
 							CanMoveToArray[Edge.Index] = {0, Edge.Cost + OpenListElem.Cost, OpenListElem.Index};
 						}
 						else
 						{
 							if (Edge.Cost <= MaxMove)
 							{
-								DelayedSpiltPathfindingList.Add({
+								InDelayedSpiltPathfindingList.Add({
 									Edge.Index, Edge.Cost + OpenListElem.Cost, OpenListElem.Index
 								});
 							}
@@ -354,7 +365,7 @@ void AGridMapManager::SearchAndAddAdjacentTiles(bool bShowStartIndex, int32 Star
 		}
 		else
 		{
-			DelaySearchList.Add({OpenListElem.Index, OpenListElem.Cost, OpenListElem.Parent});
+			InDelaySearchList.Add({OpenListElem.Index, OpenListElem.Cost, OpenListElem.Parent});
 		}
 	}
 }
@@ -433,19 +444,22 @@ void AGridMapManager::GetIndexesInRange(int32 StartIndex, int32 Range)
 					}
 				}
 			}
-			
-		}else
+		}
+		else
 		{
 			for (int32 Vertical = RangeCheckNorth * -1; Vertical <= RangeCheckSouth; ++Vertical)
 			{
-				int32 A = FMath::Max(CurrentRange - RangeCheckWest - FMath::Abs(Vertical), 0.0f) + (RangeCheckWest * -1 + FMath::Abs(Vertical) - (CurrentRange - RangeCheckWest));
-				int32 B = (CurrentRangeIndexHeightMap / GridSizeX % 2 - 1 + FMath::Abs(Vertical) * -1) / 2 + RangeCheckEast + (CurrentRange - RangeCheckEast) - FMath::Max(CurrentRange - RangeCheckEast - FMath::Abs(Vertical), 0);
+				int32 A = FMath::Max(CurrentRange - RangeCheckWest - FMath::Abs(Vertical), 0.0f) + (RangeCheckWest * -1
+					+ FMath::Abs(Vertical) - (CurrentRange - RangeCheckWest));
+				int32 B = (CurrentRangeIndexHeightMap / GridSizeX % 2 - 1 + FMath::Abs(Vertical) * -1) / 2 +
+					RangeCheckEast + (CurrentRange - RangeCheckEast) - FMath::Max(
+						CurrentRange - RangeCheckEast - FMath::Abs(Vertical), 0);
 				for (int32 Horizontal = A; Horizontal <= B; ++Horizontal)
 				{
 					const int32 CheckIndex = GridSizeX * Vertical + CurrentRangeIndexHeightMap + Horizontal;
 					if (CheckIndex >= 0 && CheckIndex <= (GridSizeX * GridSizeY * GridSizeZ))
 					{
-						const int32 Distance = FMath::Abs(Vertical) +  FMath::Abs(Horizontal);
+						const int32 Distance = FMath::Abs(Vertical) + FMath::Abs(Horizontal);
 						TilesInRangeArray.Add(FStructRange(CheckIndex, Distance));
 					}
 				}
@@ -543,6 +557,92 @@ void AGridMapManager::CheckIfTileIsVisibleFromOtherTile(int32 Index, int32 Targe
 
 	UGridMapFunctionLibrary::SetArrayElement(Distance, RangeArray, TargetIndex);
 	TilesInSightArray.Add(TargetIndex);
+}
+
+void AGridMapManager::PathFinding_Internal(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange,
+                                           bool bExcludeFriendly, bool bContinueFromLastPathfinding,
+                                           bool bShowStartIndex, TArray<FStructPathFinding>& OutCanMoveToArray,
+                                           TArray<FStructPathFinding>& OutIndexCanMoveToArray,
+                                           TArray<int32>& OutTileIndexes)
+{
+	TArray<FStructPathFinding> DelayedSpiltPathfindingList;
+	TArray<FStructPathFinding> OpenList;
+	TArray<FStructPathFinding> OpenListChildren;
+	TArray<FStructPathFinding> DelaySearchList;
+
+	CurrentIndex = InStartIndex;
+	MaxMove = FMath::Max(InMoveRange, InMaxMoveRange);
+	int32 PathfindingMove = InMoveRange;
+	if (bContinueFromLastPathfinding)
+	{
+		PathfindingMove = CurrentSearchStep + InMoveRange;
+		for (int32 Index = 0; Index < DelayedSpiltPathfindingList.Num();)
+		{
+			if (DelayedSpiltPathfindingList[Index].Cost <= MaxMove)
+			{
+				OpenList.Add({
+					DelayedSpiltPathfindingList[Index].Index, DelayedSpiltPathfindingList[Index].Cost,
+					DelayedSpiltPathfindingList[Index].Parent
+				});
+				OutCanMoveToArray[DelayedSpiltPathfindingList[Index].Index].Index = 0;
+				OutCanMoveToArray[DelayedSpiltPathfindingList[Index].Index].Cost = DelayedSpiltPathfindingList[Index].
+					Cost;
+				OutCanMoveToArray[DelayedSpiltPathfindingList[Index].Index].Parent = DelayedSpiltPathfindingList[Index].
+					Parent;
+				DelayedSpiltPathfindingList.RemoveAt(Index);
+			}
+			else
+			{
+				++Index;
+			}
+		}
+	}
+	else
+	{
+		DelayedSpiltPathfindingList.Empty();
+		ResetPathfindingArraysAndClearMeshes();
+		if (PathfindingMove <= 0)
+		{
+			OutCanMoveToArray[CurrentIndex] = {CurrentIndex, 0, CurrentIndex};
+			OutIndexCanMoveToArray.Add({CurrentIndex, 0, CurrentIndex});
+			return;
+		}
+		OpenList.Add({CurrentIndex, 0, CurrentIndex});
+	}
+	// todo.. pathfinding type, current is standard
+	for (int32 SearchStep = CurrentSearchStep; SearchStep < PathfindingMove; ++SearchStep)
+	{
+		SearchAndAddAdjacentTiles(DelayedSpiltPathfindingList, OpenList, OpenListChildren, DelaySearchList,
+		                          bShowStartIndex, InStartIndex, bExcludeFriendly);
+		// 完成上一步寻路
+		OpenList.Empty();
+		OutIndexCanMoveToArray.Append(OpenListChildren);
+		// 移动到下一步寻路
+		CurrentSearchStep += 1;
+		// 将待寻路Tile加入到OpenList中
+		OpenList.Append(OpenListChildren);
+		OpenList.Append(DelaySearchList);
+		OpenListChildren.Empty();
+		DelaySearchList.Empty();
+		// 判断是否终止搜索
+		if (OpenList.IsEmpty())
+		{
+			break;
+		}
+		if (CurrentSearchStep >= PathfindingMove)
+		{
+			break;
+		}
+	}
+	// 结束寻路
+	OutCanMoveToArray[CurrentIndex] = {CurrentIndex, 0, CurrentIndex};
+	OutIndexCanMoveToArray.Add({CurrentIndex, 0, CurrentIndex});
+	// todo... for path finding friendly
+	for (const auto& CanMove : OutIndexCanMoveToArray)
+	{
+		if (bShowStartIndex && CanMove.Index == InStartIndex) continue;
+		OutTileIndexes.Add(CanMove.Index);
+	}
 }
 
 void AGridMapManager::DisplayTileIndexesInternal()
@@ -786,9 +886,6 @@ void AGridMapManager::DisplayPathAsSpline()
 void AGridMapManager::ResetPathfindingArraysAndClearMeshes()
 {
 	ClearAllInRangeMeshMarkers();
-	OpenListChildren.Empty();
-	DelaySearchList.Empty();
-	OpenList.Empty();
 	IndexCanMoveToArray.Empty();
 	ReachablePawnsArray.Empty();
 	CanMoveToArray.Empty();

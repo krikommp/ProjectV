@@ -166,30 +166,53 @@ void UGridChessPieceMovementComponent::ActivateMovement(int32 InTileIndex, int32
 	AGridChessPiece* Owner = GetPawnChecked<AGridChessPiece>();
 
 	const FGridGameplayTags GameplayTags = FGridGameplayTags::Get();
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, GameplayTags.Ability_Behavior_Move, FGameplayEventData());
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, GameplayTags.Ability_Behavior_Move,
+	                                                         FGameplayEventData());
 }
 
-bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget, bool bDisplayPath, int32& OutEndTileIndex)
+bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget, bool bDisplayPath,
+                                                     int32& OutEndTileIndex)
 {
 	check(GridMapManager.IsValid());
 
 	AGridChessPiece* Owner = GetPawnChecked<AGridChessPiece>();
 
-	if (const UGridChessPieceExtensionComponent* ChessPieceExtComp = UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(Owner))
+	const UGridChessPieceExtensionComponent* ChessPieceExtComp =
+		UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(Owner);
+
+	check(ChessPieceExtComp);
+
+	TArray<FStructPathFinding> NewCanMoveToArray;
+	const int32 Distance = GridMapManager->FindDistanceInTilesBetweenIndexes(
+			ChessPieceExtComp->GetTileIndex(), InTileIndex);
+	
+	if (Distance > GetMoveRange())
 	{
-		const int32 Distance = GridMapManager->FindDistanceInTilesBetweenIndexes(ChessPieceExtComp->GetTileIndex(), InTileIndex);
-		if (Distance > GetMoveRange())
+		//GridMapManager->PathFinding(ChessPieceExtComp->GetTileIndex(), Distance, Distance, true, false, false);
+		TArray<FStructPathFinding> NewIndexCanMoveToArray;
+		TArray<int32> NewReachablePawnsArray;
+		int32 NewCurrentSearchStep = 0;
+		TArray<int32> NewTileIndexes;
+		for (int32 Index = 0; Index < GridMapManager->GridSizeX * GridMapManager->GridSizeY * GridMapManager->
+			 GridSizeZ; ++Index)
 		{
-			GridMapManager->PathFinding(ChessPieceExtComp->GetTileIndex(), Distance, Distance, true, false, false);
+			NewCanMoveToArray.Add({0, 0, 0});
 		}
+		GridMapManager->PathFinding_Internal(ChessPieceExtComp->GetTileIndex(), Distance, Distance, true, false,
+											 false, NewCurrentSearchStep, NewCanMoveToArray, NewIndexCanMoveToArray,
+											 NewTileIndexes, NewReachablePawnsArray);
+	}else
+	{
+		NewCanMoveToArray = GridMapManager->CanMoveToArray;
 	}
 
-	const TArray<int32>& LocalPathIndexArray = GridMapManager->FindPathToIndex(GridMapManager->CanMoveToArray, InTileIndex, InStopXFromTarget);
+	const TArray<int32>& LocalPathIndexArray = GridMapManager->FindPathToIndex(
+		NewCanMoveToArray , InTileIndex, InStopXFromTarget);
 	if (LocalPathIndexArray.IsEmpty() || LocalPathIndexArray.Num() == 1)
 		return false;
-	
+
 	GridMapManager->CreateSplinePath(LocalPathIndexArray);
-	
+
 	if (bDisplayPath)
 	{
 		GridMapManager->DisplayPathAsSpline();
@@ -209,7 +232,8 @@ bool UGridChessPieceMovementComponent::CheckMove(TSubclassOf<UGridGameAbility_Mo
 	{
 		if (AbilitySpec->Ability)
 		{
-			return AbilitySpec->Ability->CanActivateAbility(AbilitySpec->Handle, AbilitySystemComponent->AbilityActorInfo.Get());
+			return AbilitySpec->Ability->CanActivateAbility(AbilitySpec->Handle,
+			                                                AbilitySystemComponent->AbilityActorInfo.Get());
 		}
 	}
 

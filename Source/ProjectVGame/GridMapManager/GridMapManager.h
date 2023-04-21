@@ -135,8 +135,11 @@ public:
 	void SearchAndAddAdjacentTiles(TArray<FStructPathFinding>& InDelayedSpiltPathfindingList,
 	                               TArray<FStructPathFinding>& InOpenList,
 	                               TArray<FStructPathFinding>& InOpenListChildren,
-	                               TArray<FStructPathFinding>& InDelaySearchList
-	                               , bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly);
+	                               TArray<FStructPathFinding>& InDelaySearchList,
+	                               TArray<FStructPathFinding>& OutCanMoveToArray,
+	                               TArray<int32>& OutReachablePawnsArray,
+	                               int32 InMaxMove,
+	                               bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly);
 
 	// 根据输入位置索引，创建一条可到达的Path
 	const TArray<int32>& FindPathToIndex(const TArray<FStructPathFinding>& InCanMoveToArray, int32 InEndIndex,
@@ -152,9 +155,10 @@ public:
 
 	void PathFinding_Internal(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange, bool bExcludeFriendly,
 	                          bool bContinueFromLastPathfinding, bool bShowStartIndex,
+	                          OUT int32& OutCurrentSearchStep,
 	                          OUT TArray<FStructPathFinding>& OutCanMoveToArray,
 	                          OUT TArray<FStructPathFinding>& OutIndexCanMoveToArray,
-	                          OUT TArray<int32>& OutTileIndexes);
+	                          OUT TArray<int32>& OutTileIndexes, OUT TArray<int32>& OutReachablePawnsArray);
 
 private:
 	void DisplayTileIndexesInternal();
@@ -460,12 +464,6 @@ public:
 	TObjectPtr<USplineComponent> DisplaySpline;
 
 protected:
-	// 当前寻路开始索引
-	int32 CurrentIndex;
-
-	// 最大移动范围
-	int32 MaxMove;
-
 	// 只包含寻路路径的Tile队列，CanMoveToArray包含了整个地图，在只希望获取到路径的地方使用该变量
 	TArray<FStructPathFinding> IndexCanMoveToArray;
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayAbilitySpecHandle.h"
 #include "Components/PawnComponent.h"
+#include "GridMapManager/GridMapStruct.h"
 #include "GridChessPieceMovementComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnChessPieceBeginMovementDynamic);
@@ -81,7 +82,7 @@ public:
 
 	// 判断是否需要执行移动
 	UFUNCTION(BlueprintCallable, Category="Grid|ChessPieceMovement")
-	bool CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget, bool bDisplayPath, int32& OutEndTileIndex);
+	bool CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget, bool bDisplayPath, int32& OutEndTileIndex, TArray<FStructPathFinding>& OutCanMoveToArray);
 
 	// 判断是否允许移动
 	UFUNCTION(BlueprintPure, Category="Grid|ChessPieceMovement")

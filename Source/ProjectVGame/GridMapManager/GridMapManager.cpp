@@ -232,12 +232,13 @@ void AGridMapManager::SearchAndAddAdjacentTiles(TArray<FStructPathFinding>& InDe
                                                 TArray<FStructPathFinding>& OutCanMoveToArray,
                                                 TArray<int32>& OutReachablePawnsArray,
                                                 int32 InMaxMove,
+                                                int32 InCurrentSearchStep,
                                                 bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly)
 {
 	for (const auto& OpenListElem : InOpenList)
 	{
 		// 判断这个Tile的移动消耗是否满足当前SearchStep,如果不是，就将他加入到下一次寻路中
-		if (CurrentSearchStep == OpenListElem.Cost)
+		if (InCurrentSearchStep == OpenListElem.Cost)
 		{
 			// 获取该Tile所有相邻的Edge，将他们加入到寻路搜索路径中
 			for (const auto& Edge : EdgeArray[OpenListElem.Index].Array)
@@ -509,7 +510,7 @@ void AGridMapManager::PathFinding_Internal(int32 InStartIndex, int32 InMoveRange
 	TArray<FStructPathFinding> DelaySearchList;
 
 	int32 CurrentIndex = InStartIndex;
-	int32 MaxMove = FMath::Max(InMoveRange, InMaxMoveRange);
+	const int32 MaxMove = FMath::Max(InMoveRange, InMaxMoveRange);
 	int32 PathfindingMove = InMoveRange;
 	if (bContinueFromLastPathfinding)
 	{
@@ -550,7 +551,7 @@ void AGridMapManager::PathFinding_Internal(int32 InStartIndex, int32 InMoveRange
 	for (int32 SearchStep = OutCurrentSearchStep; SearchStep < PathfindingMove; ++SearchStep)
 	{
 		SearchAndAddAdjacentTiles(DelayedSpiltPathfindingList, OpenList, OpenListChildren, DelaySearchList,
-		                          OutCanMoveToArray, OutReachablePawnsArray, MaxMove,
+		                          OutCanMoveToArray, OutReachablePawnsArray, MaxMove, OutCurrentSearchStep,
 		                          bShowStartIndex, InStartIndex, bExcludeFriendly);
 		// 完成上一步寻路
 		OpenList.Empty();

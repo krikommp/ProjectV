@@ -139,6 +139,7 @@ public:
 	                               TArray<FStructPathFinding>& OutCanMoveToArray,
 	                               TArray<int32>& OutReachablePawnsArray,
 	                               int32 InMaxMove,
+	                               int32 InCurrentSearchStep,
 	                               bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly);
 
 	// 根据输入位置索引，创建一条可到达的Path

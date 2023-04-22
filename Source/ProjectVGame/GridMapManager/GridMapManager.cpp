@@ -97,10 +97,11 @@ const TArray<int32>& AGridMapManager::FindTilesInRange(int32 StartIndex, int32 I
 	return DiscoverableTileIndexArray;
 }
 
-TArray<int32> AGridMapManager::FindChessPieceInRange(const TArray<FStructRange>& InTileInRangeArray,
-                                                     AGridChessPiece* InstigatorChessPiece, int32 Distance)
+void AGridMapManager::FindChessPieceInRange(const TArray<FStructRange>& InTileInRangeArray,
+                                            AGridChessPiece* InstigatorChessPiece, int32 Distance,
+                                            TArray<int32>& OutTilesInsightArray, TArray<int32>& OutRangeArray)
 {
-	TArray<int32> OutTileIndexArray;
+	OutRangeArray.SetNumZeroed(RangeArray.Num());
 	for (const auto& TileInRange : InTileInRangeArray)
 	{
 		// 如果开始位置不可逾越的，那么跳过
@@ -113,9 +114,11 @@ TArray<int32> AGridMapManager::FindChessPieceInRange(const TArray<FStructRange>&
 
 		if (PawnArray.IsValidIndex(TileInRange.Index) && PawnArray[TileInRange.Index] == InstigatorChessPiece) continue;
 
-		OutTileIndexArray.Add(TileInRange.Index);
+		OutTilesInsightArray.Add(TileInRange.Index);
+		
+		OutRangeArray[TileInRange.Index] = TileInRange.Distance;
 	}
-	return OutTileIndexArray;
+	return;
 }
 
 bool AGridMapManager::FindPathWithinPathfindingArray(int32 IndexPathEnd, bool bCreatePathSpline,

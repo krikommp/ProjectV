@@ -227,6 +227,27 @@ bool UGridMapFunctionLibrary::CompareClickLocation(AGridMapManager* GridMapManag
 	return false;
 }
 
+void UGridMapFunctionLibrary::DisplayMoveRangeEdgeMarkers(AGridMapManager* GridMapManager,
+                                                          const TArray<FStructPathFinding>& InCanMoveToArray,
+                                                          const TArray<FStructPathFinding>& InIndexCanMoveToArray)
+{
+	for (const auto& CanMoveTo : InIndexCanMoveToArray)
+	{
+		SpawnEdgeMeshes(GridMapManager, InCanMoveToArray, GridMapManager->TileInMoveRangeEdgeDecal, CanMoveTo.Index);
+	}
+}
+
+void UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(AGridMapManager* GridMapManager,
+                                                             const TArray<int32>& InTilesInSightArray,
+                                                             const TArray<int32>& InRangeArray)
+{
+	for (const int32 Index : InTilesInSightArray)
+	{
+		SpawnEdgeMeshes(GridMapManager, InRangeArray, GridMapManager->TileInSightRangeEdgeDecal,
+		                Index);
+	}
+}
+
 void UGridMapFunctionLibrary::RemoveTileEdge(int32 TileIndex, int32 Edge, AGridMapManager* GridMapManager)
 {
 	// 在TileIndex的邻居中查找Edge的索引
@@ -1044,4 +1065,78 @@ void UGridMapFunctionLibrary::AddTileEdgesToEdgeArray(AGridMapManager* GridMapMa
 	GridMapManager->EdgeArrayInteger[Tile->TileIndex] = {LocalIntegerArray};
 	GridMapManager->EdgeArray[Tile->TileIndex] = {LocalEdgeStructArray};
 	// todo...
+}
+
+void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
+                                              const TArray<FStructPathFinding>& InCanMoveToArray,
+                                              UMaterialInterface* DecalMat, int32 Index)
+{
+	const FVector StraightEdgeDecalSize = {90.0, 90.0, 90.0};
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InCanMoveToArray, Index, Index + 1, StraightEdgeDecalSize, 270.0,
+	                             DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InCanMoveToArray, Index, Index - 1, StraightEdgeDecalSize, 90.0,
+	                             DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InCanMoveToArray, Index, Index + GridMapManager->GridSizeX,
+	                             StraightEdgeDecalSize, 0.0, DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InCanMoveToArray, Index, Index - GridMapManager->GridSizeX,
+	                             StraightEdgeDecalSize, 180.0, DecalMat);
+}
+
+void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
+                                              const TArray<int32>& InRangeArray, UMaterialInterface* DecalMat,
+                                              int32 Index)
+{
+	const FVector StraightEdgeDecalSize = {90.0, 90.0, 90.0};
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index, Index + 1,
+	                             StraightEdgeDecalSize, 270.0,
+	                             DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index, Index - 1,
+	                             StraightEdgeDecalSize, 90.0,
+	                             DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index,
+	                             Index + GridMapManager->GridSizeX,
+	                             StraightEdgeDecalSize, 0.0, DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index,
+	                             Index - GridMapManager->GridSizeX,
+	                             StraightEdgeDecalSize, 180.0, DecalMat);
+}
+
+void UGridMapFunctionLibrary::SpawnEdgeDecalBetweenIndexes(AGridMapManager* GridMapManager,
+                                                           const TArray<FStructPathFinding>& InCanMoveToArray,
+                                                           int32 OutsideIndex, int32 InsideIndex,
+                                                           const FVector& DecalSize,
+                                                           float Rotation, UMaterialInterface* DecalMat)
+{
+	if (!InCanMoveToArray.IsValidIndex(InsideIndex))
+	{
+		return;
+	}
+	// 不是边缘Tile, 因此不需要绘制
+	if (InCanMoveToArray[InsideIndex].Parent != 0)
+	{
+		return;
+	}
+	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
+		GridMapManager->GetWorld(), DecalMat, DecalSize,
+		GridMapManager->VectorFieldArray[OutsideIndex] + GridMapManager->GetActorLocation(), {90.0f, Rotation, 90.0});
+	GridMapManager->CurrentDecalsArray.Add(DecalComponent);
+}
+
+void UGridMapFunctionLibrary::SpawnEdgeDecalBetweenIndexes(AGridMapManager* GridMapManager,
+                                                           const TArray<int32>& InRangeArray, int32 OutsideIndex,
+                                                           int32 InsideIndex, const FVector& DecalSize, float Rotation,
+                                                           UMaterialInterface* DecalMat)
+{
+	if (!InRangeArray.IsValidIndex(InsideIndex))
+	{
+		return;
+	}
+	if (InRangeArray[InsideIndex] != 0)
+	{
+		return;
+	}
+	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
+		GridMapManager->GetWorld(), DecalMat, DecalSize,
+		GridMapManager->VectorFieldArray[OutsideIndex] + GridMapManager->GetActorLocation(), {90.0f, Rotation, 90.0});
+	GridMapManager->CurrentDecalsArray.Add(DecalComponent);
 }

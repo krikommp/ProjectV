@@ -59,7 +59,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool IsDiagonalMovement() const { return bDiagonalMovement; }
 
-public:
 	// 根据输入的当前位置和移动范围大小，计算出可移动到的Tiles
 	// 通过指定 DisplayTiles 来决定是否显示出可移动范围
 	UFUNCTION(BlueprintCallable, Category="Grid|Path Finding")
@@ -74,8 +73,9 @@ public:
 
 	// 根据发起对象，在可视范围内查找是否有满足距离条件的棋子对象
 	UFUNCTION(BlueprintCallable, Category="Grid|Path Finding")
-	TArray<int32> FindChessPieceInRange(const TArray<FStructRange>& InTileInRangeArray,
-	                                    AGridChessPiece* InstigatorChessPiece, int32 Distance);
+	void FindChessPieceInRange(const TArray<FStructRange>& InTileInRangeArray,
+	                           AGridChessPiece* InstigatorChessPiece, int32 Distance,
+	                           TArray<int32>& OutTilesInsightArray, TArray<int32>& OutRangeArrat);
 
 	// 根据输入位置索引，创建一条可到达的Path,并决定是否渲染出路径
 	UFUNCTION(BlueprintCallable, Category="Grod|Path Finding")
@@ -251,8 +251,16 @@ public:
 	TObjectPtr<UMaterialInterface> TileInMoveRangeDecal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|Resources",
+		meta=(AllowPrivateAccess="true", ToolTip="移动边缘贴花材质"))
+	TObjectPtr<UMaterialInterface> TileInMoveRangeEdgeDecal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|Resources",
 		meta=(AllowPrivateAccess="true", ToolTip="可视范围贴花材质"))
 	TObjectPtr<UMaterialInterface> TileInSightRangeDecal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|Resources",
+		meta=(AllowPrivateAccess="true", ToolTip="可视边缘贴花材质"))
+	TObjectPtr<UMaterialInterface> TileInSightRangeEdgeDecal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|Resources",
 		meta=(AllowPrivateAccess="true", ToolTip="攻击范围贴花材质"))
@@ -431,6 +439,24 @@ public:
 	TArray<FStructPathFinding> CanMoveToArray;
 
 	/**
+	 * @brief 只包含寻路路径的Tile队列，CanMoveToArray包含了整个地图，在只希望获取到路径的地方使用该变量
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Hide Property")
+	TArray<FStructPathFinding> IndexCanMoveToArray;
+
+	/**
+	 * @brief  记录该单位到可见位置范围数组
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Hide Property")
+	TArray<int32> RangeArray;
+
+	/**
+	 * @brief 记录该单位所有可见位置的数组
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Hide Property")
+	TArray<int32> TilesInSightArray;
+
+	/**
 	 * @brief 地图数组，记录当前寻路可以到达的tile
 	 */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Grid Size Array")
@@ -465,9 +491,6 @@ public:
 	TObjectPtr<USplineComponent> DisplaySpline;
 
 protected:
-	// 只包含寻路路径的Tile队列，CanMoveToArray包含了整个地图，在只希望获取到路径的地方使用该变量
-	TArray<FStructPathFinding> IndexCanMoveToArray;
-
 	// 当前可以到达的所有Unit位置索引
 	TArray<int32> ReachablePawnsArray;
 
@@ -479,12 +502,6 @@ protected:
 
 	// 所有需要被检查可见性的数组
 	TArray<FStructRange> TilesInRangeArray;
-
-	// 记录该单位到可见位置范围数组
-	TArray<int32> RangeArray;
-
-	// 记录该单位所有可见位置的数组
-	TArray<int32> TilesInSightArray;
 
 	// 记录被发现的位置索引
 	TArray<int32> DiscoverableTileIndexArray;

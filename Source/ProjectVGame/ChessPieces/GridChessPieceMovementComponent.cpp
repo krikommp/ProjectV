@@ -18,6 +18,7 @@
 #include "GridGlobalDelegates.h"
 #include "AbilitySystem/Abilities/GridGameAbility_Move.h"
 #include "Character/GridTurnBaseMasterComponent.h"
+#include "GridMapManager/GridMapFunctionLibrary.h"
 #include "GridMapManager/GridMapManager.h"
 #include "GridMapManager/GridMapStateComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -85,8 +86,11 @@ void UGridChessPieceMovementComponent::StartToPathFinding(bool bDisplayTiles)
 			false);
 		if (bDisplayTiles)
 		{
-			GridMapManager->DisplayRangeMarkers(VisibleTileIndexArray, GridMapManager->TileInSightRangeDecal);
-			GridMapManager->DisplayRangeMarkers(MoveTileIndexArray, GridMapManager->TileInMoveRangeDecal, true);
+			//GridMapManager->DisplayRangeMarkers(VisibleTileIndexArray, GridMapManager->TileInSightRangeDecal);
+			// GridMapManager->DisplayRangeMarkers(MoveTileIndexArray, GridMapManager->TileInMoveRangeDecal, true);
+			//UGridMapFunctionLibrary::SpawnEdgeMeshes(GridMapManager, GridMapManager->CanMoveToArray, Grid)
+			UGridMapFunctionLibrary::DisplayMoveRangeEdgeMarkers(GridMapManager.Get(), GridMapManager->CanMoveToArray, GridMapManager->IndexCanMoveToArray);
+			UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(GridMapManager.Get(), GridMapManager->TilesInSightArray, GridMapManager->RangeArray);
 		}
 	}
 }

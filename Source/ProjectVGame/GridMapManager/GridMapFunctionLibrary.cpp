@@ -13,8 +13,8 @@
 #include "Components/DecalComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GridTraceChannel.h"
-#include "Components/TextRenderComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Utility/Texture/TextureFunctionLibrary.h"
 
 
 void UGridMapFunctionLibrary::CreateNewGridMapDataAsset(AGridMapManager* GridMapManager)
@@ -241,11 +241,22 @@ void UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(AGridMapManager* Gr
                                                              const TArray<int32>& InTilesInSightArray,
                                                              const TArray<int32>& InRangeArray)
 {
+	TArray<FLinearColor> VisibleData;
+	VisibleData.Init(FLinearColor::Black, GridMapManager->GridSizeX * GridMapManager->GridSizeY);
 	for (const int32 Index : InTilesInSightArray)
 	{
 		SpawnEdgeMeshes(GridMapManager, InRangeArray, GridMapManager->TileInSightRangeEdgeDecal,
 		                Index);
 	}
+	for (int32 Index = 0; Index < InRangeArray.Num(); ++Index)
+	{
+		if (InRangeArray[Index] != 0)
+		{
+			const int32 VisibleIndex = Index % (GridMapManager->GridSizeX * GridMapManager->GridSizeY);
+			VisibleData[VisibleIndex] = FLinearColor(GridMapManager->VectorFieldArray[VisibleIndex]);
+		}
+	}
+	UTextureFunctionLibrary::SetVectorsDataToTexture2D(GridMapManager->VisibleRangeTexture, VisibleData);
 }
 
 void UGridMapFunctionLibrary::RemoveTileEdge(int32 TileIndex, int32 Edge, AGridMapManager* GridMapManager)
@@ -688,6 +699,8 @@ void UGridMapFunctionLibrary::ConstructGridMapData(AGridMapManager* GridMapManag
 	GridMapManager->DefaultTileInstance->GetLocalBounds(MinBounds, MaxBounds);
 	GridMapManager->TileBoundsX = MaxBounds.X - MinBounds.X;
 	GridMapManager->TileBoundsY = MaxBounds.Y - MinBounds.Y;
+	GridMapManager->VisibleRangeTexture = UTextureFunctionLibrary::CreateTexture2D(GridMapManager, GridMapManager->GridSizeX, GridMapManager->GridSizeY);
+	UTextureFunctionLibrary::ClearTexture2D(GridMapManager->VisibleRangeTexture, FLinearColor::Black);
 	// step 2 设置CollisionPlane大小
 	FTransform CollisionTransform;
 	float CollisionScaleX, CollisionScaleY;

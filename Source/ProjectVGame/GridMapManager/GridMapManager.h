@@ -471,6 +471,12 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Grid sized arrays")
 	TArray<TObjectPtr<AGridTileParent>> TileParents;
 
+	/**
+	 * @brief 记录可见范围的贴图
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Visible")
+	TObjectPtr<UTexture2D> VisibleRangeTexture;
+
 	// Hover Comp
 	UPROPERTY(BlueprintReadWrite, Category="Grid|Components")
 	TObjectPtr<UDecalComponent> HoverMarkerDecal;

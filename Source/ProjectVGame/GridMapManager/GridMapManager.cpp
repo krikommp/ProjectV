@@ -118,6 +118,14 @@ void AGridMapManager::FindChessPieceInRange(const TArray<FStructRange>& InTileIn
 		
 		OutRangeArray[TileInRange.Index] = TileInRange.Distance;
 	}
+
+	if (const UGridChessPieceExtensionComponent* ChessPieceExtensionComponent = UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(InstigatorChessPiece))
+	{
+		OutTilesInsightArray.Add(ChessPieceExtensionComponent->GetTileIndex());
+		
+		OutRangeArray[ChessPieceExtensionComponent->GetTileIndex()] = -1;
+	}
+	
 	return;
 }
 

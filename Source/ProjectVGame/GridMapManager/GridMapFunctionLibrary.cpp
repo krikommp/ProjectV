@@ -4,6 +4,7 @@
 #include "GridMapFunctionLibrary.h"
 
 #include "GridLogChannel.h"
+#include "GridMapWarFogComponent.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "GridMapManager/GridMapManager.h"
 #include "GridMapManager/GridMapStruct.h"
@@ -241,22 +242,16 @@ void UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(AGridMapManager* Gr
                                                              const TArray<int32>& InTilesInSightArray,
                                                              const TArray<int32>& InRangeArray)
 {
-	TArray<FLinearColor> VisibleData;
-	VisibleData.Init(FLinearColor::Black, GridMapManager->GridSizeX * GridMapManager->GridSizeY);
 	for (const int32 Index : InTilesInSightArray)
 	{
 		SpawnEdgeMeshes(GridMapManager, InRangeArray, GridMapManager->TileInSightRangeEdgeDecal,
 		                Index);
 	}
-	for (int32 Index = 0; Index < InRangeArray.Num(); ++Index)
+	if (UGridMapWarFogComponent* WarFogComponent = UGridMapWarFogComponent::FindWarFogComponent(GridMapManager))
 	{
-		if (InRangeArray[Index] != 0)
-		{
-			const int32 VisibleIndex = Index % (GridMapManager->GridSizeX * GridMapManager->GridSizeY);
-			VisibleData[VisibleIndex] = FLinearColor(GridMapManager->VectorFieldArray[VisibleIndex]);
-		}
+		WarFogComponent->PassVisibleRangeToMaterial(InRangeArray);
+		WarFogComponent->EnableVisibleFog();
 	}
-	UTextureFunctionLibrary::SetVectorsDataToTexture2D(GridMapManager->VisibleRangeTexture, VisibleData);
 }
 
 void UGridMapFunctionLibrary::RemoveTileEdge(int32 TileIndex, int32 Edge, AGridMapManager* GridMapManager)

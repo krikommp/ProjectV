@@ -23,4 +23,6 @@ public:
 	static FOnChessPieceActionOver OnChessPieceActionOver;
 
 	static FOnGridNewCardAdded OnGridNewCardAdded;
+
+	static FSimpleMulticastDelegate OnRemoveVisibleRangeDisplay;
 };

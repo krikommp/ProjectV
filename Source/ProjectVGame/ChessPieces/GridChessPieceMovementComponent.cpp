@@ -90,7 +90,7 @@ void UGridChessPieceMovementComponent::StartToPathFinding(bool bDisplayTiles)
 			// GridMapManager->DisplayRangeMarkers(MoveTileIndexArray, GridMapManager->TileInMoveRangeDecal, true);
 			//UGridMapFunctionLibrary::SpawnEdgeMeshes(GridMapManager, GridMapManager->CanMoveToArray, Grid)
 			UGridMapFunctionLibrary::DisplayMoveRangeEdgeMarkers(GridMapManager.Get(), GridMapManager->CanMoveToArray, GridMapManager->IndexCanMoveToArray);
-			UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(GridMapManager.Get(), GridMapManager->TilesInSightArray, GridMapManager->RangeArray);
+			//UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(GridMapManager.Get(), GridMapManager->TilesInSightArray, GridMapManager->RangeArray);
 		}
 	}
 }

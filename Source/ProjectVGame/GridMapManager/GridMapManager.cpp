@@ -4,6 +4,7 @@
 #include "GridMapManager.h"
 
 #include "GridGameplayTags.h"
+#include "GridGlobalDelegates.h"
 #include "GridLogChannel.h"
 #include "GridMapFunctionLibrary.h"
 #include "GridTraceChannel.h"
@@ -853,6 +854,7 @@ void AGridMapManager::ClearAllInRangeMeshMarkers()
 		Decal->DestroyComponent();
 	}
 	CurrentDecalsArray.Empty();
+	FGridGlobalDelegates::OnRemoveVisibleRangeDisplay.Broadcast();
 }
 
 void AGridMapManager::SetMarkerVisibility(bool bVisibility, UDecalComponent* DecalComponent)

@@ -10,6 +10,7 @@
 
 #include "GridMapManager.generated.h"
 
+class APostProcessVolume;
 class UStaticMesh;
 class UStaticMeshComponent;
 class UInstancedStaticMeshComponent;
@@ -34,6 +35,8 @@ class PROJECTVGAME_API AGridMapManager : public AModularPawn, public IGameFramew
 	GENERATED_BODY()
 
 	friend class UGridMapFunctionLibrary;
+	friend class UGridMapStateComponent;
+	friend class UGridMapWarFogComponent;
 
 public:
 	AGridMapManager(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -281,6 +284,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|Resources",
 		meta=(AllowPrivateAccess="true", ToolTip="寻路Spline材质"))
 	TObjectPtr<UMaterialInterface> PathMaterial;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Grid|Resources",
+		meta=(AllowPrivateAccess="true", ToolTip="后期处理"))
+	TObjectPtr<APostProcessVolume> PostProcessVolume;
 
 	/**
 	 * @brief 地图大小

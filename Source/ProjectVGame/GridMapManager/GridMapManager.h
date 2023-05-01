@@ -285,10 +285,6 @@ public:
 		meta=(AllowPrivateAccess="true", ToolTip="寻路Spline材质"))
 	TObjectPtr<UMaterialInterface> PathMaterial;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Grid|Resources",
-		meta=(AllowPrivateAccess="true", ToolTip="后期处理"))
-	TObjectPtr<APostProcessVolume> PostProcessVolume;
-
 	/**
 	 * @brief 地图大小
 	 */

@@ -20,9 +20,13 @@ void UGridMapWarFogComponent::OnRegister()
 	AGridMapManager* GridMapManager = GetPawnChecked<AGridMapManager>();
 	GridMapManagerPtr = GridMapManager;
 
+	// spawn a post process volume
+	PostProcessVolume = GetWorld()->SpawnActor<APostProcessVolume>(APostProcessVolume::StaticClass(), FTransform::Identity);
+	PostProcessVolume->bUnbound = true;
+
 	WarFogVisibleRangeTexture = UTextureFunctionLibrary::CreateTexture2D(this, GridMapManager->GridSizeX, GridMapManager->GridSizeY);
 	UTextureFunctionLibrary::ClearTexture2D(WarFogVisibleRangeTexture, FLinearColor::Black);
-	InitializeMaterial(GridMapManager->PostProcessVolume);
+	InitializeMaterial(PostProcessVolume);
 	SetupMaterialParameters(WarFogVisibleRangeMaterial);
 	DisableVisibleFog();
 
@@ -40,16 +44,16 @@ void UGridMapWarFogComponent::OnUnregister()
 
 void UGridMapWarFogComponent::EnableVisibleFog()
 {
-	check(GridMapManagerPtr.IsValid() && GridMapManagerPtr->PostProcessVolume);
+	check(GridMapManagerPtr.IsValid() && PostProcessVolume);
 
-	GridMapManagerPtr->PostProcessVolume->bEnabled = true;
+	PostProcessVolume->bEnabled = true;
 }
 
 void UGridMapWarFogComponent::DisableVisibleFog()
 {
-	check(GridMapManagerPtr.IsValid() && GridMapManagerPtr->PostProcessVolume);
+	check(GridMapManagerPtr.IsValid() && PostProcessVolume);
 
-	GridMapManagerPtr->PostProcessVolume->bEnabled = false;
+	PostProcessVolume->bEnabled = false;
 }
 
 void UGridMapWarFogComponent::PassVisibleRangeToMaterial(const TArray<int32>& InRangeArray)
@@ -76,7 +80,7 @@ void UGridMapWarFogComponent::InitializeMaterial(APostProcessVolume* InPostProce
 
 void UGridMapWarFogComponent::SetupMaterialParameters(UMaterialInstanceDynamic* InMaterial) const
 {
-	check(GridMapManagerPtr.IsValid() && GridMapManagerPtr->PostProcessVolume);
+	check(GridMapManagerPtr.IsValid() && PostProcessVolume);
 	
 	WarFogVisibleRangeMaterial->SetTextureParameterValue("WarFogVisibleRangeTexture", WarFogVisibleRangeTexture);
 	WarFogVisibleRangeMaterial->SetVectorParameterValue("WarFogParam1", FLinearColor(GridMapManagerPtr->GridSizeX, GridMapManagerPtr->GridSizeY, GridMapManagerPtr->TileBoundsX * 0.5f, GridMapManagerPtr->TileBoundsY * 0.5f));

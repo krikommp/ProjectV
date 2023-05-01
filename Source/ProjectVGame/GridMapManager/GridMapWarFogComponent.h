@@ -54,6 +54,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|WarFog")
 	TObjectPtr<UMaterialInterface> WarFogMaterial;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|WarFog")
+	TObjectPtr<APostProcessVolume> PostProcessVolume;
+
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> CurrentFogMaterial;

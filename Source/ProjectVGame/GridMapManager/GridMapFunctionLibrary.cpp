@@ -1120,7 +1120,7 @@ void UGridMapFunctionLibrary::SpawnEdgeDecalBetweenIndexes(AGridMapManager* Grid
 		return;
 	}
 	// 不是边缘Tile, 因此不需要绘制
-	if (InCanMoveToArray[InsideIndex].Parent != 0)
+	if (GridMapManager->PawnArray[InsideIndex] == nullptr && InCanMoveToArray[InsideIndex].Parent != 0)
 	{
 		return;
 	}

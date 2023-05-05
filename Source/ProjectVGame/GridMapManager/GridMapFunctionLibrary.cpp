@@ -746,17 +746,6 @@ void UGridMapFunctionLibrary::ConstructGridMapData(AGridMapManager* GridMapManag
 
 	// 预生成
 	PreGeneratorGridMap(GridMapManager);
-
-	// 生成 node 对象
-	GridMapManager->GridMapNodeArray.Init(nullptr, GridMapManager->VectorFieldArray.Num());
-	for (int32 Index = 0; Index < GridMapManager->VectorFieldArray.Num(); ++Index)
-	{
-		AGridMapNode* NewNode = NewObject<AGridMapNode>(GridMapManager);
-		NewNode->InitializeAbilitySystem();
-		NewNode->SetNodePosition(GridMapManager->VectorFieldArray[Index]);
-		NewNode->TileIndex = Index;
-		GridMapManager->GridMapNodeArray[Index] = NewNode;
-	}
 }
 
 void UGridMapFunctionLibrary::PreGeneratorGridMap(AGridMapManager* GridMapManager)

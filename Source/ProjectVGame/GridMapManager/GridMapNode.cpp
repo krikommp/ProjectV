@@ -8,7 +8,7 @@
 AGridMapNode::AGridMapNode(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
-	ObjectInitializer.CreateDefaultSubobject<UGridAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent = ObjectInitializer.CreateDefaultSubobject<UGridAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
 }
 
 void AGridMapNode::InitializeAbilitySystem()

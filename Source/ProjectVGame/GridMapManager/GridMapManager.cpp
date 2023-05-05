@@ -7,6 +7,7 @@
 #include "GridGlobalDelegates.h"
 #include "GridLogChannel.h"
 #include "GridMapFunctionLibrary.h"
+#include "GridMapNode.h"
 #include "GridTraceChannel.h"
 #include "ChessPieces/GridChessPiece.h"
 #include "ChessPieces/GridChessPieceExtensionComponent.h"
@@ -54,6 +55,18 @@ FVector AGridMapManager::IndexToVectorOnGrid(int32 InIndex, float ZOffset)
 void AGridMapManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// init GridMapNode
+	// 生成 node 对象
+	GridMapNodeArray.Init(nullptr, VectorFieldArray.Num());
+	for (int32 Index = 0; Index < VectorFieldArray.Num(); ++Index)
+	{
+		AGridMapNode* NewNode = GetWorld()->SpawnActor<AGridMapNode>(AGridMapNode::StaticClass());
+		NewNode->InitializeAbilitySystem();
+		NewNode->SetNodePosition(VectorFieldArray[Index]);
+		NewNode->TileIndex = Index;
+		GridMapNodeArray[Index] = NewNode;
+	}
 }
 
 TArray<int32> AGridMapManager::PathFinding(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange,

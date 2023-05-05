@@ -10,6 +10,7 @@
 
 #include "GridMapManager.generated.h"
 
+class AGridMapNode;
 class APostProcessVolume;
 class UStaticMesh;
 class UStaticMeshComponent;
@@ -434,6 +435,12 @@ public:
 	 */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Grid Size Array")
 	TArray<FVector> VectorFieldArray;
+
+	/**
+	 * @brief 每个 Tile 对象
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Grid Size Array")
+	TArray<TObjectPtr<AGridMapNode>> GridMapNodeArray;
 
 	/**
 	 * @brief 地图数组，记录当前寻路可以到达的tile

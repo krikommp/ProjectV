@@ -73,3 +73,8 @@ int32 AGridActor::VectorToIndex(const FVector& Vector)
 {
 	return 0;
 }
+
+int32 AGridActor::GetTileIndex() const
+{
+	return TileIndex;
+}

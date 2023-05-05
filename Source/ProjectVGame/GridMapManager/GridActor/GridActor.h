@@ -37,6 +37,7 @@ public:
 	virtual int32 MeshToInstance(const AActor* Actor) override;
 	virtual FVector GetVectorArray(int32 Index) override;
 	virtual int32 VectorToIndex(const FVector& Vector) override;
+	virtual int32 GetTileIndex() const override;
 	// ~GridTileInterface
 
 protected:

@@ -78,6 +78,8 @@ void FGridGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(GameplayEvent_AbilityCardInput, "GameplayEvent.AbilityCardInput", "卡牌输入事件");
 	AddTag(GameplayEvent_PopAttackInput, "GameplayEvent.PopAttackInput", "抛出攻击输入事件");
 	AddTag(GameplayTag_Save, "GameplayEvent.Save", "保存游戏");
+	AddTag(GameplayEvent_OnChessLeaveTile, "GameplayEvent.OnChessLeaveTile", "棋子离开格子时触发事件");
+	AddTag(GameplayEvent_OnChessEnterTile, "GameplayEvent.OnChessEnterTile", "棋子进入格子时触发事件");
 
 	AddTag(Status_Death, "Status.Death", "目标处于死亡状态");
 	AddTag(Status_Death_Dying, "Status.Death.Dying", "目标开始死亡流程");

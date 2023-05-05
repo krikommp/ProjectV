@@ -5,6 +5,7 @@
 #include "UObject/Object.h"
 #include "GridMapNode.generated.h"
 
+class AGridChessPiece;
 class UGridAbilitySystemComponent;
 /**
  * UGridMapNode
@@ -28,6 +29,10 @@ public:
 	
 	void InitializeAbilitySystem();
 	void SetNodePosition(const FVector& NewPosition);
+
+	void OnChessPieceEnter(AGridChessPiece* InChessPiece) const;
+
+	void OnChessPieceLeave(AGridChessPiece* InChessPiece) const;
 protected:
 
 	int32 TileIndex;

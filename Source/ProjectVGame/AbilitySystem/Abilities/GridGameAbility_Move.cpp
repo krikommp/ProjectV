@@ -12,6 +12,7 @@
 #include "ChessPieces/GridChessPieceMovementComponent.h"
 #include "GameFramework/GameStateBase.h"
 #include "GridMapManager/GridMapManager.h"
+#include "GridMapManager/GridMapNode.h"
 #include "GridMapManager/GridMapStateComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -107,10 +108,14 @@ void UGridGameAbility_Move::AccelerateAndMovePawnAlongSpline(float DeltaTime)
 				if (GridMapManager->GetPathIndexArray().IsValidIndex(PathIndex) && GridMapManager->GetPathIndexArray()[
 					PathIndex] != ChessPieceExtComponent->GetTileIndex())
 				{
+					GridMapManager->GridMapNodeArray[ChessPieceExtComponent->GetTileIndex()]->OnChessPieceLeave(ChessPiece);
+					
 					ChessPieceExtComponent->SetTileIndex(GridMapManager->GetPathIndexArray()[PathIndex]);
 					const UGameplayEffect* MoveCost = MoveCostEffect->GetDefaultObject<UGameplayEffect>();
 					AbilitySystemComponent->ApplyGameplayEffectToSelf(MoveCost, 1,
 					                                                  AbilitySystemComponent->MakeEffectContext());
+
+					GridMapManager->GridMapNodeArray[ChessPieceExtComponent->GetTileIndex()]->OnChessPieceEnter(ChessPiece);
 				}
 			}
 		}

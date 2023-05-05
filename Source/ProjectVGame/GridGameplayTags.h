@@ -45,6 +45,8 @@ public:
 	FGameplayTag GameplayTag_Save;
 	FGameplayTag GameplayEvent_PopAttackInput;
 	FGameplayTag GameplayEvent_AbilityCardInput;
+	FGameplayTag GameplayEvent_OnChessEnterTile;
+	FGameplayTag GameplayEvent_OnChessLeaveTile;
 
 	FGameplayTag Status_Death;
 	FGameplayTag Status_Death_Dying;

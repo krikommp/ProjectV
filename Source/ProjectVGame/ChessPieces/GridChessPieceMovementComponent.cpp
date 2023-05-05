@@ -89,7 +89,10 @@ void UGridChessPieceMovementComponent::StartToPathFinding(bool bDisplayTiles)
 			//GridMapManager->DisplayRangeMarkers(VisibleTileIndexArray, GridMapManager->TileInSightRangeDecal);
 			// GridMapManager->DisplayRangeMarkers(MoveTileIndexArray, GridMapManager->TileInMoveRangeDecal, true);
 			//UGridMapFunctionLibrary::SpawnEdgeMeshes(GridMapManager, GridMapManager->CanMoveToArray, Grid)
-			UGridMapFunctionLibrary::DisplayMoveRangeEdgeMarkers(GridMapManager.Get(), GridMapManager->CanMoveToArray, GridMapManager->IndexCanMoveToArray);
+			UGridMapFunctionLibrary::DisplayMoveRangeEdgeMarkers(GridMapManager.Get(),
+			                                                     ChessPieceExtComp->GetTileIndex(),
+			                                                     GridMapManager->CanMoveToArray,
+			                                                     GridMapManager->IndexCanMoveToArray);
 			//UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(GridMapManager.Get(), GridMapManager->TilesInSightArray, GridMapManager->RangeArray);
 		}
 	}
@@ -175,7 +178,8 @@ void UGridChessPieceMovementComponent::ActivateMovement(int32 InTileIndex, int32
 }
 
 bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget, bool bDisplayPath,
-                                                     int32& OutEndTileIndex, TArray<FStructPathFinding>& OutCanMoveToArray)
+                                                     int32& OutEndTileIndex,
+                                                     TArray<FStructPathFinding>& OutCanMoveToArray)
 {
 	check(GridMapManager.IsValid());
 
@@ -187,8 +191,8 @@ bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 In
 	check(ChessPieceExtComp);
 
 	const int32 Distance = GridMapManager->FindDistanceInTilesBetweenIndexes(
-			ChessPieceExtComp->GetTileIndex(), InTileIndex);
-	
+		ChessPieceExtComp->GetTileIndex(), InTileIndex);
+
 	if (Distance > GetMoveRange())
 	{
 		//GridMapManager->PathFinding(ChessPieceExtComp->GetTileIndex(), Distance, Distance, true, false, false);
@@ -198,20 +202,21 @@ bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 In
 		TArray<int32> NewTileIndexes;
 		OutCanMoveToArray.Empty();
 		for (int32 Index = 0; Index < GridMapManager->GridSizeX * GridMapManager->GridSizeY * GridMapManager->
-			 GridSizeZ; ++Index)
+		     GridSizeZ; ++Index)
 		{
 			OutCanMoveToArray.Add({0, 0, 0});
 		}
 		GridMapManager->PathFinding_Internal(ChessPieceExtComp->GetTileIndex(), Distance, Distance, true, false,
-											 false, NewCurrentSearchStep, OutCanMoveToArray, NewIndexCanMoveToArray,
-											 NewTileIndexes, NewReachablePawnsArray);
-	}else
+		                                     false, NewCurrentSearchStep, OutCanMoveToArray, NewIndexCanMoveToArray,
+		                                     NewTileIndexes, NewReachablePawnsArray);
+	}
+	else
 	{
 		OutCanMoveToArray = GridMapManager->CanMoveToArray;
 	}
 
 	const TArray<int32>& LocalPathIndexArray = GridMapManager->FindPathToIndex(
-		OutCanMoveToArray , InTileIndex, InStopXFromTarget);
+		OutCanMoveToArray, InTileIndex, InStopXFromTarget);
 	if (LocalPathIndexArray.IsEmpty() || LocalPathIndexArray.Num() == 1)
 		return false;
 

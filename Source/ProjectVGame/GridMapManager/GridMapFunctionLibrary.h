@@ -46,6 +46,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="GridMap|Helper")
 	static void DisplayMoveRangeEdgeMarkers(AGridMapManager* GridMapManager,
+	                                        int32 StartIndex,
 	                                        const TArray<FStructPathFinding>& InCanMoveToArray,
 	                                        const TArray<FStructPathFinding>& InIndexCanMoveToArray);
 
@@ -114,7 +115,8 @@ private:
 
 	void static AddTileEdgesToEdgeArray(AGridMapManager* GridMapManager, AGridTileParent* Tile);
 
-	void static SpawnEdgeMeshes(AGridMapManager* GridMapManager, const TArray<FStructPathFinding>& InCanMoveToArray,
+	void static SpawnEdgeMeshes(AGridMapManager* GridMapManager, int32 StartIndex,
+	                            const TArray<FStructPathFinding>& InCanMoveToArray,
 	                            UMaterialInterface* DecalMat, int32 Index);
 
 	void static SpawnEdgeMeshes(AGridMapManager* GridMapManager,
@@ -122,6 +124,7 @@ private:
 	                            UMaterialInterface* DecalMat, int32 Index);
 
 	void static SpawnEdgeDecalBetweenIndexes(AGridMapManager* GridMapManager,
+	                                         int32 StartIndex,
 	                                         const TArray<FStructPathFinding>& InCanMoveToArray, int32 OutsideIndex,
 	                                         int32 InsideIndex, const FVector& DecalSize, float Rotation,
 	                                         UMaterialInterface* DecalMat);

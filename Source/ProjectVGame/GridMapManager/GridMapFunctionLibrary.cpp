@@ -230,12 +230,13 @@ bool UGridMapFunctionLibrary::CompareClickLocation(AGridMapManager* GridMapManag
 }
 
 void UGridMapFunctionLibrary::DisplayMoveRangeEdgeMarkers(AGridMapManager* GridMapManager,
+                                                          int32 StartIndex,
                                                           const TArray<FStructPathFinding>& InCanMoveToArray,
                                                           const TArray<FStructPathFinding>& InIndexCanMoveToArray)
 {
 	for (const auto& CanMoveTo : InIndexCanMoveToArray)
 	{
-		SpawnEdgeMeshes(GridMapManager, InCanMoveToArray, GridMapManager->TileInMoveRangeEdgeDecal, CanMoveTo.Index);
+		SpawnEdgeMeshes(GridMapManager, StartIndex, InCanMoveToArray, GridMapManager->TileInMoveRangeEdgeDecal, CanMoveTo.Index);
 	}
 }
 
@@ -695,7 +696,8 @@ void UGridMapFunctionLibrary::ConstructGridMapData(AGridMapManager* GridMapManag
 	GridMapManager->DefaultTileInstance->GetLocalBounds(MinBounds, MaxBounds);
 	GridMapManager->TileBoundsX = MaxBounds.X - MinBounds.X;
 	GridMapManager->TileBoundsY = MaxBounds.Y - MinBounds.Y;
-	GridMapManager->VisibleRangeTexture = UTextureFunctionLibrary::CreateTexture2D(GridMapManager, GridMapManager->GridSizeX, GridMapManager->GridSizeY);
+	GridMapManager->VisibleRangeTexture = UTextureFunctionLibrary::CreateTexture2D(
+		GridMapManager, GridMapManager->GridSizeX, GridMapManager->GridSizeY);
 	UTextureFunctionLibrary::ClearTexture2D(GridMapManager->VisibleRangeTexture, FLinearColor::Black);
 	// step 2 设置CollisionPlane大小
 	FTransform CollisionTransform;
@@ -1077,17 +1079,20 @@ void UGridMapFunctionLibrary::AddTileEdgesToEdgeArray(AGridMapManager* GridMapMa
 }
 
 void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
+                                              int32 StartIndex,
                                               const TArray<FStructPathFinding>& InCanMoveToArray,
                                               UMaterialInterface* DecalMat, int32 Index)
 {
 	const FVector StraightEdgeDecalSize = {90.0, 90.0, 90.0};
-	SpawnEdgeDecalBetweenIndexes(GridMapManager, InCanMoveToArray, Index, Index + 1, StraightEdgeDecalSize, 270.0,
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index + 1, StraightEdgeDecalSize,
+	                             270.0,
 	                             DecalMat);
-	SpawnEdgeDecalBetweenIndexes(GridMapManager, InCanMoveToArray, Index, Index - 1, StraightEdgeDecalSize, 90.0,
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index - 1, StraightEdgeDecalSize,
+	                             90.0,
 	                             DecalMat);
-	SpawnEdgeDecalBetweenIndexes(GridMapManager, InCanMoveToArray, Index, Index + GridMapManager->GridSizeX,
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index + GridMapManager->GridSizeX,
 	                             StraightEdgeDecalSize, 0.0, DecalMat);
-	SpawnEdgeDecalBetweenIndexes(GridMapManager, InCanMoveToArray, Index, Index - GridMapManager->GridSizeX,
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index - GridMapManager->GridSizeX,
 	                             StraightEdgeDecalSize, 180.0, DecalMat);
 }
 
@@ -1111,12 +1116,17 @@ void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
 }
 
 void UGridMapFunctionLibrary::SpawnEdgeDecalBetweenIndexes(AGridMapManager* GridMapManager,
+                                                           int32 StartIndex,
                                                            const TArray<FStructPathFinding>& InCanMoveToArray,
                                                            int32 OutsideIndex, int32 InsideIndex,
                                                            const FVector& DecalSize,
                                                            float Rotation, UMaterialInterface* DecalMat)
 {
 	if (!InCanMoveToArray.IsValidIndex(InsideIndex))
+	{
+		return;
+	}
+	if (InsideIndex == StartIndex)
 	{
 		return;
 	}

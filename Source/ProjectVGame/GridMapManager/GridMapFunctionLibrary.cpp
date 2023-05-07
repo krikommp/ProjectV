@@ -1122,18 +1122,21 @@ void UGridMapFunctionLibrary::SpawnEdgeDecalBetweenIndexes(AGridMapManager* Grid
                                                            const FVector& DecalSize,
                                                            float Rotation, UMaterialInterface* DecalMat)
 {
-	if (!InCanMoveToArray.IsValidIndex(InsideIndex))
+	if (!GridMapManager->VectorFieldArray.IsValidIndex(OutsideIndex))
 	{
 		return;
 	}
-	if (InsideIndex == StartIndex)
+	if (InCanMoveToArray.IsValidIndex(InsideIndex))
 	{
-		return;
-	}
-	// 不是边缘Tile, 因此不需要绘制
-	if (GridMapManager->PawnArray[InsideIndex] == nullptr && InCanMoveToArray[InsideIndex].Parent != 0)
-	{
-		return;
+		if (InsideIndex == StartIndex)
+		{
+			return;
+		}
+		// 不是边缘Tile, 因此不需要绘制
+		if (GridMapManager->PawnArray[InsideIndex] == nullptr && InCanMoveToArray[InsideIndex].Parent != 0)
+		{
+			return;
+		}
 	}
 	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
 		GridMapManager->GetWorld(), DecalMat, DecalSize,
@@ -1146,13 +1149,20 @@ void UGridMapFunctionLibrary::SpawnEdgeDecalBetweenIndexes(AGridMapManager* Grid
                                                            int32 InsideIndex, const FVector& DecalSize, float Rotation,
                                                            UMaterialInterface* DecalMat)
 {
-	if (!InRangeArray.IsValidIndex(InsideIndex))
+	if (!GridMapManager->VectorFieldArray.IsValidIndex(OutsideIndex))
 	{
 		return;
 	}
-	if (InRangeArray[InsideIndex] != 0)
+	if (InRangeArray.IsValidIndex(InsideIndex))
 	{
-		return;
+		if (!InRangeArray.IsValidIndex(InsideIndex))
+		{
+			return;
+		}
+		if (InRangeArray[InsideIndex] != 0)
+		{
+			return;
+		}
 	}
 	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
 		GridMapManager->GetWorld(), DecalMat, DecalSize,

@@ -256,6 +256,31 @@ void UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(AGridMapManager* Gr
 	}
 }
 
+UDecalComponent* UGridMapFunctionLibrary::DisplayDecal(AGridMapManager* GridMapManager, int32 Index,
+	UMaterialInterface* DecalMaterial, bool bOverrider)
+{
+	check(GridMapManager->VectorFieldArray.IsValidIndex(Index));
+	const FVector TileLocation = GridMapManager->VectorFieldArray[Index] + GridMapManager->GetActorLocation();
+	if (bOverrider)
+	{
+		TObjectPtr<UDecalComponent>* FoundDecalComponent = GridMapManager->CurrentDecalsArray.FindByPredicate(
+			[&TileLocation](const UDecalComponent* DecalComponent)
+			{
+				return UKismetMathLibrary::EqualEqual_VectorVector(
+					DecalComponent->GetComponentLocation(), TileLocation);
+			});
+		if (FoundDecalComponent)
+		{
+			FoundDecalComponent->Get()->SetDecalMaterial(DecalMaterial);
+			return nullptr;
+		}
+	}
+	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
+		GridMapManager->GetWorld(), DecalMaterial, GridMapManager->DecalSizeSquare, TileLocation, {90.0f, 0.0f, 0.0f});
+	// GridMapManager->CurrentDecalsArray.Add(DecalComponent);
+	return DecalComponent;
+}
+
 void UGridMapFunctionLibrary::RemoveTileEdge(int32 TileIndex, int32 Edge, AGridMapManager* GridMapManager)
 {
 	// 在TileIndex的邻居中查找Edge的索引

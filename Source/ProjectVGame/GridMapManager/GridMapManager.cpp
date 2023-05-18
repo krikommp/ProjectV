@@ -193,24 +193,11 @@ void AGridMapManager::DisplayRangeMarkers(const TArray<int32>& InTileIndexArray,
 	{
 		if (VectorFieldArray.IsValidIndex(TileIndex))
 		{
-			const FVector TileLocation = VectorFieldArray[TileIndex] + GetActorLocation();
-			if (bOverrider)
+			auto DecalComponent = UGridMapFunctionLibrary::DisplayDecal(this, TileIndex, DecalMaterial, bOverrider);
+			if (DecalComponent != nullptr)
 			{
-				TObjectPtr<UDecalComponent>* FoundDecalComponent = CurrentDecalsArray.FindByPredicate(
-					[&TileLocation](const UDecalComponent* DecalComponent)
-					{
-						return UKismetMathLibrary::EqualEqual_VectorVector(
-							DecalComponent->GetComponentLocation(), TileLocation);
-					});
-				if (FoundDecalComponent)
-				{
-					FoundDecalComponent->Get()->SetDecalMaterial(DecalMaterial);
-					continue;
-				}
+				CurrentDecalsArray.Add(DecalComponent);
 			}
-			UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
-				GetWorld(), DecalMaterial, DecalSizeSquare, TileLocation, {90.0f, 0.0f, 0.0f});
-			CurrentDecalsArray.Add(DecalComponent);
 		}
 	}
 }

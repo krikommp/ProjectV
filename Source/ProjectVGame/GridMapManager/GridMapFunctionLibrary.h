@@ -55,6 +55,10 @@ public:
 	                                           const TArray<int32>& InTilesInSightArray,
 	                                           const TArray<int32>& InRangeArray);
 
+
+	UFUNCTION(BlueprintCallable, Category="GridMap|Helper")
+	static UDecalComponent* DisplayDecal(AGridMapManager* GridMapManager, int32 Index, UMaterialInterface* DecalMaterial, bool bOverrider);
+
 	template <typename T>
 	static void SetArrayElement(T Item, TArray<T>& ItemArray, int32 Index)
 	{

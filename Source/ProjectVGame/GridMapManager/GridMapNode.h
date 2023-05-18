@@ -22,7 +22,8 @@ class PROJECTVGAME_API AGridMapNode : public AInfo
 
 public:
 	AGridMapNode(const FObjectInitializer& ObjectInitializer);
-	
+
+	UFUNCTION(BlueprintCallable)
 	int32 GetTileIndex() const { return TileIndex; }
 
 	UGridAbilitySystemComponent* GetAbilitySystemComponent() const { return AbilitySystemComponent; }

@@ -51,6 +51,9 @@ void FGridGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_ActivateFail_TagsBlocked, "Ability.ActivateFail.TagsBlocked", "由于 Tag 被阻塞，技能使用失败");
 	AddTag(Ability_ActivateFail_NotOwner, "Ability.ActivateFail.NotOwner", "不是技能的持有者，技能使用失敗");
 
+	AddTag(Ability_TargetType_MapNode, "Ability.TargetType.MapNode", "目标类型为地图节点");
+	AddTag(Ability_TargetType_ChessPiece, "Ability.TargetType.ChessPiece", "目标类型为棋子");
+
 	AddTag(Ability_Behavior_SurvivesDeath, "Ability.Behavior.SurvivesDeath", "该技能不随单位死亡而中止");
 	AddTag(Ability_Behavior_Move, "Ability.Behavior.Move", "移动");
 	

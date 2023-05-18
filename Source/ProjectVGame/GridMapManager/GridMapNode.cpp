@@ -19,6 +19,8 @@ void AGridMapNode::InitializeAbilitySystem()
 	check(AbilitySystemComponent);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	InitializeGameplayTags();
 }
 
 void AGridMapNode::SetNodePosition(const FVector& NewPosition)
@@ -44,4 +46,10 @@ void AGridMapNode::OnChessPieceLeave(AGridChessPiece* InChessPiece) const
 	EventData.Target = InChessPiece;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, GridGameplayTags.GameplayEvent_OnChessLeaveTile,
 															 FGameplayEventData());
+}
+
+void AGridMapNode::InitializeGameplayTags() const
+{
+	const FGridGameplayTags GridGameplayTags = FGridGameplayTags::Get();
+	AbilitySystemComponent->AddLooseGameplayTag(GridGameplayTags.Ability_TargetType_MapNode);
 }

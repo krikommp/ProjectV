@@ -23,6 +23,9 @@ public:
 	FGameplayTag Ability_ActivateFail_Networking;
 	FGameplayTag Ability_ActivateFail_NotOwner;
 
+	FGameplayTag Ability_TargetType_MapNode;
+	FGameplayTag Ability_TargetType_ChessPiece;
+
 	FGameplayTag Ability_Behavior_SurvivesDeath;
 	FGameplayTag Ability_Behavior_Move;
 

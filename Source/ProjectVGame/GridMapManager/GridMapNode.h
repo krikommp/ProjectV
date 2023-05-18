@@ -33,6 +33,10 @@ public:
 	void OnChessPieceEnter(AGridChessPiece* InChessPiece) const;
 
 	void OnChessPieceLeave(AGridChessPiece* InChessPiece) const;
+
+private:
+	void InitializeGameplayTags() const;
+	
 protected:
 
 	int32 TileIndex;

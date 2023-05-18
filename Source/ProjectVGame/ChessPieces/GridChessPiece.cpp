@@ -5,6 +5,7 @@
 
 #include "GridChessPieceExtensionComponent.h"
 #include "GridChessPieceHealthComponent.h"
+#include "GridGameplayTags.h"
 #include "GridLogChannel.h"
 #include "AbilitySystem/GridAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/GridActionSet.h"
@@ -149,11 +150,13 @@ void AGridChessPiece::OnChessPieceInfoInitialized()
 	SkeletalMeshComponent->SetAnimInstanceClass(ChessPieceInfo->HeroData.AnimBlueprint);
 }
 
-void AGridChessPiece::InitializeGameplayTags()
+void AGridChessPiece::InitializeGameplayTags() const
 {
+	const FGridGameplayTags GridGameplayTags = FGridGameplayTags::Get();
+	AbilitySystemComponent->AddLooseGameplayTag(GridGameplayTags.Ability_TargetType_ChessPiece);
 }
 
-void AGridChessPiece::DisableMovementAndCollision()
+void AGridChessPiece::DisableMovementAndCollision() const
 {
 	if (Controller)
 	{

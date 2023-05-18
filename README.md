@@ -1,6 +1,6 @@
 ### 元素系统 (HIGH)  
 - 目标:
-  - [x] 基本的元素单位，目前有：火，水，雷，冰，毒，油  
+  - &#10004; 基本的元素单位，目前有：火，水，雷，冰，毒，油  
   - [ ] 元素特性
      1. 火：添加火属性，并附加燃烧效果（每回合扣血）
      2. 水：添加水属性，并附加湿润效果
@@ -54,9 +54,9 @@
      6. 油：在棋子身上显示减速效果（待定），添加 buff 图标；在地面显示油污 decal
 - TODO
   思路：
-  - [x] 当有单位进入到该Tile中，我们遍历该Tile上所有激活的GameplayEffect, 这个GameplayEffect应该有一个特定类型（GridGameplayEffect_GridMapNode），里面保存了一组进入时给与的GameplayEffect，如果遍历到的一个GE是该类型，那么就对进入Tile的对象施加这个GE
-  - [x] 每回合都会对当前位于Tile中的对象施加一次
-  - 
+  - &#10004; 当有单位进入到该Tile中，我们遍历该Tile上所有激活的GameplayEffect, 这个GameplayEffect应该有一个特定类型（GridGameplayEffect_GridMapNode），里面保存了一组进入时给与的GameplayEffect，如果遍历到的一个GE是该类型，那么就对进入Tile的对象施加这个GE
+  - &#10004; 每回合都会对当前位于Tile中的对象施加一次
+  - &#10004; 相邻位置应用GameplayEffect，对于每个Tile, 查找相邻的Tiles(八方向)，搜索，找到所有相邻的Tiles，然后对每个Tile应用相应的GameplayEffect
 
 ### 寻路
 

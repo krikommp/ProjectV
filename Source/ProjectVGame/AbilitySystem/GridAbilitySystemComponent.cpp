@@ -8,6 +8,8 @@
 #include "AbilityTimerManager.h"
 #include "GridGlobalAbilitySystem.h"
 #include "Abilities/GridGameplayAbility_Card.h"
+#include "AbilityEffects/GridGameplayEffect_GridMapNode.h"
+#include "GridMapManager/GridMapNode.h"
 #include "UIData/GridAbilityBuffUIData.h"
 
 UGridAbilitySystemComponent::UGridAbilitySystemComponent(const FObjectInitializer& ObjectInitializer)
@@ -45,6 +47,32 @@ void UGridAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AAc
 		OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &ThisClass::NotifyGameplayEffectActivate);
 		OnAnyGameplayEffectRemovedDelegate().AddUObject(this, &ThisClass::NotifyGameplayEffectRemoved);
 	}
+}
+
+FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpecToSelf(
+	const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey)
+{
+	const auto MyHandle = Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
+	if (const UGridGameplayEffect_GridMapNode* GridMapNodeGameplayEffect = Cast<UGridGameplayEffect_GridMapNode>(GameplayEffect.Def))
+	{
+		if (const AGridMapNode* GridMapNode =  Cast<AGridMapNode>(GetOwnerActor()))
+		{
+			TArray<const AGridMapNode*> NearbyNodes;
+			for(const FConductionGameplayEffect& ConductionGameplayEffect : GridMapNodeGameplayEffect->ConductionGameplayEffects)
+			{
+				GridMapNode->FindAllNearbyTiles(NearbyNodes, ConductionGameplayEffect.RequiredSourceTags);
+				FGameplayEffectSpecHandle ConductionSpecHandle = ConductionGameplayEffect.CreateSpec(GameplayEffect.GetContext(), GameplayEffect.GetLevel());
+				if (ConductionSpecHandle.IsValid())
+				{
+					for (const AGridMapNode* ApplyToGridMapNode : NearbyNodes)
+					{
+						ApplyToGridMapNode->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*ConductionSpecHandle.Data.Get(), PredictionKey);
+					}
+				}
+			}
+		}
+	}
+	return MyHandle;
 }
 
 void UGridAbilitySystemComponent::TickAbilityTurn(int32 Delta)

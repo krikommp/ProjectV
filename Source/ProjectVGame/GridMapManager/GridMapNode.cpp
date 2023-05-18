@@ -5,8 +5,11 @@
 #include "ChessPieces/GridChessPiece.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GridGameplayTags.h"
+#include "GridMapManager.h"
+#include "GridMapStateComponent.h"
 #include "AbilitySystem/GridAbilitySystemComponent.h"
-#include "AbilitySystem/AbilityEffects/GridGameplayEffect_Attach.h"
+#include "AbilitySystem/AbilityEffects/GridGameplayEffect_GridMapNode.h"
+#include "GameFramework/GameStateBase.h"
 
 AGridMapNode::AGridMapNode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -71,12 +74,37 @@ void AGridMapNode::AttachActiveGameplayEffect(const AGridChessPiece* InChessPiec
 		{
 			// 获取GameplayEffect类对象
 		 	const UGameplayEffect* GameplayEffect = ActiveGE->Spec.Def;
-			if (const UGridGameplayEffect_Attach* GridGameplayEffect_Attach = Cast<UGridGameplayEffect_Attach>(GameplayEffect))
+			if (const UGridGameplayEffect_GridMapNode* GridGameplayEffect_Attach = Cast<UGridGameplayEffect_GridMapNode>(GameplayEffect))
 			{
 				for (const auto& AttachGameplayEffectClass : GridGameplayEffect_Attach->AttachGameplayEffects)
 				{
 					const UGameplayEffect* AttachGameplayEffect = AttachGameplayEffectClass->GetDefaultObject<UGameplayEffect>();
 					InChessPiece->GetAbilitySystemComponent()->ApplyGameplayEffectToSelf(AttachGameplayEffect,ActiveGE->Spec.GetLevel(), InChessPiece->GetAbilitySystemComponent()->MakeEffectContext());
+				}
+			}
+		}
+	}
+}
+
+void AGridMapNode::FindAllNearbyTiles(TArray<const AGridMapNode*>& OutNearbyTiles, const FGameplayTagContainer& RequireTags) const
+{
+	check(AbilitySystemComponent);
+	// check AbilitySystemComponent has requireTag
+	if (!AbilitySystemComponent->HasAnyMatchingGameplayTags(RequireTags))
+	{
+		return;
+	}
+	if (!OutNearbyTiles.Contains(this))
+	{
+		OutNearbyTiles.Add(this);
+		if (const auto GridMapManager = GetWorld()->GetGameState()->FindComponentByClass<UGridMapStateComponent>()->GetGridMapManager())
+		{
+			for (const int EdgeIndex : GridMapManager->EdgeArrayInteger[TileIndex])
+			{
+				if (GridMapManager->GridMapNodeArray.IsValidIndex(EdgeIndex))
+				{
+					const auto NearbyTile = GridMapManager->GridMapNodeArray[EdgeIndex];
+					NearbyTile->FindAllNearbyTiles(OutNearbyTiles, RequireTag);
 				}
 			}
 		}

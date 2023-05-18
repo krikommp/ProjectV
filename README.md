@@ -57,6 +57,55 @@
   - &#10004; 当有单位进入到该Tile中，我们遍历该Tile上所有激活的GameplayEffect, 这个GameplayEffect应该有一个特定类型（GridGameplayEffect_GridMapNode），里面保存了一组进入时给与的GameplayEffect，如果遍历到的一个GE是该类型，那么就对进入Tile的对象施加这个GE
   - &#10004; 每回合都会对当前位于Tile中的对象施加一次
   - &#10004; 相邻位置应用GameplayEffect，对于每个Tile, 查找相邻的Tiles(八方向)，搜索，找到所有相邻的Tiles，然后对每个Tile应用相应的GameplayEffect
+- 设计方法：
+```
+GameplayEffect: 引发类型，用来触发实际将会应用的GE
+目标类型 (ConditionGameplayEffect)
+ChessPiece:
+	-> 实际的GE
+GridMapNode:
+	-> 实际的GE
+Tips: 不再指定其他属性
+
+GridGameplayEffect_ChessPiece: 可以被应用到棋子上的GE
+可以包括实际的属性修改
+指定GameplayTag
+持续
+组合 -> GridGameplayEffect_ChessPiece (组合需要一个新的GameplayEffect)
+移除
+
+GridGameplayEffect_GridMapNode: 可以被应用到地面的GE
+组合 -> GridGameplayEffect_GridMapNode: 
+	-> ConductionGameplayEffects 可被传导的GameplayEffect
+因此，一个可被传导的GE需要多个GE的组合才能有效果
+1. 本元素GE
+2. 组合产生的GE
+3. 由于组合产生了一个可传导GE（AttachGameplayEffects）, 需要一个GE来应用到 ChessPiece 上
+
+/// Class
+
+UGridGameplayEffect
+-> ConditionGameplayEffect
+
+UGridGameplayEffect_Trigger: UGridGameplayEffect
+
+UGridGameplayEffect_ChessPiece: UGridGameplayEffect
+
+UGridGameplayEffect_GridMapNode: UGridGameplayEffect
+-> AttachGameplayEffects
+-> ConductionGameplayEffects
+
+
+/// Tags
+Ability.Element.Prue.* 原始的
+Ability.Element.Compose.* 组合的
+
+
+/// Name
+GE_Element_Trigger_* 用于触发
+GE_Element_ChessPiece_* 将应用于棋子上
+GE_Element_GridMapMod_* 将应用于网格上
+```
 
 ### 寻路
 

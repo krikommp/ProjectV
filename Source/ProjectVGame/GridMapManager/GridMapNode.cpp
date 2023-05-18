@@ -104,7 +104,7 @@ void AGridMapNode::FindAllNearbyTiles(TArray<const AGridMapNode*>& OutNearbyTile
 				if (GridMapManager->GridMapNodeArray.IsValidIndex(EdgeIndex))
 				{
 					const auto NearbyTile = GridMapManager->GridMapNodeArray[EdgeIndex];
-					NearbyTile->FindAllNearbyTiles(OutNearbyTiles, RequireTag);
+					NearbyTile->FindAllNearbyTiles(OutNearbyTiles, RequireTags);
 				}
 			}
 		}

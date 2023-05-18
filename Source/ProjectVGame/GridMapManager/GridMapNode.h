@@ -35,6 +35,8 @@ public:
 
 	void OnChessPieceLeave(AGridChessPiece* InChessPiece) const;
 
+	void AttachActiveGameplayEffect(AGridChessPiece* InChessPiece);
+
 private:
 	void InitializeGameplayTags() const;
 	

@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GridGameplayTags.h"
 #include "AbilitySystem/GridAbilitySystemComponent.h"
+#include "AbilitySystem/AbilityEffects/GridGameplayEffect_Attach.h"
 
 AGridMapNode::AGridMapNode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -46,6 +47,36 @@ void AGridMapNode::OnChessPieceLeave(AGridChessPiece* InChessPiece) const
 	EventData.Target = InChessPiece;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, GridGameplayTags.GameplayEvent_OnChessLeaveTile,
 															 FGameplayEventData());
+}
+
+void AGridMapNode::AttachActiveGameplayEffect(AGridChessPiece* InChessPiece)
+{
+	check(AbilitySystemComponent);
+
+	// 定义我们要查询的标签
+	FGameplayTagContainer Tags;
+	Tags.AddTagFast(FGameplayTag::RequestGameplayTag(FName("Ability.Element"), true));
+
+	// 创建查询
+	FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(Tags);
+
+	// 获取激活效果
+	TArray<FActiveGameplayEffectHandle> ActiveEffects = AbilitySystemComponent->GetActiveEffects(Query);
+
+	for (const auto& ActiveEffect : ActiveEffects)
+	{
+		// 获取激活效果
+		const FActiveGameplayEffect* ActiveGE = AbilitySystemComponent->GetActiveGameplayEffect(ActiveEffect);
+		if (ActiveGE)
+		{
+			// 获取GameplayEffect类对象
+		 	const UGameplayEffect* GameplayEffect = ActiveGE->Spec.Def;
+			if (const UGridGameplayEffect_Attach* GridGameplayEffect_Attach = Cast<UGridGameplayEffect_Attach>(GameplayEffect))
+			{
+				
+			}
+		}
+	}
 }
 
 void AGridMapNode::InitializeGameplayTags() const

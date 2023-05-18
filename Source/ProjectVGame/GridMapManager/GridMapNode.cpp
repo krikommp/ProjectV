@@ -37,6 +37,7 @@ void AGridMapNode::OnChessPieceEnter(AGridChessPiece* InChessPiece) const
 	EventData.Target = InChessPiece;
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, GridGameplayTags.GameplayEvent_OnChessEnterTile,
 	                                                         FGameplayEventData());
+	AttachActiveGameplayEffect(InChessPiece);
 }
 
 void AGridMapNode::OnChessPieceLeave(AGridChessPiece* InChessPiece) const
@@ -49,7 +50,7 @@ void AGridMapNode::OnChessPieceLeave(AGridChessPiece* InChessPiece) const
 															 FGameplayEventData());
 }
 
-void AGridMapNode::AttachActiveGameplayEffect(AGridChessPiece* InChessPiece)
+void AGridMapNode::AttachActiveGameplayEffect(const AGridChessPiece* InChessPiece) const
 {
 	check(AbilitySystemComponent);
 
@@ -58,7 +59,7 @@ void AGridMapNode::AttachActiveGameplayEffect(AGridChessPiece* InChessPiece)
 	Tags.AddTagFast(FGameplayTag::RequestGameplayTag(FName("Ability.Element"), true));
 
 	// 创建查询
-	FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(Tags);
+	const FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(Tags);
 
 	// 获取激活效果
 	TArray<FActiveGameplayEffectHandle> ActiveEffects = AbilitySystemComponent->GetActiveEffects(Query);
@@ -66,14 +67,17 @@ void AGridMapNode::AttachActiveGameplayEffect(AGridChessPiece* InChessPiece)
 	for (const auto& ActiveEffect : ActiveEffects)
 	{
 		// 获取激活效果
-		const FActiveGameplayEffect* ActiveGE = AbilitySystemComponent->GetActiveGameplayEffect(ActiveEffect);
-		if (ActiveGE)
+		if (const FActiveGameplayEffect* ActiveGE = AbilitySystemComponent->GetActiveGameplayEffect(ActiveEffect))
 		{
 			// 获取GameplayEffect类对象
 		 	const UGameplayEffect* GameplayEffect = ActiveGE->Spec.Def;
 			if (const UGridGameplayEffect_Attach* GridGameplayEffect_Attach = Cast<UGridGameplayEffect_Attach>(GameplayEffect))
 			{
-				
+				for (const auto& AttachGameplayEffectClass : GridGameplayEffect_Attach->AttachGameplayEffects)
+				{
+					const UGameplayEffect* AttachGameplayEffect = AttachGameplayEffectClass->GetDefaultObject<UGameplayEffect>();
+					InChessPiece->GetAbilitySystemComponent()->ApplyGameplayEffectToSelf(AttachGameplayEffect,ActiveGE->Spec.GetLevel(), InChessPiece->GetAbilitySystemComponent()->MakeEffectContext());
+				}
 			}
 		}
 	}

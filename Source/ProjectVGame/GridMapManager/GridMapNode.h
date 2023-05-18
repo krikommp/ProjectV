@@ -35,7 +35,11 @@ public:
 
 	void OnChessPieceLeave(AGridChessPiece* InChessPiece) const;
 
-	void AttachActiveGameplayEffect(AGridChessPiece* InChessPiece);
+	/**
+	 * @brief 为棋子对象添加附加效果
+	 * @param InChessPiece 棋子对象
+	 */
+	void AttachActiveGameplayEffect(const AGridChessPiece* InChessPiece) const;
 
 private:
 	void InitializeGameplayTags() const;

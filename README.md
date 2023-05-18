@@ -55,7 +55,7 @@
 - TODO
   思路：
   - [x] 当有单位进入到该Tile中，我们遍历该Tile上所有激活的GameplayEffect, 这个GameplayEffect应该有一个特定类型（GridGameplayEffect_GridMapNode），里面保存了一组进入时给与的GameplayEffect，如果遍历到的一个GE是该类型，那么就对进入Tile的对象施加这个GE
-  - [ ] 每回合都会对当前位于Tile中的对象施加一次
+  - [x] 每回合都会对当前位于Tile中的对象施加一次
   - 
 
 ### 寻路

@@ -8,6 +8,10 @@
 #include "GridTraceChannel.h"
 #include "AbilitySystem/GridAbilitySystemComponent.h"
 #include "ChessPieces/GridChessPiece.h"
+#include "ChessPieces/GridChessPieceExtensionComponent.h"
+#include "GridMapManager/GridMapManager.h"
+#include "GridMapManager/GridMapNode.h"
+#include "GridMapManager/GridMapStateComponent.h"
 #include "Messages/GridVerbMessage.h"
 #include "Player/GridPlayerController.h"
 
@@ -115,6 +119,17 @@ void UGridTurnManagerComponent::StartTurn()
 	{
 		ChessPiece->OnTurnStartInternal();
 		ChessPiece->GetGridAbilitySystemComponent()->TickAbilityTurn(1);
+		// get chess piece location tile index, than call attach gameplay effect
+		if (const auto GridMapManager = GetGameState<AGameStateBase>()->FindComponentByClass<UGridMapStateComponent>()->GetGridMapManager())
+		{
+			if (const UGridChessPieceExtensionComponent* ChessPieceExtensionComponent = UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(ChessPiece))
+			{
+				check(GridMapManager->VectorFieldArray.IsValidIndex(ChessPieceExtensionComponent->GetTileIndex()));
+
+				const auto GridMapNode = GridMapManager->GridMapNodeArray[ChessPieceExtensionComponent->GetTileIndex()];
+				GridMapNode->AttachActiveGameplayEffect(ChessPiece);
+			}
+		}
 	}
 
 	if (GetCurrentActionIndex() == 0)

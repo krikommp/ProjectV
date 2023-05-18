@@ -45,7 +45,7 @@ public:
 	/**
 	 * @brief 查找相邻符合要求的节点
 	 * @param OutNearbyTiles 
-	 * @param RequireTag 
+	 * @param RequireTags 
 	 */
 	void FindAllNearbyTiles(TArray<const AGridMapNode*>& OutNearbyTiles, const FGameplayTagContainer& RequireTags) const;
 

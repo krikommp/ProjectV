@@ -31,6 +31,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
 	void MoveCardToGraveyard(UGridCardInfo* InCardInfo);
 
+	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
+	void AddNewCardToPlayerHand(UGridCardInfo* InNewCardInfo);
+
 	UFUNCTION(BlueprintPure, Category="Grid|PlayerHand")
 	UGridCard* GetCurrentCard() const;
 	

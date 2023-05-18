@@ -1,13 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "GridPlayerHand.h"
 
 #include "GridCardDrawPile.h"
 #include "GridCardGraveyard.h"
 #include "GridCardPlayPlane.h"
 #include "GridCardSelectPlane.h"
-#include "GridLogChannel.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Character/GridPlayerHandComponent.h"
 #include "Components/CanvasPanel.h"
@@ -37,7 +35,7 @@ void UGridPlayerHand::NativeDestruct()
 	OnPileChanged.RemoveAll(this);
 }
 
-void UGridPlayerHand::AddCard(UGridCard* Card)
+void UGridPlayerHand::AddCard(UGridCard *Card)
 {
 	HandCanvas->AddChild(Card);
 	FVector2D DrawCardPixelPosition, DrawCardViewportPosition;
@@ -47,14 +45,14 @@ void UGridPlayerHand::AddCard(UGridCard* Card)
 	NewCardTransform.Scale = FVector2D::Zero();
 	NewCardTransform.Angle = 0.0f;
 	Card->SetRenderTransform(NewCardTransform);
-		
+
 	Cards.Add(Card);
 	NotifyCardPileChanged();
 }
 
-void UGridPlayerHand::RemoveCard(UGridCard* Card)
+void UGridPlayerHand::RemoveCard(UGridCard *Card)
 {
-	if (UGridPlayerHandComponent* PlayerHandComponent = UGridPlayerHandComponent::FindPlayerHandComponent(UGameplayStatics::GetGameInstance(GetWorld())->GetPrimaryPlayerController()->GetPawn()))
+	if (UGridPlayerHandComponent *PlayerHandComponent = UGridPlayerHandComponent::FindPlayerHandComponent(UGameplayStatics::GetGameInstance(GetWorld())->GetPrimaryPlayerController()->GetPawn()))
 	{
 		Cards.Remove(Card);
 		PlayerHandComponent->CardsHoldInHand.Remove(Card->CardInfo);
@@ -62,9 +60,10 @@ void UGridPlayerHand::RemoveCard(UGridCard* Card)
 	}
 }
 
-void UGridPlayerHand::SortCards(const TArray<UGridCard*>& InCards)
+TArray<FWidgetTransform> UGridPlayerHand::CalculateCardTransform(const TArray<UGridCard *> &InCards)
 {
-	const UGridUICardManagerSubsystem* UICardManagerSubsystem = GetGameInstance()->GetSubsystem<UGridUICardManagerSubsystem>();
+	TArray<FWidgetTransform> Result;
+	const UGridUICardManagerSubsystem *UICardManagerSubsystem = GetGameInstance()->GetSubsystem<UGridUICardManagerSubsystem>();
 	const float CardSpacingInHand = UICardManagerSubsystem->GetValue<float>("CardSpacingInHand");
 	const float CardAngleFromCenter = UICardManagerSubsystem->GetValue<float>("CardAngleFromCenter");
 	for (int32 CardIndex = 0; CardIndex < InCards.Num(); ++CardIndex)
@@ -75,6 +74,18 @@ void UGridPlayerHand::SortCards(const TArray<UGridCard*>& InCards)
 		NewCardTransform.Translation = FVector2D(CardMoveToX, CardMoveToY);
 		NewCardTransform.Scale = FVector2D::One();
 		NewCardTransform.Angle = (CardAngleFromCenter * (-1.0f) * (InCards.Num() - 1)) + (CardAngleFromCenter * 2.0f * CardIndex);
+		Result.Add(NewCardTransform);
+	}
+	return Result;
+}
+
+void UGridPlayerHand::SortCards(const TArray<UGridCard *> &InCards)
+{
+	TArray<FWidgetTransform> NewCardTransforms = CalculateCardTransform(InCards);
+	check(NewCardTransforms.Num() == InCards.Num());
+	for (int32 CardIndex = 0; CardIndex < InCards.Num(); ++CardIndex)
+	{
+		FWidgetTransform NewCardTransform = NewCardTransforms[CardIndex];
 		InCards[CardIndex]->RequestDesiredTransformUpdate(NewCardTransform);
 		InCards[CardIndex]->SuggestZOrder(CardIndex);
 		InCards[CardIndex]->CardState = ECardState::Draw;
@@ -83,15 +94,15 @@ void UGridPlayerHand::SortCards(const TArray<UGridCard*>& InCards)
 
 void UGridPlayerHand::ClearCard()
 {
-	const UGridUICardManagerSubsystem* UICardManager = GetGameInstance()->GetSubsystem<UGridUICardManagerSubsystem>();
-	for (const auto& Card : Cards)
+	const UGridUICardManagerSubsystem *UICardManager = GetGameInstance()->GetSubsystem<UGridUICardManagerSubsystem>();
+	for (const auto &Card : Cards)
 	{
 		UICardManager->ReturnCardWidget(Card);
 	}
 	Cards.Reset();
 }
 
-void UGridPlayerHand::Register_OnEnterCardSelectPlane(FOnEnterCardSelectPlane::FDelegate&& Delegate)
+void UGridPlayerHand::Register_OnEnterCardSelectPlane(FOnEnterCardSelectPlane::FDelegate &&Delegate)
 {
 	if (!OnEnterCardSelectPlane.IsBoundToObject(Delegate.GetUObject()))
 	{
@@ -99,12 +110,12 @@ void UGridPlayerHand::Register_OnEnterCardSelectPlane(FOnEnterCardSelectPlane::F
 	}
 }
 
-void UGridPlayerHand::UnRegister_OnEnterCardSelectPlane(const UObject* InUser)
+void UGridPlayerHand::UnRegister_OnEnterCardSelectPlane(const UObject *InUser)
 {
 	OnEnterCardSelectPlane.RemoveAll(InUser);
 }
 
-void UGridPlayerHand::Register_OnEnterCardPlayPlane(FOnEnterCardSelectPlane::FDelegate&& Delegate)
+void UGridPlayerHand::Register_OnEnterCardPlayPlane(FOnEnterCardSelectPlane::FDelegate &&Delegate)
 {
 	if (!OnEnterCardPlayPlane.IsBoundToObject(Delegate.GetUObject()))
 	{
@@ -112,12 +123,12 @@ void UGridPlayerHand::Register_OnEnterCardPlayPlane(FOnEnterCardSelectPlane::FDe
 	}
 }
 
-void UGridPlayerHand::UnRegister_OnEnterCardPlayPlane(const UObject* InUser)
+void UGridPlayerHand::UnRegister_OnEnterCardPlayPlane(const UObject *InUser)
 {
 	OnEnterCardPlayPlane.RemoveAll(InUser);
 }
 
-void UGridPlayerHand::Register_OnCardPlayPlaneMouseButtonDown(FOnCardPlayPlaneMouseButtonDown::FDelegate&& Delegate)
+void UGridPlayerHand::Register_OnCardPlayPlaneMouseButtonDown(FOnCardPlayPlaneMouseButtonDown::FDelegate &&Delegate)
 {
 	if (!OnCardPlayPlaneMouseButtonDown.IsBoundToObject(Delegate.GetUObject()))
 	{
@@ -125,9 +136,47 @@ void UGridPlayerHand::Register_OnCardPlayPlaneMouseButtonDown(FOnCardPlayPlaneMo
 	}
 }
 
-void UGridPlayerHand::UnRegister_OnCardPlayPlaneMouseButtonDown(const UObject* InUser)
+void UGridPlayerHand::UnRegister_OnCardPlayPlaneMouseButtonDown(const UObject *InUser)
 {
 	OnCardPlayPlaneMouseButtonDown.RemoveAll(InUser);
+}
+
+FWidgetTransform UGridPlayerHand::HoverCard(UGridCard *InCard)
+{
+	const TArray<FWidgetTransform> CardTransformList = CalculateCardTransform(Cards);
+	const UGridUICardManagerSubsystem *UICardManagerSubsystem = GetGameInstance()->GetSubsystem<UGridUICardManagerSubsystem>();
+	const float HoverOtherCardMoveX = UICardManagerSubsystem->GetValue<float>("HoverOtherCardMoveX");
+	check(CardTransformList.Num() == Cards.Num());
+	FWidgetTransform HoverTargetTransform;
+	for (int32 Index = 0; Index < Cards.Num(); ++Index)
+	{
+		UGridCard* Card = Cards[Index];
+		if (Card != InCard)
+		{
+			FWidgetTransform NewTransform = CardTransformList[Index];
+			const float Direction = NewTransform.Translation.X - InCard->GetRenderTransform().Translation.X;
+ 			const float MoveDistance = HoverOtherCardMoveX / FMath::Abs(Direction);
+			if (Direction < 0.0f)
+			{
+				NewTransform.Translation.X -= MoveDistance;
+			}else
+			{
+				NewTransform.Translation.X += MoveDistance;
+			}
+			Card->RequestDesiredTransformUpdate(NewTransform);
+			Card->CardState = ECardState::Draw;
+		}else
+		{
+			HoverTargetTransform = CardTransformList[Index];
+		}
+	}
+	return HoverTargetTransform;
+}
+
+void UGridPlayerHand::UnHoverCard(UGridCard* InCard)
+{
+	InCard->CheckCardStyle();
+	NotifyCardPileChanged();
 }
 
 void UGridPlayerHand::PlaySelectCard()
@@ -140,13 +189,13 @@ void UGridPlayerHand::UnSelectCard()
 	UnSelectCard(SelectedCard);
 }
 
-void UGridPlayerHand::PlayCard(UGridCard* CardToPlay)
+void UGridPlayerHand::PlayCard(UGridCard *CardToPlay)
 {
 	CardToPlay->CardState = ECardState::Play;
 	NotifyCardPlayed(CardToPlay);
 }
 
-void UGridPlayerHand::Discard(UGridCard* CardToDiscard)
+void UGridPlayerHand::Discard(UGridCard *CardToDiscard)
 {
 	Cards.Remove(CardToDiscard);
 	NotifyCardDiscard(CardToDiscard);
@@ -154,10 +203,10 @@ void UGridPlayerHand::Discard(UGridCard* CardToDiscard)
 	SelectedCard = nullptr;
 }
 
-void UGridPlayerHand::SelectCard(UGridCard* InSelectedCard)
+void UGridPlayerHand::SelectCard(UGridCard *InSelectedCard)
 {
 	SelectedCard = InSelectedCard;
-	for (const auto& OtherCard : Cards)
+	for (const auto &OtherCard : Cards)
 	{
 		if (OtherCard != SelectedCard)
 		{
@@ -167,14 +216,14 @@ void UGridPlayerHand::SelectCard(UGridCard* InSelectedCard)
 	NotifyCardSelect(SelectedCard);
 }
 
-void UGridPlayerHand::UnSelectCard(UGridCard* UnSelectCard)
+void UGridPlayerHand::UnSelectCard(UGridCard *UnSelectCard)
 {
 	SelectedCard = nullptr;
 	NotifyCardUnSelect();
 	NotifyCardPileChanged();
 }
 
-void UGridPlayerHand::PlayerHandShow(AActor* HandOwner)
+void UGridPlayerHand::PlayerHandShow(AActor *HandOwner)
 {
 	if (HandOwner == nullptr)
 	{
@@ -191,9 +240,17 @@ void UGridPlayerHand::PlayerHandShow(AActor* HandOwner)
 
 void UGridPlayerHand::GateAllCardsInputState()
 {
-	for (const auto& Card : Cards)
+	for (const auto &Card : Cards)
 	{
 		Card->GateCardInput();
+	}
+}
+
+void UGridPlayerHand::ChangeAllCardsInHandState(ECardState NewCardState)
+{
+	for (const auto &Card : Cards)
+	{
+		Card->CardState = NewCardState;
 	}
 }
 
@@ -223,19 +280,19 @@ void UGridPlayerHand::NotifyEnterPlayCardPlane() const
 	OnEnterCardPlayPlaneDynamic.Broadcast();
 }
 
-void UGridPlayerHand::NotifyCardPlayed(UGridCard* PlayedCard) const
+void UGridPlayerHand::NotifyCardPlayed(UGridCard *PlayedCard) const
 {
 	OnCardPlayed.Broadcast(PlayedCard);
 	OnCardPlayedDynamic.Broadcast(PlayedCard);
 }
 
-void UGridPlayerHand::NotifyCardDiscard(UGridCard* InCard) const
+void UGridPlayerHand::NotifyCardDiscard(UGridCard *InCard) const
 {
 	OnCardDiscard.Broadcast(InCard);
 	OnCardDiscardDynamic.Broadcast(InCard);
 }
 
-void UGridPlayerHand::NotifyCardHover(UGridCard* HoveredCard) const
+void UGridPlayerHand::NotifyCardHover(UGridCard *HoveredCard) const
 {
 	OnCardHover.Broadcast(HoveredCard);
 	OnCardHoverDynamic.Broadcast(HoveredCard);
@@ -247,7 +304,7 @@ void UGridPlayerHand::NotifyCardUnHover() const
 	OnCardUnHoverDynamic.Broadcast();
 }
 
-void UGridPlayerHand::NotifyCardSelect(UGridCard* InSelectedCard) const
+void UGridPlayerHand::NotifyCardSelect(UGridCard *InSelectedCard) const
 {
 	OnCardSelected.Broadcast(InSelectedCard);
 	OnCardSelectedDynamic.Broadcast(InSelectedCard);
@@ -259,7 +316,7 @@ void UGridPlayerHand::NotifyCardUnSelect() const
 	OnCardUnSelectedDynamic.Broadcast();
 }
 
-void UGridPlayerHand::NotifyPlayCardPlaneMouseButtonDown(const FPointerEvent& InMouseEvent) const
+void UGridPlayerHand::NotifyPlayCardPlaneMouseButtonDown(const FPointerEvent &InMouseEvent) const
 {
 	OnCardPlayPlaneMouseButtonDown.Broadcast(InMouseEvent);
 	OnCardPlayPlaneMouseButtonDownDynamic.Broadcast(InMouseEvent);

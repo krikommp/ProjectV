@@ -4,6 +4,8 @@
 #include "GridMapFunctionLibrary.h"
 
 #include "GridLogChannel.h"
+#include "GridMapNode.h"
+#include "GridMapWarFogComponent.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "GridMapManager/GridMapManager.h"
 #include "GridMapManager/GridMapStruct.h"
@@ -13,8 +15,8 @@
 #include "Components/DecalComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GridTraceChannel.h"
-#include "Components/TextRenderComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Utility/Texture/TextureFunctionLibrary.h"
 
 
 void UGridMapFunctionLibrary::CreateNewGridMapDataAsset(AGridMapManager* GridMapManager)
@@ -170,18 +172,21 @@ int32 UGridMapFunctionLibrary::VectorToIndex3D(AGridMapManager* GridMapManager, 
 	const int AddY = ModY ? 1 : 0;
 
 	const int X = FMath::Floor(((PivotX + AddX) - GridMapManager->GetActorLocation().X) / GridMapManager->TileBoundsX);
-	const int Y = FMath::Floor(((PivotY + AddY) - GridMapManager->GetActorLocation().Y) / GridMapManager->TileBoundsY) * GridMapManager->
+	const int Y = FMath::Floor(((PivotY + AddY) - GridMapManager->GetActorLocation().Y) / GridMapManager->TileBoundsY) *
+		GridMapManager->
 		GridSizeX;
 
 	const int32 Result = X + Y;
 
 	for (int32 Index = 0; Index <= GridMapManager->GridSizeZ - 1; ++Index)
 	{
-		if (GridMapManager->VectorFieldArray.IsValidIndex(Index * (GridMapManager->GridSizeX * GridMapManager->GridSizeY) + Result))
+		if (GridMapManager->VectorFieldArray.IsValidIndex(
+			Index * (GridMapManager->GridSizeX * GridMapManager->GridSizeY) + Result))
 		{
 			if (UKismetMathLibrary::NearlyEqual_FloatFloat(
-			GridMapManager->VectorFieldArray[Index * (GridMapManager->GridSizeX * GridMapManager->GridSizeY) + Result].Z,
-			Vector.Z - GridMapManager->GetActorLocation().Z, GridMapManager->HeightBetweenLevels / 2.0f))
+				GridMapManager->VectorFieldArray[Index * (GridMapManager->GridSizeX * GridMapManager->GridSizeY) +
+					Result].Z,
+				Vector.Z - GridMapManager->GetActorLocation().Z, GridMapManager->HeightBetweenLevels / 2.0f))
 			{
 				return (Index * (GridMapManager->GridSizeX * GridMapManager->GridSizeY) + Result);
 			}
@@ -212,16 +217,68 @@ static float CompareTwoVector(float A, float B)
 }
 
 bool UGridMapFunctionLibrary::CompareClickLocation(AGridMapManager* GridMapManager, const FVector& ClickedLocation,
-	int32 ClickedIndex)
+                                                   int32 ClickedIndex)
 {
 	if (UKismetMathLibrary::EqualEqual_VectorVector(
-				ClickedLocation,
-				GridMapManager->VectorFieldArray[ClickedIndex] + GridMapManager->GetActorLocation(),
-				CompareTwoVector(GridMapManager->TileBoundsX, GridMapManager->TileBoundsY)))
+		ClickedLocation,
+		GridMapManager->VectorFieldArray[ClickedIndex] + GridMapManager->GetActorLocation(),
+		CompareTwoVector(GridMapManager->TileBoundsX, GridMapManager->TileBoundsY)))
 	{
 		return true;
 	}
 	return false;
+}
+
+void UGridMapFunctionLibrary::DisplayMoveRangeEdgeMarkers(AGridMapManager* GridMapManager,
+                                                          int32 StartIndex,
+                                                          const TArray<FStructPathFinding>& InCanMoveToArray,
+                                                          const TArray<FStructPathFinding>& InIndexCanMoveToArray)
+{
+	for (const auto& CanMoveTo : InIndexCanMoveToArray)
+	{
+		SpawnEdgeMeshes(GridMapManager, StartIndex, InCanMoveToArray, GridMapManager->TileInMoveRangeEdgeDecal, CanMoveTo.Index);
+	}
+}
+
+void UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(AGridMapManager* GridMapManager,
+                                                             const TArray<int32>& InTilesInSightArray,
+                                                             const TArray<int32>& InRangeArray)
+{
+	for (const int32 Index : InTilesInSightArray)
+	{
+		SpawnEdgeMeshes(GridMapManager, InRangeArray, GridMapManager->TileInSightRangeEdgeDecal,
+		                Index);
+	}
+	if (UGridMapWarFogComponent* WarFogComponent = UGridMapWarFogComponent::FindWarFogComponent(GridMapManager))
+	{
+		WarFogComponent->PassVisibleRangeToMaterial(InRangeArray);
+		WarFogComponent->EnableVisibleFog();
+	}
+}
+
+UDecalComponent* UGridMapFunctionLibrary::DisplayDecal(AGridMapManager* GridMapManager, int32 Index,
+	UMaterialInterface* DecalMaterial, bool bOverrider)
+{
+	check(GridMapManager->VectorFieldArray.IsValidIndex(Index));
+	const FVector TileLocation = GridMapManager->VectorFieldArray[Index] + GridMapManager->GetActorLocation();
+	if (bOverrider)
+	{
+		TObjectPtr<UDecalComponent>* FoundDecalComponent = GridMapManager->CurrentDecalsArray.FindByPredicate(
+			[&TileLocation](const UDecalComponent* DecalComponent)
+			{
+				return UKismetMathLibrary::EqualEqual_VectorVector(
+					DecalComponent->GetComponentLocation(), TileLocation);
+			});
+		if (FoundDecalComponent)
+		{
+			FoundDecalComponent->Get()->SetDecalMaterial(DecalMaterial);
+			return nullptr;
+		}
+	}
+	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
+		GridMapManager->GetWorld(), DecalMaterial, GridMapManager->DecalSizeSquare, TileLocation, {90.0f, 0.0f, 0.0f});
+	// GridMapManager->CurrentDecalsArray.Add(DecalComponent);
+	return DecalComponent;
 }
 
 void UGridMapFunctionLibrary::RemoveTileEdge(int32 TileIndex, int32 Edge, AGridMapManager* GridMapManager)
@@ -397,14 +454,41 @@ void UGridMapFunctionLibrary::PopulateEdgeTileAndCost(AGridMapManager* GridMapMa
 	const int32 Length = GridMapManager->GridSizeX * GridMapManager->GridSizeY * GridMapManager->GridSizeZ;
 	for (int32 Index = 0; Index < Length; ++Index)
 	{
-		const int32 North = Index - GridMapManager->GridSizeX;
-		const int32 East = Index + 1;
-		const int32 South = Index + GridMapManager->GridSizeX;
-		const int32 West = Index - 1;
-		TArray<int32> TempIntArray = {North, East, South, West};
-		TArray<FStructIndexCost> TempIndexCostArray = {{North, 1}, {East, 1}, {South, 1}, {West, 1}};
-		GridMapManager->EdgeArrayInteger.Add({TempIntArray});
-		GridMapManager->EdgeArray.Add({TempIndexCostArray});
+		if (GridMapManager->IsDiagonalMovement())
+		{
+			const int32 North = Index - GridMapManager->GridSizeX;
+			const int32 East = Index + 1;
+			const int32 South = Index + GridMapManager->GridSizeX;
+			const int32 West = Index - 1;
+			const int32 NorthEast = Index - GridMapManager->GridSizeX + 1;
+			const int32 SouthEast = Index + GridMapManager->GridSizeX + 1;
+			const int32 SouthWest = Index + GridMapManager->GridSizeX - 1;
+			const int32 NorthWest = Index - GridMapManager->GridSizeX - 1;
+			const TArray TempIntArray = {North, East, South, West, NorthEast, SouthEast, SouthWest, NorthWest};
+			const TArray<FStructIndexCost> TempIndexCostArray = {
+				{North, 1},
+				{East, 1},
+				{South, 1},
+				{West, 1},
+				{NorthEast, 1},
+				{SouthEast, 1},
+				{SouthWest, 1},
+				{NorthWest, 1}
+			};
+			GridMapManager->EdgeArrayInteger.Add({TempIntArray});
+			GridMapManager->EdgeArray.Add({TempIndexCostArray});
+		}
+		else
+		{
+			const int32 North = Index - GridMapManager->GridSizeX;
+			const int32 East = Index + 1;
+			const int32 South = Index + GridMapManager->GridSizeX;
+			const int32 West = Index - 1;
+			const TArray TempIntArray = {North, East, South, West};
+			const TArray<FStructIndexCost> TempIndexCostArray = {{North, 1}, {East, 1}, {South, 1}, {West, 1}};
+			GridMapManager->EdgeArrayInteger.Add({TempIntArray});
+			GridMapManager->EdgeArray.Add({TempIndexCostArray});
+		}
 	}
 }
 
@@ -637,6 +721,9 @@ void UGridMapFunctionLibrary::ConstructGridMapData(AGridMapManager* GridMapManag
 	GridMapManager->DefaultTileInstance->GetLocalBounds(MinBounds, MaxBounds);
 	GridMapManager->TileBoundsX = MaxBounds.X - MinBounds.X;
 	GridMapManager->TileBoundsY = MaxBounds.Y - MinBounds.Y;
+	GridMapManager->VisibleRangeTexture = UTextureFunctionLibrary::CreateTexture2D(
+		GridMapManager, GridMapManager->GridSizeX, GridMapManager->GridSizeY);
+	UTextureFunctionLibrary::ClearTexture2D(GridMapManager->VisibleRangeTexture, FLinearColor::Black);
 	// step 2 设置CollisionPlane大小
 	FTransform CollisionTransform;
 	float CollisionScaleX, CollisionScaleY;
@@ -823,7 +910,7 @@ void UGridMapFunctionLibrary::PrepareForCreateMultiLevelGrids(AGridMapManager* G
 		                                              0.0001))
 		{
 			// 尝试计算出该Tile中的所有相邻Tile索引
-			TArray<int32> AdjacentIndexArray = GetAdjacentIndexes(GridMapManager, Index);
+			TArray<int32> AdjacentIndexArray = GetAdjacentIndexes(GridMapManager, Index, false);
 			// 由于两个相邻的 Tile 可能不在同一层，所以我们找出所有层上与这个Tile相邻的索引
 			for (const auto& AdjacentIndex : AdjacentIndexArray)
 			{
@@ -849,13 +936,62 @@ void UGridMapFunctionLibrary::PrepareForCreateMultiLevelGrids(AGridMapManager* G
 			}
 		}
 	}
+	if (GridMapManager->IsDiagonalMovement())
+	{
+		// 在添加完直线后添加对角线边缘，以便在寻路过程中首选直角边移动
+		// 遍历第一层以上的所有Tile
+		for (int32 Index = GridMapSquareSize; Index < (GridMapSquareSize * GridMapManager->GridSizeZ) - 1; ++Index)
+		{
+			// 判断是否是空闲的 Tile
+			if (UKismetMathLibrary::NotEqual_VectorVector(GridMapManager->VectorFieldArray[Index], FVector(0, 0, 0),
+			                                              0.0001))
+			{
+				// 尝试计算出该Tile中的所有相邻Tile索引
+				TArray<int32> AdjacentIndexArray = GetAdjacentIndexes(GridMapManager, Index, true);
+				// 由于两个相邻的 Tile 可能不在同一层，所以我们找出所有层上与这个Tile相邻的索引
+				for (const auto& AdjacentIndex : AdjacentIndexArray)
+				{
+					for (int32 ZIndex = GridMapManager->GridSizeZ - 1; ZIndex >= 0; --ZIndex)
+					{
+						const int32 ChildIndex = (ZIndex * GridMapSquareSize) + (AdjacentIndex % GridMapSquareSize);
+						if (UKismetMathLibrary::NotEqual_VectorVector(GridMapManager->VectorFieldArray[ChildIndex],
+						                                              FVector(0, 0, 0), 0.0001))
+						{
+							// 根据高度判断行动力消耗
+							// 对于结果为 0 的，认为是不可以通过的地方
+							const int32 Cost = GetEdgeCostFromZDifferent(GridMapManager,
+							                                             GridMapManager->VectorFieldArray[Index].Z,
+							                                             ChildIndex);
+							if (Cost > 0)
+							{
+								// 找到符合条件的Tile, 结束查找
+								AddEdgeBothWays(GridMapManager, Index, ChildIndex, Cost);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
-TArray<int32> UGridMapFunctionLibrary::GetAdjacentIndexes(AGridMapManager* GridMapManager, int32 Index)
+TArray<int32> UGridMapFunctionLibrary::GetAdjacentIndexes(AGridMapManager* GridMapManager, int32 Index, bool bDiagonal)
 {
-	TArray<int32> AdjacentIndexes = {
-		Index - GridMapManager->GridSizeX, Index + 1, Index + GridMapManager->GridSizeX, Index - 1
-	};
+	TArray<int32> AdjacentIndexes;
+	if (bDiagonal)
+	{
+		AdjacentIndexes = {
+			Index - GridMapManager->GridSizeX, Index + 1, Index + GridMapManager->GridSizeX, Index - 1
+		};
+	}
+	else
+	{
+		AdjacentIndexes = {
+			Index - GridMapManager->GridSizeX + 1, Index + GridMapManager->GridSizeX + 1,
+			Index + GridMapManager->GridSizeX - 1, Index - GridMapManager->GridSizeX - 1
+		};
+	}
 	TArray<int32> LocalIndexArray;
 	const int32 GridMapSquareSize = GridMapManager->GridSizeX * GridMapManager->GridSizeY;
 	for (const auto& AdjacentIndex : AdjacentIndexes)
@@ -917,7 +1053,8 @@ void UGridMapFunctionLibrary::CollectAllTileParentOnGridMapAndAddToEdgeArray(AGr
 		{
 			if (!GridMapManager->VectorFieldArray.IsValidIndex(TileParent->TileIndex))
 			{
-				UE_LOG(LogGrid, Error, TEXT("TileParent [%s] with [%d] Tile Index Is InValid, and i will skip it!"), *GetNameSafe(TileParent), TileParent->TileIndex);
+				UE_LOG(LogGrid, Error, TEXT("TileParent [%s] with [%d] Tile Index Is InValid, and i will skip it!"),
+				       *GetNameSafe(TileParent), TileParent->TileIndex);
 				break;
 			}
 			AddTileEdgesToEdgeArray(GridMapManager, TileParent);
@@ -952,14 +1089,108 @@ void UGridMapFunctionLibrary::AddTileEdgesToEdgeArray(AGridMapManager* GridMapMa
 		{
 			LocalIntegerArray.Add(TileEdge.Index);
 			LocalEdgeStructArray.Add({TileEdge.Index, TileEdge.Cost});
-			SetEdgeCost(TileEdge.Index, Tile->TileIndex, FMath::Max(Tile->EdgeCostStructArray[EdgeIndex].Cost, TileEdge.Cost), GridMapManager);
-		}else
+			SetEdgeCost(TileEdge.Index, Tile->TileIndex,
+			            FMath::Max(Tile->EdgeCostStructArray[EdgeIndex].Cost, TileEdge.Cost), GridMapManager);
+		}
+		else
 		{
 			// 在自定义Tile中，该edge不存在，那么就从地图寻路网格中移除这个edge
 			RemoveTileEdge(TileEdge.Index, Tile->TileIndex, GridMapManager);
 		}
 	}
-	GridMapManager->EdgeArrayInteger[Tile->TileIndex] = { LocalIntegerArray };
-	GridMapManager->EdgeArray[Tile->TileIndex] = { LocalEdgeStructArray };
+	GridMapManager->EdgeArrayInteger[Tile->TileIndex] = {LocalIntegerArray};
+	GridMapManager->EdgeArray[Tile->TileIndex] = {LocalEdgeStructArray};
 	// todo...
+}
+
+void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
+                                              int32 StartIndex,
+                                              const TArray<FStructPathFinding>& InCanMoveToArray,
+                                              UMaterialInterface* DecalMat, int32 Index)
+{
+	const FVector StraightEdgeDecalSize = {90.0, 90.0, 90.0};
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index + 1, StraightEdgeDecalSize,
+	                             270.0,
+	                             DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index - 1, StraightEdgeDecalSize,
+	                             90.0,
+	                             DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index + GridMapManager->GridSizeX,
+	                             StraightEdgeDecalSize, 0.0, DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index - GridMapManager->GridSizeX,
+	                             StraightEdgeDecalSize, 180.0, DecalMat);
+}
+
+void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
+                                              const TArray<int32>& InRangeArray, UMaterialInterface* DecalMat,
+                                              int32 Index)
+{
+	const FVector StraightEdgeDecalSize = {90.0, 90.0, 90.0};
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index, Index + 1,
+	                             StraightEdgeDecalSize, 270.0,
+	                             DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index, Index - 1,
+	                             StraightEdgeDecalSize, 90.0,
+	                             DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index,
+	                             Index + GridMapManager->GridSizeX,
+	                             StraightEdgeDecalSize, 0.0, DecalMat);
+	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index,
+	                             Index - GridMapManager->GridSizeX,
+	                             StraightEdgeDecalSize, 180.0, DecalMat);
+}
+
+void UGridMapFunctionLibrary::SpawnEdgeDecalBetweenIndexes(AGridMapManager* GridMapManager,
+                                                           int32 StartIndex,
+                                                           const TArray<FStructPathFinding>& InCanMoveToArray,
+                                                           int32 OutsideIndex, int32 InsideIndex,
+                                                           const FVector& DecalSize,
+                                                           float Rotation, UMaterialInterface* DecalMat)
+{
+	if (!GridMapManager->VectorFieldArray.IsValidIndex(OutsideIndex))
+	{
+		return;
+	}
+	if (InCanMoveToArray.IsValidIndex(InsideIndex))
+	{
+		if (InsideIndex == StartIndex)
+		{
+			return;
+		}
+		// 不是边缘Tile, 因此不需要绘制
+		if (GridMapManager->PawnArray[InsideIndex] == nullptr && InCanMoveToArray[InsideIndex].Parent != 0)
+		{
+			return;
+		}
+	}
+	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
+		GridMapManager->GetWorld(), DecalMat, DecalSize,
+		GridMapManager->VectorFieldArray[OutsideIndex] + GridMapManager->GetActorLocation(), {90.0f, Rotation, 90.0});
+	GridMapManager->CurrentDecalsArray.Add(DecalComponent);
+}
+
+void UGridMapFunctionLibrary::SpawnEdgeDecalBetweenIndexes(AGridMapManager* GridMapManager,
+                                                           const TArray<int32>& InRangeArray, int32 OutsideIndex,
+                                                           int32 InsideIndex, const FVector& DecalSize, float Rotation,
+                                                           UMaterialInterface* DecalMat)
+{
+	if (!GridMapManager->VectorFieldArray.IsValidIndex(OutsideIndex))
+	{
+		return;
+	}
+	if (InRangeArray.IsValidIndex(InsideIndex))
+	{
+		if (!InRangeArray.IsValidIndex(InsideIndex))
+		{
+			return;
+		}
+		if (InRangeArray[InsideIndex] != 0)
+		{
+			return;
+		}
+	}
+	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
+		GridMapManager->GetWorld(), DecalMat, DecalSize,
+		GridMapManager->VectorFieldArray[OutsideIndex] + GridMapManager->GetActorLocation(), {90.0f, Rotation, 90.0});
+	GridMapManager->CurrentDecalsArray.Add(DecalComponent);
 }

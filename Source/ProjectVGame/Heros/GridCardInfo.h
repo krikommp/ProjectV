@@ -7,6 +7,7 @@
 #include "GridCardData.h"
 #include "AbilitySystem/AbilityEvents/GridAbilityInputEvent.h"
 #include "GameFramework/SaveGame.h"
+#include "GameplayTagContainer.h"
 
 #include "GridCardInfo.generated.h"
 
@@ -45,7 +46,7 @@ public:
 	FORCEINLINE UGridAbilitySystemComponent* GetGridAbilitySystemComponent() const { return AbilitySystemComponent; }
 
 	UFUNCTION(BlueprintPure, Category="Grid|Card")
-	bool CheckAbilityCanActivate() const;
+	bool CheckAbilityCanActivate(FGameplayTagContainer& OptionalRelevantTags) const;
 
 	UFUNCTION(BlueprintCallable, Category="Grid|Card")
 	bool TryActivateCardAbility();
@@ -55,6 +56,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Grid|Card")
 	void SendCardInputEvent(const FGridAbilityInputEvent& InputEvent);
+
+	UFUNCTION(BlueprintPure, Category="Grid|Card")
+	FText GetCardDescription();
 public:
 	// 卡牌ID，用以区分相同类型的卡牌
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Grid|CardInfo")

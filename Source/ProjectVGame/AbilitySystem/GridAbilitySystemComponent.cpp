@@ -57,6 +57,21 @@ void UGridAbilitySystemComponent::TickAbilityTurn(int32 Delta)
 	TimerManager->TickTurn(this, Delta);
 }
 
+TMap<UGridAbilityBuffUIData*, float> UGridAbilitySystemComponent::GetAllActiveBuffInfos()
+{
+	TMap<UGridAbilityBuffUIData*, float> Out;
+	const FActiveGameplayEffectsContainer& ActiveGameEffectContainer = GetActiveGameplayEffects();
+	for (FActiveGameplayEffectsContainer::ConstIterator ActiveEffectIt = ActiveGameEffectContainer.CreateConstIterator(); ActiveEffectIt; ++ActiveEffectIt)
+	{
+		const UGameplayEffect* Effect = ActiveEffectIt->Spec.Def;
+		if (const UGridAbilityBuffUIData* UIData = Cast<UGridAbilityBuffUIData>(UAbilitySystemBlueprintLibrary::GetGameplayEffectUIData(Effect->GetClass(), UGridAbilityBuffUIData::StaticClass())))
+		{
+			Out.Add(const_cast<UGridAbilityBuffUIData*>(UIData), ActiveEffectIt->GetDuration());
+		}
+	}
+	return Out;
+}
+
 void UGridAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability,
                                                      bool bWasCancelled)
 {

@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "Blueprint/UserWidget.h"
+#include "Components/SlateWrapperTypes.h"
 
 template <typename T>
 class PROJECTVGAME_API FWidgetObjectPool

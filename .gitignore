@@ -25,4 +25,5 @@ Package/
 *.sdf
 *.suo
 *.xcworkspace
+*.sln.DotSettings.user
 

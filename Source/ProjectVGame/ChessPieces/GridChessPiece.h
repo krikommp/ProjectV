@@ -92,9 +92,9 @@ protected:
 	virtual void OnAbilitySystemUninitialized();
 	virtual void OnChessPieceInfoInitialized();
 	
-	void InitializeGameplayTags();
+	void InitializeGameplayTags() const;
 
-	void DisableMovementAndCollision();
+	void DisableMovementAndCollision() const;
 	void DestroyDueToDeath();
 	void UninitAndDestroy();
 

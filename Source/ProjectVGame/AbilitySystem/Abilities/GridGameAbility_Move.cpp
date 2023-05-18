@@ -12,6 +12,7 @@
 #include "ChessPieces/GridChessPieceMovementComponent.h"
 #include "GameFramework/GameStateBase.h"
 #include "GridMapManager/GridMapManager.h"
+#include "GridMapManager/GridMapNode.h"
 #include "GridMapManager/GridMapStateComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -77,11 +78,13 @@ void UGridGameAbility_Move::AccelerateAndMovePawnAlongSpline(float DeltaTime)
 
 	if (!GridMapManager.IsValid()) return;
 
-	if (UGridChessPieceExtensionComponent* ChessPieceExtComponent = UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(ChessPiece))
+	if (UGridChessPieceExtensionComponent* ChessPieceExtComponent =
+		UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(ChessPiece))
 	{
 		if (MovementComponent->GetMaxSpeed() > MovementComponent->GetCurrentSpeed())
 		{
-			MovementComponent->SetCurrentSpeed(MovementComponent->GetCurrentSpeed() + MovementComponent->GetAcceleration());
+			MovementComponent->SetCurrentSpeed(
+				MovementComponent->GetCurrentSpeed() + MovementComponent->GetAcceleration());
 		}
 
 		CurrentSplineDistance -= ((GridMapManager->TileBoundsX + GridMapManager->TileBoundsY) / 400.0f) * (
@@ -105,9 +108,14 @@ void UGridGameAbility_Move::AccelerateAndMovePawnAlongSpline(float DeltaTime)
 				if (GridMapManager->GetPathIndexArray().IsValidIndex(PathIndex) && GridMapManager->GetPathIndexArray()[
 					PathIndex] != ChessPieceExtComponent->GetTileIndex())
 				{
+					GridMapManager->GridMapNodeArray[ChessPieceExtComponent->GetTileIndex()]->OnChessPieceLeave(ChessPiece);
+					
 					ChessPieceExtComponent->SetTileIndex(GridMapManager->GetPathIndexArray()[PathIndex]);
 					const UGameplayEffect* MoveCost = MoveCostEffect->GetDefaultObject<UGameplayEffect>();
-					AbilitySystemComponent->ApplyGameplayEffectToSelf(MoveCost, 1, AbilitySystemComponent->MakeEffectContext());
+					AbilitySystemComponent->ApplyGameplayEffectToSelf(MoveCost, 1,
+					                                                  AbilitySystemComponent->MakeEffectContext());
+
+					GridMapManager->GridMapNodeArray[ChessPieceExtComponent->GetTileIndex()]->OnChessPieceEnter(ChessPiece);
 				}
 			}
 		}
@@ -120,20 +128,22 @@ void UGridGameAbility_Move::EndMovement()
 
 	if (!GridMapManager.IsValid()) return;
 
-	if (UGridChessPieceExtensionComponent* ChessPieceExtComponent =
-		UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(ChessPiece))
+	UGridChessPieceExtensionComponent* ChessPieceExtComponent =
+		UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(ChessPiece);
+
+	if (ChessPieceExtComponent == nullptr) return;
+
+	if (!GridMapManager->GetPathIndexArray().IsEmpty())
 	{
 		ChessPieceExtComponent->SetTileIndex(GridMapManager->GetPathIndexArray()[0]);
 		const FVector TargetLocation = GridMapManager->
 			IndexToVectorOnGrid(ChessPieceExtComponent->GetTileIndex(), 0.0f);
 
 		ChessPiece->SetActorLocation(TargetLocation);
-
-		GridMapManager->PawnArray[ChessPieceExtComponent->GetTileIndex()] = ChessPiece;
-
-		bEndMovement = true;
-		MovementComponent->SetCurrentSpeed(0.0f);
 	}
 
+	GridMapManager->PawnArray[ChessPieceExtComponent->GetTileIndex()] = ChessPiece;
+	bEndMovement = true;
+	MovementComponent->SetCurrentSpeed(0.0f);
 	MovementComponent->Internal_EndMovement();
 }

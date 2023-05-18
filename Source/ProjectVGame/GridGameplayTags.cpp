@@ -45,7 +45,14 @@ void FGridGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 {
 	AddTag(Ability_ActivateFail_IsDead, "Ability.ActivateFail.IsDead", "由于目标死亡，技能使用失败");
 	AddTag(Ability_ActivateFail_Cost, "Ability.ActivateFail.Cost", "由于消耗不足，技能使用失败");
+	AddTag(Ability_ActivateFail_Cooldown, "Ability.ActivateFail.Cooldown", "正在冷却，技能使用失败");
+	AddTag(Ability_ActivateFail_TagsMissing, "Ability.ActivateFail.TagsMissing", "缺少所需 Tag, 技能使用失败");
+	AddTag(Ability_ActivateFail_Networking, "Ability.ActivateFail.Networking", "没有通过网络检测，技能使用失败");
 	AddTag(Ability_ActivateFail_TagsBlocked, "Ability.ActivateFail.TagsBlocked", "由于 Tag 被阻塞，技能使用失败");
+	AddTag(Ability_ActivateFail_NotOwner, "Ability.ActivateFail.NotOwner", "不是技能的持有者，技能使用失敗");
+
+	AddTag(Ability_TargetType_MapNode, "Ability.TargetType.MapNode", "目标类型为地图节点");
+	AddTag(Ability_TargetType_ChessPiece, "Ability.TargetType.ChessPiece", "目标类型为棋子");
 
 	AddTag(Ability_Behavior_SurvivesDeath, "Ability.Behavior.SurvivesDeath", "该技能不随单位死亡而中止");
 	AddTag(Ability_Behavior_Move, "Ability.Behavior.Move", "移动");
@@ -71,13 +78,22 @@ void FGridGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(GameplayEvent_BreakDefense, "GameplayEvent.BreakDefense", "单位被破防时触发事件");
 	AddTag(GameplayEvent_Death, "GameplayEvent.Death", "单位死亡时触发事件");
 	AddTag(GameplayEvent_Reset, "GameplayEvent.Reset", "单位重置时触发事件");
-	AddTag(GameplayEvent_AbilityCardInput, "GameplayEvent.AbilityCardInput.", "卡牌输入事件");
+	AddTag(GameplayEvent_AbilityCardInput, "GameplayEvent.AbilityCardInput", "卡牌输入事件");
 	AddTag(GameplayEvent_PopAttackInput, "GameplayEvent.PopAttackInput", "抛出攻击输入事件");
 	AddTag(GameplayTag_Save, "GameplayEvent.Save", "保存游戏");
+	AddTag(GameplayEvent_OnChessLeaveTile, "GameplayEvent.OnChessLeaveTile", "棋子离开格子时触发事件");
+	AddTag(GameplayEvent_OnChessEnterTile, "GameplayEvent.OnChessEnterTile", "棋子进入格子时触发事件");
 
 	AddTag(Status_Death, "Status.Death", "目标处于死亡状态");
 	AddTag(Status_Death_Dying, "Status.Death.Dying", "目标开始死亡流程");
 	AddTag(Status_Death_Dead, "Status.Death.Dead", "目标结束死亡流程");
+
+	AddTag(Element_Water, "Element.Water", "水元素");
+	AddTag(Element_Fire, "Element.Fire", "火元素");
+	AddTag(Element_Ice, "Element.Ice", "冰元素");
+	AddTag(Element_Oil, "Element.Oil", "油元素");
+	AddTag(Element_Thunder, "Element.Thunder", "雷元素");
+	AddTag(Element_Toxic, "Element.Toxic", "毒元素");
 }
 
 void FGridGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment)

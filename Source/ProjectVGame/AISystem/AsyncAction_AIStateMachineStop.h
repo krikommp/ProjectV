@@ -9,7 +9,7 @@
 
 class AGridChessPiece;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAsyncChessPieceAIStateMachineStopped)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAsyncChessPieceAIStateMachineStopped);
 
 /**
  * UAsyncAction_AIStateMachineStop

@@ -12,6 +12,7 @@ UGridCombatSet::UGridCombatSet()
 
 void UGridCombatSet::OnRep_BaseDamage(const FGameplayAttributeData& OldValue)
 {
+	UE_LOG(LogTemp, Error, TEXT("Change"));
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGridCombatSet, BaseDamage, OldValue);
 }
 

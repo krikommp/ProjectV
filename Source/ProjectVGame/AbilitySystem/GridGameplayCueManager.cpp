@@ -17,4 +17,5 @@ UGridGameplayCueManager* UGridGameplayCueManager::Get()
 
 void UGridGameplayCueManager::LoadAlwaysLoadedCues()
 {
+	
 }

@@ -27,8 +27,10 @@ UGridPlayerHandStateComponent::UGridPlayerHandStateComponent(const FObjectInitia
 {
 }
 
-bool UGridPlayerHandStateComponent::CheckAllCardInHandMotionEnded() const
+bool UGridPlayerHandStateComponent::CheckAllCardInHandMotionEnded()
 {
+	if (!bStartToCheckMotion) return true;
+	
 	check(PlayerHand);
 
 	for (const auto& Card : PlayerHand->Cards)
@@ -38,6 +40,9 @@ bool UGridPlayerHandStateComponent::CheckAllCardInHandMotionEnded() const
 			return false;
 		}
 	}
+
+	PlayerHand->OnPlayerHandMotionEnded.Broadcast();
+	bStartToCheckMotion = false;
 
 	return true;
 }

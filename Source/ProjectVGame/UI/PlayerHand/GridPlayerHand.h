@@ -6,12 +6,15 @@
 #include "CardPileInterface.h"
 #include "UI/GridActivatableWidget.h"
 #include "UI/GridHUDLayout.h"
+#include "UI/Card/GridCard.h"
 #include "GridPlayerHand.generated.h"
 
 class UGridCardDrawPile;
 class UGridCardGraveyard;
 class UGridCardInfo;
 class UCanvasPanel;
+class UGridCardSelectPlane;
+class UGridCardPlayPlane;
 
 DECLARE_MULTICAST_DELEGATE(FOnEnterCardSelectPlane);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnterCardSelectPlaneDynamic);
@@ -33,6 +36,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnCardSelected, UGridCard* SelectedCard);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCardSelectedDynamic, UGridCard*, SelectedCard);
 DECLARE_MULTICAST_DELEGATE(FOnCardUnSelected);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardUnSelectedDynamic);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerHandMotionEnded);
 
 /**
  * UGridPlayerHand
@@ -75,6 +79,12 @@ public:
 
 	// ~PlayerHand Card Operator Functions
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
+	FWidgetTransform HoverCard(UGridCard* InCard);
+
+	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
+	void UnHoverCard(UGridCard* InCard);
+	
+	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
 	void PlaySelectCard();
 
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
@@ -98,6 +108,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Grid|PlayerHand")
 	void GateAllCardsInputState();
 
+	UFUNCTION(BlueprintCallable)
+	void ChangeAllCardsInHandState(ECardState NewCardState);
+
 	// 获取卡牌中心锚点位置
 	UFUNCTION(BlueprintPure, Category="Grid|PlayerHand")
 	FVector2D GetCardAnchorLocation() const;
@@ -119,6 +132,8 @@ private:
 	void NotifyCardDiscard(UGridCard* InCard) const;
 	void NotifyCardSelect(UGridCard* InSelectedCard) const;
 	void NotifyPlayCardPlaneMouseButtonDown(const FPointerEvent& InMouseEvent) const;
+
+	TArray<FWidgetTransform> CalculateCardTransform(const TArray<UGridCard*>& InCards);
 public:
 	// 抽牌堆
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
@@ -185,6 +200,9 @@ public:
 	// 卡牌点击事件
 	UPROPERTY(BlueprintAssignable, Category="Grid|PlayerHand", meta=(DisplayName="OnCardPlayPlaneMouseButtonDown"))
 	FOnCardPlayPlaneMouseButtonDownDynamic OnCardPlayPlaneMouseButtonDownDynamic;
+
+	UPROPERTY(BlueprintAssignable, Category="Grid|PlayerHand")
+	FOnPlayerHandMotionEnded OnPlayerHandMotionEnded;
 protected:
 	// 当前持有手牌对象
 	UPROPERTY(BlueprintReadWrite, Category="Grid|PlayerHand")

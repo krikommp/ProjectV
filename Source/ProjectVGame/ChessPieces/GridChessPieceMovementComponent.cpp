@@ -18,6 +18,7 @@
 #include "GridGlobalDelegates.h"
 #include "AbilitySystem/Abilities/GridGameAbility_Move.h"
 #include "Character/GridTurnBaseMasterComponent.h"
+#include "GridMapManager/GridMapFunctionLibrary.h"
 #include "GridMapManager/GridMapManager.h"
 #include "GridMapManager/GridMapStateComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -72,7 +73,7 @@ void UGridChessPieceMovementComponent::StartToPathFinding(bool bDisplayTiles)
 		UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(Pawn))
 	{
 		const auto VisibleTileIndexArray = GridMapManager->FindTilesInRange(ChessPieceExtComp->GetTileIndex(),
-		                                                                    GetVisibleRange(), true, false, true,
+		                                                                    GetVisibleRange(), false, true,
 		                                                                    (GridMapManager->TileBoundsX +
 			                                                                    GridMapManager->
 			                                                                    TileBoundsY) * 0.5f * 0.5f,
@@ -85,8 +86,14 @@ void UGridChessPieceMovementComponent::StartToPathFinding(bool bDisplayTiles)
 			false);
 		if (bDisplayTiles)
 		{
-			GridMapManager->DisplayRangeMarkers(VisibleTileIndexArray, GridMapManager->TileInSightRangeDecal);
-			GridMapManager->DisplayRangeMarkers(MoveTileIndexArray, GridMapManager->TileInMoveRangeDecal, true);
+			//GridMapManager->DisplayRangeMarkers(VisibleTileIndexArray, GridMapManager->TileInSightRangeDecal);
+			// GridMapManager->DisplayRangeMarkers(MoveTileIndexArray, GridMapManager->TileInMoveRangeDecal, true);
+			//UGridMapFunctionLibrary::SpawnEdgeMeshes(GridMapManager, GridMapManager->CanMoveToArray, Grid)
+			UGridMapFunctionLibrary::DisplayMoveRangeEdgeMarkers(GridMapManager.Get(),
+			                                                     ChessPieceExtComp->GetTileIndex(),
+			                                                     GridMapManager->CanMoveToArray,
+			                                                     GridMapManager->IndexCanMoveToArray);
+			//UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(GridMapManager.Get(), GridMapManager->TilesInSightArray, GridMapManager->RangeArray);
 		}
 	}
 }
@@ -156,9 +163,75 @@ void UGridChessPieceMovementComponent::BeginMovement(int32 InTileIndex, int32 In
 
 	GridMapManager->FindPathWithinPathfindingArray(InTileIndex, true, false, false, InStopXFromTarget);
 
-	const FGridGameplayTags GameplayTags = FGridGameplayTags::Get();
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, GameplayTags.Ability_Behavior_Move, FGameplayEventData());
+	ActivateMovement(InTileIndex, InStopXFromTarget);
 }
+
+void UGridChessPieceMovementComponent::ActivateMovement(int32 InTileIndex, int32 InStopXFromTarget)
+{
+	check(GridMapManager.IsValid());
+
+	AGridChessPiece* Owner = GetPawnChecked<AGridChessPiece>();
+
+	const FGridGameplayTags GameplayTags = FGridGameplayTags::Get();
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, GameplayTags.Ability_Behavior_Move,
+	                                                         FGameplayEventData());
+}
+
+bool UGridChessPieceMovementComponent::CheckNeedMove(int32 InTileIndex, int32 InStopXFromTarget, bool bDisplayPath,
+                                                     int32& OutEndTileIndex,
+                                                     TArray<FStructPathFinding>& OutCanMoveToArray)
+{
+	check(GridMapManager.IsValid());
+
+	AGridChessPiece* Owner = GetPawnChecked<AGridChessPiece>();
+
+	const UGridChessPieceExtensionComponent* ChessPieceExtComp =
+		UGridChessPieceExtensionComponent::FindGridChessPieceExtensionComponent(Owner);
+
+	check(ChessPieceExtComp);
+
+	const int32 Distance = GridMapManager->FindDistanceInTilesBetweenIndexes(
+		ChessPieceExtComp->GetTileIndex(), InTileIndex);
+
+	if (Distance > GetMoveRange())
+	{
+		//GridMapManager->PathFinding(ChessPieceExtComp->GetTileIndex(), Distance, Distance, true, false, false);
+		TArray<FStructPathFinding> NewIndexCanMoveToArray;
+		TArray<int32> NewReachablePawnsArray;
+		int32 NewCurrentSearchStep = 0;
+		TArray<int32> NewTileIndexes;
+		OutCanMoveToArray.Empty();
+		for (int32 Index = 0; Index < GridMapManager->GridSizeX * GridMapManager->GridSizeY * GridMapManager->
+		     GridSizeZ; ++Index)
+		{
+			OutCanMoveToArray.Add({0, 0, 0});
+		}
+		GridMapManager->PathFinding_Internal(ChessPieceExtComp->GetTileIndex(), Distance, Distance, true, false,
+		                                     false, NewCurrentSearchStep, OutCanMoveToArray, NewIndexCanMoveToArray,
+		                                     NewTileIndexes, NewReachablePawnsArray);
+	}
+	else
+	{
+		OutCanMoveToArray = GridMapManager->CanMoveToArray;
+	}
+
+	const TArray<int32>& LocalPathIndexArray = GridMapManager->FindPathToIndex(
+		OutCanMoveToArray, InTileIndex, InStopXFromTarget);
+	if (LocalPathIndexArray.IsEmpty() || LocalPathIndexArray.Num() == 1)
+		return false;
+
+	GridMapManager->CreateSplinePath(LocalPathIndexArray);
+
+	if (bDisplayPath)
+	{
+		GridMapManager->DisplayPathAsSpline();
+	}
+
+	OutEndTileIndex = LocalPathIndexArray[0];
+
+	return true;
+}
+
 
 bool UGridChessPieceMovementComponent::CheckMove(TSubclassOf<UGridGameAbility_Move> InMoveAbility) const
 {
@@ -168,7 +241,8 @@ bool UGridChessPieceMovementComponent::CheckMove(TSubclassOf<UGridGameAbility_Mo
 	{
 		if (AbilitySpec->Ability)
 		{
-			return AbilitySpec->Ability->CanActivateAbility(AbilitySpec->Handle, AbilitySystemComponent->AbilityActorInfo.Get());
+			return AbilitySpec->Ability->CanActivateAbility(AbilitySpec->Handle,
+			                                                AbilitySystemComponent->AbilityActorInfo.Get());
 		}
 	}
 

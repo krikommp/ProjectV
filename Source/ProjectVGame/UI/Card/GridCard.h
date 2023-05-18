@@ -11,6 +11,8 @@ class UGridCardInfo;
 class UGridBaseCardState;
 class USizeBox;
 class USMInstance;
+class UGridCardStyle;
+class AGridChessPiece;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardPointerEnter);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardPointerLeave);
@@ -46,6 +48,9 @@ enum class ECardState : uint8
 
 	// 使用状态
 	Use,
+
+	// 取消Hover
+	UnHover,
 	
 	Unknown UMETA(Hidden),
 };
@@ -78,7 +83,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="Grid|Card", meta=(DisplayName="SetupCardInfo"))
 	void ReceiveSetupCardInfo(UGridCardInfo* NewCardInfo);
 	void SetupCardInfo(UGridCardInfo* InCardInfo);
-	
 	
 	// 将卡牌移动到一个合适的位置
 	UFUNCTION(BlueprintCallable, Category="Grid|CardMotion")
@@ -114,6 +118,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Grid|State")
 	void StopStateMachine();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="CardStyle")
+	void SetupCardStyle(UGridCardStyle* InCardStyle);
+
+	UFUNCTION(BlueprintCallable, Category="CardStyle")
+	void CheckCardStyle();
 protected:
 	// 卡牌状态机类
 	UPROPERTY(EditAnywhere, Category="Grid|State")
@@ -124,6 +134,9 @@ protected:
 	USMInstance* CardStateMachineInstance;
 
 	void CreateCardStateMachineInstance();
+
+	void HandleChessPieceActionOver();
+	void HandleChessPieceChanged(AGridChessPiece* InOld, AGridChessPiece* InNew);
 public:
 	// 当前持有该卡牌的 Hand
 	// 可能为空
@@ -163,4 +176,16 @@ public:
 	// 卡牌状态
 	UPROPERTY(BlueprintReadWrite, Category="Card|State")
 	ECardState CardState = ECardState::Init;
+
+	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = "CardStyle")
+	TObjectPtr<UGridCardStyle> NormalCardStyle;
+
+	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = "CardStyle")
+	TObjectPtr<UGridCardStyle> CostCardStyle;
+
+	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = "CardStyle")
+	TObjectPtr<UGridCardStyle> BlockCardStyle;
+
+	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = "CardStyle")
+	TObjectPtr<UGridCardStyle> DisableCardStyle;
 };

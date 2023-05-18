@@ -18,11 +18,12 @@ class AGridMapManager;
  * 适用于棋子的 gameplay ability 
  */
 UCLASS(Abstract, HideCategories = Input, Meta = (ShortTooltip = "The base gameplay ability class used by chess piece."))
-class PROJECTVGAME_API UGridGameplayAbility_ChessPiece : public UGameplayAbility
+class PROJECTVGAME_API UGridGameplayAbility_ChessPiece : public UGridGameplayAbility
 {
 	GENERATED_BODY()
 
 	friend class UGridAbilitySystemComponent;
+	friend class UGridCardInfo;
 public:
 
 	UGridGameplayAbility_ChessPiece(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

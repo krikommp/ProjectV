@@ -27,4 +27,6 @@ public:
 	virtual FVector GetVectorArray(int32 Index) = 0;
 
 	virtual int32 MeshToInstance(const AActor* Actor) = 0;
+
+	virtual int32 GetTileIndex() const = 0;
 };

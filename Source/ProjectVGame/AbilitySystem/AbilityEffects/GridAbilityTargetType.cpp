@@ -1,5 +1,5 @@
 ﻿#include "GridAbilityTargetType.h"
-
+#include "GridMapManager/GridMapNode.h"
 #include "ChessPieces/GridChessPiece.h"
 #include "GridMapManager/GridMapManager.h"
 #include "GridMapManager/GridMapStateComponent.h"
@@ -26,6 +26,10 @@ void UGridAbilityTargetType_SingleOnGridMap::GetTargets_Implementation(AActor* T
 	{
 		if (const AGridMapManager* GridMapManager = GridMapStateComponent->GetGridMapManager())
 		{
+			if (GridMapManager->GridMapNodeArray.IsValidIndex(TargetTileIndex) && GridMapManager->GridMapNodeArray[TargetTileIndex] != nullptr) 
+			{
+				OutActors.Add(GridMapManager->GridMapNodeArray[TargetTileIndex]);
+			}
 			if (GridMapManager->PawnArray.IsValidIndex(TargetTileIndex) && GridMapManager->PawnArray[TargetTileIndex] != nullptr)
 			{
 				OutActors.Add(GridMapManager->PawnArray[TargetTileIndex]);

@@ -154,6 +154,11 @@ const FGridHeroData& UGridAssetManager::GetHeroData(int32 HeroID) const
 	return HeroDataMap.FindChecked(HeroID);
 }
 
+bool UGridAssetManager::CheckCardData(const FString& CardId) const
+{
+	return CardDataMap.Contains(CardId);
+}
+
 const FGridCardData& UGridAssetManager::GetCardData(const FString& CardId) const
 {
 	return CardDataMap.FindChecked(CardId);

@@ -10,6 +10,8 @@
 
 #include "GridMapManager.generated.h"
 
+class AGridMapNode;
+class APostProcessVolume;
 class UStaticMesh;
 class UStaticMeshComponent;
 class UInstancedStaticMeshComponent;
@@ -34,6 +36,8 @@ class PROJECTVGAME_API AGridMapManager : public AModularPawn, public IGameFramew
 	GENERATED_BODY()
 
 	friend class UGridMapFunctionLibrary;
+	friend class UGridMapStateComponent;
+	friend class UGridMapWarFogComponent;
 
 public:
 	AGridMapManager(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -51,28 +55,35 @@ public:
 	FORCEINLINE const TArray<FStructRange>& GetTileInRangeArray() const { return TilesInRangeArray; }
 	FORCEINLINE const TArray<int32>& GetDiscoverableTileIndex() const { return DiscoverableTileIndexArray; }
 	FORCEINLINE const TArray<FStructPathFinding>& GetIndexCanMove() const { return IndexCanMoveToArray; }
-	
-public:
+
+	/**
+	 * @brief 是否支持斜角移动，即八方向移动
+	 * @return ture: 支持八方向移动；false: 支持四方向移动
+	 */
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool IsDiagonalMovement() const { return bDiagonalMovement; }
+
 	// 根据输入的当前位置和移动范围大小，计算出可移动到的Tiles
 	// 通过指定 DisplayTiles 来决定是否显示出可移动范围
 	UFUNCTION(BlueprintCallable, Category="Grid|Path Finding")
-	TArray<int32> PathFinding(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange, bool bDisplayTiles,
+	TArray<int32> PathFinding(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange, bool bExcludeFriendly,
 	                          bool bContinueFromLastPathfinding, bool bShowStartIndex = false);
 
 	// 查找所有可视范围网格
 	UFUNCTION(BlueprintCallable, Category="Grid|Path Finding")
 	const TArray<int32>& FindTilesInRange(int32 StartIndex, int32 InRange, bool bCheckVisibility, bool bFindOnlyPawns,
-	                                      bool bDisplayTiles, float MaxZDifference, int32 MinimumRange,
+	                                      float MaxZDifference, int32 MinimumRange,
 	                                      bool bExcludeFriendly);
 
 	// 根据发起对象，在可视范围内查找是否有满足距离条件的棋子对象
 	UFUNCTION(BlueprintCallable, Category="Grid|Path Finding")
-	TArray<int32> FindChessPieceInRange(const TArray<FStructRange>& InTileInRangeArray,
-	                                    AGridChessPiece* InstigatorChessPiece, int32 Distance);
+	void FindChessPieceInRange(const TArray<FStructRange>& InTileInRangeArray,
+	                           AGridChessPiece* InstigatorChessPiece, int32 Distance,
+	                           TArray<int32>& OutTilesInsightArray, TArray<int32>& OutRangeArrat);
 
 	// 根据输入位置索引，创建一条可到达的Path,并决定是否渲染出路径
 	UFUNCTION(BlueprintCallable, Category="Grod|Path Finding")
-	void FindPathWithinPathfindingArray(int32 IndexPathEnd, bool bCreatePathSpline, bool bDisplayPath,
+	bool FindPathWithinPathfindingArray(int32 IndexPathEnd, bool bCreatePathSpline, bool bDisplayPath,
 	                                    bool bDisplayPathAsSpline, int32 StopFromTarget = 0);
 
 	// 计算两个索引之间的距离
@@ -118,12 +129,22 @@ public:
 	UFUNCTION(BlueprintPure, Category="Grid|Path Finding", meta=(DisplayName="GetDiscoverableTileIndex"))
 	FORCEINLINE TArray<int32> K2_GetDiscoverableTileIndex() const { return DiscoverableTileIndexArray; }
 
+	UFUNCTION(BlueprintPure, Category="Grid|Path Finding", meta=(DisplayName="GetReachablePawnsArray"))
+	FORCEINLINE TArray<int32> K2_GetReachablePawnsArray() const { return ReachablePawnsArray; }
+
 	UFUNCTION(BlueprintPure, Category="Grid|Path Finding", meta=(DisplayName="GetIndexCanMove"))
 	TArray<int32> K2_GetIndexCanMove() const;
 
-private:
 	// 检查 OpenList 中所有的 Tile, 如果可以移动到，那么就加入到合适的数组中，等待下一次移动
-	void SearchAndAddAdjacentTiles();
+	void SearchAndAddAdjacentTiles(TArray<FStructPathFinding>& InDelayedSpiltPathfindingList,
+	                               TArray<FStructPathFinding>& InOpenList,
+	                               TArray<FStructPathFinding>& InOpenListChildren,
+	                               TArray<FStructPathFinding>& InDelaySearchList,
+	                               TArray<FStructPathFinding>& OutCanMoveToArray,
+	                               TArray<int32>& OutReachablePawnsArray,
+	                               int32 InMaxMove,
+	                               int32 InCurrentSearchStep,
+	                               bool bShowStartIndex, int32 StartIndex, bool bExcludeFriendly);
 
 	// 根据输入位置索引，创建一条可到达的Path
 	const TArray<int32>& FindPathToIndex(const TArray<FStructPathFinding>& InCanMoveToArray, int32 InEndIndex,
@@ -136,6 +157,13 @@ private:
 	void CheckIfTileIsVisibleFromOtherTile(int32 Index, int32 TargetIndex, bool bFindOnlyPawns, float MaxZDifference,
 	                                       int32 Distance, int32 MinimumRange, bool bCheckVisibility,
 	                                       bool bExcludeFriendly);
+
+	void PathFinding_Internal(int32 InStartIndex, int32 InMoveRange, int32 InMaxMoveRange, bool bExcludeFriendly,
+	                          bool bContinueFromLastPathfinding, bool bShowStartIndex,
+	                          OUT int32& OutCurrentSearchStep,
+	                          OUT TArray<FStructPathFinding>& OutCanMoveToArray,
+	                          OUT TArray<FStructPathFinding>& OutIndexCanMoveToArray,
+	                          OUT TArray<int32>& OutTileIndexes, OUT TArray<int32>& OutReachablePawnsArray);
 
 private:
 	void DisplayTileIndexesInternal();
@@ -150,7 +178,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Grid|Visible")
 	void InitializeDecalAndPathComponent();
 
-private:
 	// 计算格子贴画的大小
 	void ScaleDecalRelativeToDefaultTile(UDecalComponent* DecalComponent) const;
 
@@ -164,7 +191,6 @@ private:
 	// 清理Path
 	void DestroyAndClearSplinePath();
 
-public:
 	UPROPERTY(BlueprintReadWrite, Category="Unit")
 	TArray<AGridChessPiece*> PawnArray;
 
@@ -229,8 +255,16 @@ public:
 	TObjectPtr<UMaterialInterface> TileInMoveRangeDecal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|Resources",
+		meta=(AllowPrivateAccess="true", ToolTip="移动边缘贴花材质"))
+	TObjectPtr<UMaterialInterface> TileInMoveRangeEdgeDecal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|Resources",
 		meta=(AllowPrivateAccess="true", ToolTip="可视范围贴花材质"))
 	TObjectPtr<UMaterialInterface> TileInSightRangeDecal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|Resources",
+		meta=(AllowPrivateAccess="true", ToolTip="可视边缘贴花材质"))
+	TObjectPtr<UMaterialInterface> TileInSightRangeEdgeDecal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Grid|Resources",
 		meta=(AllowPrivateAccess="true", ToolTip="攻击范围贴花材质"))
@@ -252,7 +286,6 @@ public:
 		meta=(AllowPrivateAccess="true", ToolTip="寻路Spline材质"))
 	TObjectPtr<UMaterialInterface> PathMaterial;
 
-public:
 	/**
 	 * @brief 地图大小
 	 */
@@ -404,10 +437,34 @@ public:
 	TArray<FVector> VectorFieldArray;
 
 	/**
+	 * @brief 每个 Tile 对象
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Grid Size Array")
+	TArray<TObjectPtr<AGridMapNode>> GridMapNodeArray;
+
+	/**
 	 * @brief 地图数组，记录当前寻路可以到达的tile
 	 */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Grid Size Array")
 	TArray<FStructPathFinding> CanMoveToArray;
+
+	/**
+	 * @brief 只包含寻路路径的Tile队列，CanMoveToArray包含了整个地图，在只希望获取到路径的地方使用该变量
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Hide Property")
+	TArray<FStructPathFinding> IndexCanMoveToArray;
+
+	/**
+	 * @brief  记录该单位到可见位置范围数组
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Hide Property")
+	TArray<int32> RangeArray;
+
+	/**
+	 * @brief 记录该单位所有可见位置的数组
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Hide Property")
+	TArray<int32> TilesInSightArray;
 
 	/**
 	 * @brief 地图数组，记录当前寻路可以到达的tile
@@ -424,7 +481,12 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Grid sized arrays")
 	TArray<TObjectPtr<AGridTileParent>> TileParents;
 
-public:
+	/**
+	 * @brief 记录可见范围的贴图
+	 */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Grid|Visible")
+	TObjectPtr<UTexture2D> VisibleRangeTexture;
+
 	// Hover Comp
 	UPROPERTY(BlueprintReadWrite, Category="Grid|Components")
 	TObjectPtr<UDecalComponent> HoverMarkerDecal;
@@ -445,27 +507,6 @@ public:
 	TObjectPtr<USplineComponent> DisplaySpline;
 
 protected:
-	// 当前寻路开始索引
-	int32 CurrentIndex;
-
-	// 最大移动范围
-	int32 MaxMove;
-
-	// 保存当前寻路中移动消耗过高的tile,如果继续上一次寻路，那么这些tile将会被寻路到
-	TArray<FStructPathFinding> DelayedSpiltPathfindingList;
-
-	// 本次寻路中等待搜索的Tile队列
-	TArray<FStructPathFinding> OpenList;
-
-	// 下次待搜索的Tile队列
-	TArray<FStructPathFinding> OpenListChildren;
-
-	// 消耗过大的Tile,可能会在下次寻路时加入搜索
-	TArray<FStructPathFinding> DelaySearchList;
-
-	// 只包含寻路路径的Tile队列，CanMoveToArray包含了整个地图，在只希望获取到路径的地方使用该变量
-	TArray<FStructPathFinding> IndexCanMoveToArray;
-
 	// 当前可以到达的所有Unit位置索引
 	TArray<int32> ReachablePawnsArray;
 
@@ -477,12 +518,6 @@ protected:
 
 	// 所有需要被检查可见性的数组
 	TArray<FStructRange> TilesInRangeArray;
-
-	// 记录该单位到可见位置范围数组
-	TArray<int32> RangeArray;
-
-	// 记录该单位所有可见位置的数组
-	TArray<int32> TilesInSightArray;
 
 	// 记录被发现的位置索引
 	TArray<int32> DiscoverableTileIndexArray;
@@ -509,4 +544,7 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UInstancedStaticMeshComponent> DisplayEdgeInstancedMeshComponent;
+
+	UPROPERTY(Config)
+	bool bDiagonalMovement = true;
 };

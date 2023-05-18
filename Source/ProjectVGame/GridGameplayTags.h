@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Object.h"
+#include "GameplayTagsManager.h"
 
 struct FGridGameplayTags
 {
@@ -16,7 +17,14 @@ public:
 public:
 	FGameplayTag Ability_ActivateFail_IsDead;
 	FGameplayTag Ability_ActivateFail_Cost;
+	FGameplayTag Ability_ActivateFail_Cooldown;
 	FGameplayTag Ability_ActivateFail_TagsBlocked;
+	FGameplayTag Ability_ActivateFail_TagsMissing;
+	FGameplayTag Ability_ActivateFail_Networking;
+	FGameplayTag Ability_ActivateFail_NotOwner;
+
+	FGameplayTag Ability_TargetType_MapNode;
+	FGameplayTag Ability_TargetType_ChessPiece;
 
 	FGameplayTag Ability_Behavior_SurvivesDeath;
 	FGameplayTag Ability_Behavior_Move;
@@ -40,6 +48,8 @@ public:
 	FGameplayTag GameplayTag_Save;
 	FGameplayTag GameplayEvent_PopAttackInput;
 	FGameplayTag GameplayEvent_AbilityCardInput;
+	FGameplayTag GameplayEvent_OnChessEnterTile;
+	FGameplayTag GameplayEvent_OnChessLeaveTile;
 
 	FGameplayTag Status_Death;
 	FGameplayTag Status_Death_Dying;
@@ -58,6 +68,19 @@ public:
 
 	// Actor/Component 准备完毕
 	FGameplayTag InitState_GameplayReady;
+
+	// 水元素
+	FGameplayTag Element_Water;
+	// 冰元素
+	FGameplayTag Element_Ice;
+	// 火元素
+	FGameplayTag Element_Fire;
+	// 雷元素
+	FGameplayTag Element_Thunder;
+	// 油元素
+	FGameplayTag Element_Oil;
+	// 毒元素
+	FGameplayTag Element_Toxic;
 	
 	TMap<uint8, FGameplayTag> MovementModeTagMap;
 	TMap<uint8, FGameplayTag> CustomMovementModeTagMap;

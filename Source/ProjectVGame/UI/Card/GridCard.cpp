@@ -3,11 +3,15 @@
 
 #include "GridCard.h"
 
+#include "GridGameplayTags.h"
+#include "GridGlobalDelegates.h"
 #include "GridLogChannel.h"
 #include "SMInstance.h"
+#include "AbilitySystem/GridAbilitySystemComponent.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/SizeBox.h"
+#include "Heros/GridCardInfo.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -55,6 +59,8 @@ FReply UGridCard::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPo
 void UGridCard::RecycleCard()
 {
 	StopStateMachine();
+	FGridGlobalDelegates::OnChessPieceActionOver.RemoveAll(this);
+	FGridGlobalDelegates::OnChessPieceSelectChanged.RemoveAll(this);
 	PlayerHand = nullptr;
 	CardInfo = nullptr;
 }
@@ -72,6 +78,9 @@ void UGridCard::SetupCardInfo(UGridCardInfo* InCardInfo)
 	{
 		UE_LOG(LogGrid, Error, TEXT("[UGridCard::SetupCardInfo]: Cannot initialize Card Info for [%s] with NULL CardInfo"), *GetNameSafe(this));
 	}
+
+	FGridGlobalDelegates::OnChessPieceActionOver.AddUObject(this, &ThisClass::HandleChessPieceActionOver);
+	FGridGlobalDelegates::OnChessPieceSelectChanged.AddUObject(this, &ThisClass::HandleChessPieceChanged);
 	ReceiveSetupCardInfo(CardInfo);
 }
 
@@ -130,6 +139,16 @@ FVector2D UGridCard::GetMousePosition()
 	return UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
 }
 
+void UGridCard::HandleChessPieceActionOver()
+{
+	CheckCardStyle();
+}
+
+void UGridCard::HandleChessPieceChanged(AGridChessPiece* InOld, AGridChessPiece* InNew)
+{
+	CheckCardStyle();
+}
+
 void UGridCard::SetCardSize(const FVector2D& NewCardSize) const
 {
 	CardSizeBox->SetWidthOverride(NewCardSize.X);
@@ -139,6 +158,36 @@ void UGridCard::SetCardSize(const FVector2D& NewCardSize) const
 void UGridCard::StopStateMachine()
 {
 	DoShutDown();
+}
+
+void UGridCard::CheckCardStyle()
+{
+	if (CardInfo && CardInfo->AbilitySystemComponent)
+	{
+		FGameplayTagContainer FailedTags;
+		CardInfo->CheckAbilityCanActivate(FailedTags);
+
+		if (!FailedTags.IsEmpty())
+		{
+			const FGridGameplayTags GameplayTags = FGridGameplayTags::Get();
+			if (FailedTags.HasTag(GameplayTags.Ability_ActivateFail_Cost))
+			{
+				SetupCardStyle(CostCardStyle);
+			}else if (FailedTags.HasTag(GameplayTags.Ability_ActivateFail_Cooldown))
+			{
+				SetupCardStyle(CostCardStyle);
+			}else if (FailedTags.HasTag(GameplayTags.Ability_ActivateFail_TagsBlocked))
+			{
+				SetupCardStyle(BlockCardStyle);
+			}else if (FailedTags.HasTag(GameplayTags.Ability_ActivateFail_NotOwner))
+			{
+				SetupCardStyle(DisableCardStyle);
+			}
+		}else
+		{
+			SetupCardStyle(NormalCardStyle);
+		}
+	}
 }
 
 void UGridCard::GateCardInput()

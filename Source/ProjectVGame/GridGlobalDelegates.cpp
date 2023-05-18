@@ -3,3 +3,6 @@
 FOnAvtiveInputModeChanged FGridGlobalDelegates::OnActiveInputModeChanged;
 FOnChessPieceTurnOver FGridGlobalDelegates::OnChessPieceTurnOver;
 FOnChessPieceSelectChanged FGridGlobalDelegates::OnChessPieceSelectChanged;
+FOnChessPieceActionOver FGridGlobalDelegates::OnChessPieceActionOver;
+FOnGridNewCardAdded FGridGlobalDelegates::OnGridNewCardAdded;
+FSimpleMulticastDelegate FGridGlobalDelegates::OnRemoveVisibleRangeDisplay;

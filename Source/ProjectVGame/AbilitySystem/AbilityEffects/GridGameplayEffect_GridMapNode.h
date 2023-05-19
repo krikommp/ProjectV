@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffect.h"
+#include "GridGameplayEffect.h"
 #include "UObject/Object.h"
 #include "GridGameplayEffect_GridMapNode.generated.h"
 
@@ -29,14 +30,14 @@ struct PROJECTVGAME_API FConductionGameplayEffect
  * 
  */
 UCLASS()
-class PROJECTVGAME_API UGridGameplayEffect_GridMapNode : public UGameplayEffect
+class PROJECTVGAME_API UGridGameplayEffect_GridMapNode : public UGridGameplayEffect
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GridMap, meta = (DisplayName = "AttachGameplayEffects"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GridGameplayEffect, meta = (DisplayName = "AttachGameplayEffects"))
 	TArray<TSubclassOf<UGameplayEffect>> AttachGameplayEffects;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GameplayEffect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GridGameplayEffect)
 	TArray<FConductionGameplayEffect> ConductionGameplayEffects;
 };

@@ -5,9 +5,13 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemGlobals.h"
+#ifdef ENABLE_TURN_BASE_GAMEABILITY
 #include "AbilityTimerManager.h"
+#endif
 #include "GridGlobalAbilitySystem.h"
+#include "GridLogChannel.h"
 #include "Abilities/GridGameplayAbility_Card.h"
+#include "AbilityEffects/GridGameplayEffect.h"
 #include "AbilityEffects/GridGameplayEffect_GridMapNode.h"
 #include "GridMapManager/GridMapNode.h"
 #include "UIData/GridAbilityBuffUIData.h"
@@ -53,6 +57,27 @@ FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpec
 	const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey)
 {
 	const auto MyHandle = Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
+	if (const UGridGameplayEffect* GridGameplayEffect = Cast<UGridGameplayEffect>(GameplayEffect.Def))
+	{
+		// 判断目标身上是否有需要的GameplayTag, 如果有则应用GameplayEffect
+		for (const FConditionalGameplayEffect& ConditionalGameplayEffect : GridGameplayEffect->ConditionalGameplayEffectsToTarget)
+		{
+			if (GridGameplayEffect->StaticClass() == ConditionalGameplayEffect.EffectClass)
+			{
+				UE_LOG(LogGridAbilitySystem, Error, TEXT("不能在自己的ConditionalGameplayEffectsToTarget中添加自己的类"));
+				continue;
+			}
+			if (HasAllMatchingGameplayTags(ConditionalGameplayEffect.RequiredSourceTags))
+			{
+				FGameplayEffectSpecHandle ConditionalSpecHandle = ConditionalGameplayEffect.CreateSpec(GameplayEffect.GetEffectContext(), GameplayEffect.GetLevel());
+				if (ConditionalSpecHandle.IsValid())
+				{
+					ApplyGameplayEffectSpecToSelf(*ConditionalSpecHandle.Data.Get(), PredictionKey);
+				}
+			}
+		}
+	}
+	// 该GameplayEffect是否需要应用到相邻的格子上
 	if (const UGridGameplayEffect_GridMapNode* GridMapNodeGameplayEffect = Cast<UGridGameplayEffect_GridMapNode>(GameplayEffect.Def))
 	{
 		if (const AGridMapNode* GridMapNode =  Cast<AGridMapNode>(GetOwnerActor()))
@@ -77,12 +102,14 @@ FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpec
 
 void UGridAbilitySystemComponent::TickAbilityTurn(int32 Delta)
 {
+#ifdef ENABLE_TURN_BASE_GAMEABILITY
 	const auto TimerManager = UAbilitySystemGlobals::Get().GetTimerManager();
 	if (TimerManager == nullptr)
 	{
 		return;
 	}
 	TimerManager->TickTurn(this, Delta);
+#endif
 }
 
 TMap<UGridAbilityBuffUIData*, float> UGridAbilitySystemComponent::GetAllActiveBuffInfos()

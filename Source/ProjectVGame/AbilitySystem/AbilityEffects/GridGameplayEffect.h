@@ -16,8 +16,8 @@ class PROJECTVGAME_API UGridGameplayEffect : public UGameplayEffect
 	GENERATED_BODY()
 
 public:
-	/** other gameplay effects that will be applied to the target of this effect if this effect applies */
-	/** different from ConditionalGameplayEffects will judge target's gameplaytag */
+
+	// 根据目标身上的Tag来决定是否应用下面的GE
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GridGameplayEffect)
 	TArray<FConditionalGameplayEffect> ConditionalGameplayEffectsToTarget;
 };

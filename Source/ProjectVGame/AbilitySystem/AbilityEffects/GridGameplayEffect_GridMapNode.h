@@ -17,11 +17,11 @@ struct PROJECTVGAME_API FConductionGameplayEffect
 
 	FGameplayEffectSpecHandle CreateSpec(FGameplayEffectContextHandle EffectContext, float SourceLevel) const;
 
-	/** gameplay effect that will be applied to the target */
+	// 定义会被应用到目标的GE
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GameplayEffect)
 	TSubclassOf<UGameplayEffect> EffectClass;
 
-	/** Tags that the source must have for this GE to apply */
+	// 定义目标需要的Tag,如果目标身上没有这些Tag,那么GE将不会应用到目标身上
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GameplayEffect)
 	FGameplayTagContainer RequiredSourceTags;
 };
@@ -35,9 +35,12 @@ class PROJECTVGAME_API UGridGameplayEffect_GridMapNode : public UGridGameplayEff
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GridGameplayEffect, meta = (DisplayName = "AttachGameplayEffects"))
+	// 针对GridMapNode使用, 可以指定一系列GE，这些GE将会对进入该格子的棋子施加
+	// 并且每回合都会执行一次
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GridGameplayEffect)
 	TArray<TSubclassOf<UGameplayEffect>> AttachGameplayEffects;
 
+	// 针对GridMapNode使用，会将对应的GE施加到这个单位格邻近的格子上（包括他自己）
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GridGameplayEffect)
 	TArray<FConductionGameplayEffect> ConductionGameplayEffects;
 };

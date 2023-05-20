@@ -20,7 +20,7 @@ TOptional<FUIInputConfig> UGridActivatableWidget::GetDesiredInputConfig() const
 {
 	switch (InputConfig)
 	{
-#ifdef ENABLE_FEELINGSOUL
+#ifdef ENABLE_CURSOR_VISIBLE_IN_GAME
 	case EGridWidgetInputMode::GameAndMenu:
 		return FUIInputConfig(ECommonInputMode::All, GameMouseCaptureMode, false, MouseLockMode, bShowCursor);
 	case EGridWidgetInputMode::Game:

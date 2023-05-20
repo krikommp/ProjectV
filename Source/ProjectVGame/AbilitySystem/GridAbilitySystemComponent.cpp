@@ -5,7 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemGlobals.h"
-#ifdef ENABLE_TURN_BASE_GAMEABILITY
+#ifdef ENABLE_TURN_BASE_GAME_ABILITY
 #include "AbilityTimerManager.h"
 #endif
 #include "GridGlobalAbilitySystem.h"
@@ -102,7 +102,7 @@ FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpec
 
 void UGridAbilitySystemComponent::TickAbilityTurn(int32 Delta)
 {
-#ifdef ENABLE_TURN_BASE_GAMEABILITY
+#ifdef ENABLE_TURN_BASE_GAME_ABILITY
 	const auto TimerManager = UAbilitySystemGlobals::Get().GetTimerManager();
 	if (TimerManager == nullptr)
 	{

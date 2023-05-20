@@ -26,39 +26,18 @@ static FMenuItemNode* FindMenuItemNode(TArray<FMenuItemNode>& InMenuNodes, const
 
 void UMenuManager::Initialize(FSubsystemCollectionBase& Collection)
 {
-	// 遍历所有 class, 查询到所有继承自 UMenuItem 的类
-	for (TObjectIterator<UClass> It; It; ++It)
-	{
-		UClass* CurrentClass = *It;
-		for (TFieldIterator<UFunction> FuncIt(CurrentClass, EFieldIteratorFlags::ExcludeSuper); FuncIt; ++FuncIt)
-		{
-			UFunction* Function = *FuncIt;
-			if (Function->HasMetaData("MenuItem"))
-			{
-				TSharedPtr<FMenuItem> MenuItem = MakeShareable(new FMenuItem());
-				MenuItem->InitMenu(Function->GetMetaData("MenuItem"), Function->GetMetaData("ToolTip"), CurrentClass->GetDefaultObject(), Function);
-				AddMenuItemToNodeList(MenuItem);
-				MenuItem->OnMenuClick();
-			}
-		}
-	}
+	ReBuildMenuItemTree();
 
-	// 菜单栏扩展
-	// 顺序是：1. 找到需要挂载的MenuBar 2. 添加 PullDownMenu 3. 添加 SubMenu 4. 添加 MenuEntry
-	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
-	{
-		TSharedPtr<FExtender> MenuExtender = MakeShareable(new FExtender());
-		MenuExtender->AddMenuBarExtension("Help",
-		                                  EExtensionHook::After,
-		                                  nullptr,
-		                                  FMenuBarExtensionDelegate::CreateUObject(
-			                                  this, &UMenuManager::AddMenuBarExtension));
-		LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
-	}
+	// listen to live coding compile finish
+	//FCoreUObjectDelegates::ReloadCompleteDelegate.AddUObject(this, &UMenuManager::OnReloadComplete);
 }
 
 void UMenuManager::Deinitialize()
 {
+	//FCoreUObjectDelegates::ReloadCompleteDelegate.RemoveAll(this);
+	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
+	LevelEditorModule.GetMenuExtensibilityManager()->RemoveExtender(MenuExtender);
+	
 	Super::Deinitialize();
 }
 
@@ -97,7 +76,7 @@ void UMenuManager::AddMenuBarExtension(FMenuBarBuilder& Builder)
 	}
 }
 
-void UMenuManager::AddMenuItemToNodeList(TSharedPtr<FMenuItem> NewMenuItem)
+void UMenuManager::AddMenuItemToNodeList(const TSharedPtr<FMenuItem>& NewMenuItem)
 {
 	// 根据菜单路径获取需要的菜单节点位置
 	TArray<FString> MenuNames;
@@ -122,7 +101,7 @@ void UMenuManager::AddMenuItemToNodeList(TSharedPtr<FMenuItem> NewMenuItem)
 	{
 		FMenuItemNode MenuItemNode;
 		MenuItemNode.NodeName = MenuNames[0];
-		int32 Index = RootNodeList.Add(MenuItemNode);
+		const int32 Index = RootNodeList.Add(MenuItemNode);
 		RootNode = &RootNodeList[Index];
 	}
 	// 然后根据解析出来的MenuNames，逐层查询节点，如果不存在则创建
@@ -135,11 +114,43 @@ void UMenuManager::AddMenuItemToNodeList(TSharedPtr<FMenuItem> NewMenuItem)
 		{
 			FMenuItemNode MenuItemNode;
 			MenuItemNode.NodeName = ChildName;
-			int32 Index = ParentNode->Children.Add(MenuItemNode);
+			const int32 Index = ParentNode->Children.Add(MenuItemNode);
 			ChildNode = &ParentNode->Children[Index];
 		}
 		ParentNode = ChildNode;
 	}
 	// 最后叶子节点赋值为待插入的菜单
 	ParentNode->MenuItem = NewMenuItem;
+}
+
+void UMenuManager::ReBuildMenuItemTree()
+{
+	// 遍历所有 class, 查询到所有继承自 UMenuItem 的类
+	for (TObjectIterator<UClass> It; It; ++It)
+	{
+		const UClass* CurrentClass = *It;
+		for (TFieldIterator<UFunction> FuncIt(CurrentClass, EFieldIteratorFlags::ExcludeSuper); FuncIt; ++FuncIt)
+		{
+			const UFunction* Function = *FuncIt;
+			if (Function->HasMetaData("MenuItem"))
+			{
+				TSharedPtr<FMenuItem> MenuItem = MakeShareable(new FMenuItem());
+				MenuItem->InitMenu(Function->GetMetaData("MenuItem"), Function->GetMetaData("ToolTip"), CurrentClass->GetDefaultObject(), Function->GetFName());
+				AddMenuItemToNodeList(MenuItem);
+			}
+		}
+	}
+
+	// 菜单栏扩展
+	// 顺序是：1. 找到需要挂载的MenuBar 2. 添加 PullDownMenu 3. 添加 SubMenu 4. 添加 MenuEntry
+	{
+		FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
+		MenuExtender = MakeShareable(new FExtender());
+		MenuExtender->AddMenuBarExtension("Help",
+										  EExtensionHook::After,
+										  nullptr,
+										  FMenuBarExtensionDelegate::CreateUObject(
+											  this, &UMenuManager::AddMenuBarExtension));
+		LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
+	}
 }

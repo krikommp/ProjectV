@@ -53,11 +53,21 @@ protected:
 	 * @brief 添加菜单项到菜单树
 	 * @param NewMenuItem 待插入的菜单节点
 	 */
-	void AddMenuItemToNodeList(TSharedPtr<FMenuItem> NewMenuItem);
+	void AddMenuItemToNodeList(const TSharedPtr<FMenuItem>& NewMenuItem);
+
+	/**
+	 * @brief 重新构建MenuItem
+	 */
+	void ReBuildMenuItemTree();
 
 private:
 	/**
 	 * @brief 根节点数组，用于保存所有的MenuItem节点
 	 */
 	TArray<FMenuItemNode> RootNodeList;
+
+	/**
+	 * @brief 菜单扩展器
+	 */
+	TSharedPtr<FExtender> MenuExtender;
 };

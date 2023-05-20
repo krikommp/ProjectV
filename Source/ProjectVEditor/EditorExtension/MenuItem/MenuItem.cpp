@@ -3,24 +3,23 @@
 
 #include "MenuItem.h"
 
-typedef void(*FunctionPtr_t)(void*);
-
-void FMenuItem::InitMenu(const FString& Path, const FString& Tooltip, UObject* InOwner, UFunction* Func)
+void FMenuItem::InitMenu(const FString& Path, const FString& Tooltip, UObject* InOwner, const FName& InFuncName)
 {
 	MenuPath = Path;
 	MenuToolTip = Tooltip;
 	MenuName = FPaths::GetPathLeaf(Path);
-	Function = Func;
 	Owner = InOwner;
-	bLeaf = Function != nullptr ? true : false;
+	FunctionName = InFuncName;
+	bLeaf = Owner != nullptr ? true : false;
 }
 
-void FMenuItem::OnMenuClick()
+void FMenuItem::OnMenuClick() const
 {
-	if (Owner.IsValid() && Function.IsValid())
-	{
-		FunctionPtr_t FuncPtr = reinterpret_cast<FunctionPtr_t>(Function->GetNativeFunc());
-		FuncPtr(Owner.Get());
-	}
-	//UE_LOG(LogTemp, Error, TEXT("YES"));
+	if (!Owner.IsValid()) return;
+
+	UFunction* Function = Owner->FindFunction(FunctionName);
+
+	if (Function == nullptr) return;
+
+	Owner->ProcessEvent(Function, nullptr);
 }

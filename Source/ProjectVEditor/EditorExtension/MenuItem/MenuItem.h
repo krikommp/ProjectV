@@ -8,14 +8,14 @@ struct FMenuItem : public TSharedFromThis<FMenuItem>
 {
 private:
 	/**
-	 * @brief UFunction指针，用于绑定菜单项点击事件
-	 */
-	TWeakObjectPtr<UFunction> Function = nullptr;
-
-	/**
 	 * @brief 函数持有者
 	 */
 	TWeakObjectPtr<UObject> Owner = nullptr;
+
+	/**
+	 * @brief 被调用函数名称
+	 */
+	FName FunctionName;
 
 	/**
 	 * @brief 菜单项路径，例： "First/Second/Third"
@@ -48,9 +48,10 @@ public:
 	 * @brief 创建菜单项
 	 * @param Path 菜单路径
 	 * @param Tooltip 菜单提示项
-	 * @param Func 菜单点击事件
+	 * @param InOwner 函数持有者
+	 * @param InFuncName 被调用函数名称
 	 */
-	void InitMenu(const FString& Path, const FString& Tooltip, UObject* InOwner = nullptr, UFunction* Func = nullptr);
+	void InitMenu(const FString& Path, const FString& Tooltip, UObject* InOwner = nullptr, const FName& InFuncName = FName());
 
-	void OnMenuClick();
+	void OnMenuClick() const;
 };

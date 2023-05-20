@@ -138,7 +138,8 @@ GE_Element_GridMapMod_* 将应用于网格上
 - [ ] 需要有一个UI，显示在画面头部，用于展示行动队列和当前行动单位。
 
 ### 特殊宏标记 （需要在源码引擎里面添加）
-- [ ] ENABLE_TURN_BASE_GAMEABILITY: 是否启用回合制游戏模式 
+- [x] ENABLE_TURN_BASE_GAME_ABILITY: 是否启用回合制游戏模式
+- [x] ENABLE_CURSOR_VISIBLE_IN_GAME: 是否在游戏中显示鼠标
 
 ### 编辑器扩展
 #### 目标 &#10004;

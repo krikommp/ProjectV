@@ -52,6 +52,9 @@ public:
 	const FGridCardData& GetCardData(const FString& CardId) const;
 	const FGridSkillData& GetSkillData(const FName& SkillId) const;
 
+	UFUNCTION(meta=(MenuItem="/AssetManager/Test", ToolTip="Test Asset Manager"))
+	void Test();
+
 protected:
 
 	template <typename GameDataClass>

@@ -30,9 +30,16 @@ void UMenuManager::Initialize(FSubsystemCollectionBase& Collection)
 	for (TObjectIterator<UClass> It; It; ++It)
 	{
 		UClass* CurrentClass = *It;
-		if (CurrentClass->IsChildOf(UMenuItem::StaticClass()) && !(CurrentClass->HasAnyClassFlags(CLASS_Abstract)))
+		for (TFieldIterator<UFunction> FuncIt(CurrentClass, EFieldIteratorFlags::ExcludeSuper); FuncIt; ++FuncIt)
 		{
-			AddMenuItemToNodeList(Cast<UMenuItem>(CurrentClass->GetDefaultObject()));
+			UFunction* Function = *FuncIt;
+			if (Function->HasMetaData("MenuItem"))
+			{
+				TSharedPtr<FMenuItem> MenuItem = MakeShareable(new FMenuItem());
+				MenuItem->InitMenu(Function->GetMetaData("MenuItem"), Function->GetMetaData("ToolTip"), CurrentClass->GetDefaultObject(), Function);
+				AddMenuItemToNodeList(MenuItem);
+				MenuItem->OnMenuClick();
+			}
 		}
 	}
 
@@ -65,7 +72,7 @@ static void AddMenuExtension(FMenuBuilder& Builder, TArray<FMenuItemNode>* NodeL
 			Builder.AddMenuEntry(FText::FromString(Node.MenuItem->GetMenuName()),
 			                     FText::FromString(Node.MenuItem->GetMenuToolTip()),
 			                     FSlateIcon(),
-			                     FUIAction(FExecuteAction::CreateUObject(Node.MenuItem, &UMenuItem::OnMenuClick)));
+			                     FUIAction(FExecuteAction::CreateSP(Node.MenuItem.Get(), &FMenuItem::OnMenuClick)));
 		}
 		else if (!Node.NodeName.IsEmpty() && Node.Children.Num() > 0)
 		{
@@ -90,12 +97,8 @@ void UMenuManager::AddMenuBarExtension(FMenuBarBuilder& Builder)
 	}
 }
 
-void UMenuManager::AddMenuItemToNodeList(UMenuItem* NewMenuItem)
+void UMenuManager::AddMenuItemToNodeList(TSharedPtr<FMenuItem> NewMenuItem)
 {
-	if (NewMenuItem == nullptr)
-	{
-		return;
-	}
 	// 根据菜单路径获取需要的菜单节点位置
 	TArray<FString> MenuNames;
 	FString MenuPath = NewMenuItem->GetMenuPath();

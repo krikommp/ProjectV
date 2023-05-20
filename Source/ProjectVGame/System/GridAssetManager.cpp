@@ -169,6 +169,11 @@ const FGridSkillData& UGridAssetManager::GetSkillData(const FName& SkillId) cons
 	return SkillDataMap.FindChecked(SkillId);
 }
 
+void UGridAssetManager::Test()
+{
+	UE_LOG(LogTemp, Error, TEXT("这是一个测试函数"));
+}
+
 void UGridAssetManager::LoadHeroData()
 {
 	const auto DataTable = GetAsset(HeroDataTable);

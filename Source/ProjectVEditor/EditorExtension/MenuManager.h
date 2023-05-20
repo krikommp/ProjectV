@@ -3,10 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MenuItem/MenuItem.h"
 #include "UObject/Object.h"
 #include "MenuManager.generated.h"
-
-class UMenuItem;
 
 /**
  * FMenuItemNode
@@ -24,7 +23,7 @@ struct FMenuItemNode
 	/**
 	 * @brief 菜单节点指针
 	 */
-	UMenuItem* MenuItem = nullptr;
+	TSharedPtr<FMenuItem> MenuItem;
 
 	/**
 	 * @brief 菜单节点子节点
@@ -54,7 +53,7 @@ protected:
 	 * @brief 添加菜单项到菜单树
 	 * @param NewMenuItem 待插入的菜单节点
 	 */
-	void AddMenuItemToNodeList(UMenuItem* NewMenuItem);
+	void AddMenuItemToNodeList(TSharedPtr<FMenuItem> NewMenuItem);
 
 private:
 	/**

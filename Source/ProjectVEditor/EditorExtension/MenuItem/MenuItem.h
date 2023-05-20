@@ -3,25 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
-#include "MenuItem.generated.h"
 
-/**
- * UMenuItem
- *
- * 作为所有MenuItem类的基类
- */
-UCLASS(Abstract)
-class PROJECTVEDITOR_API UMenuItem : public UObject
+struct FMenuItem : public TSharedFromThis<FMenuItem>
 {
-	GENERATED_BODY()
-
-public:
-	~UMenuItem() override = default;
-
-	virtual void OnMenuClick();
-
 private:
+	/**
+	 * @brief UFunction指针，用于绑定菜单项点击事件
+	 */
+	TWeakObjectPtr<UFunction> Function = nullptr;
+
+	/**
+	 * @brief 函数持有者
+	 */
+	TWeakObjectPtr<UObject> Owner = nullptr;
+
 	/**
 	 * @brief 菜单项路径，例： "First/Second/Third"
 	 */
@@ -37,16 +32,25 @@ private:
 	 */
 	FString MenuToolTip;
 
+	/**
+	 * @brief 是否为叶子节点
+	 */
+	bool bLeaf = false;
+
 public:
 	const FString& GetMenuPath() const { return MenuPath; }
 	const FString& GetMenuName() const { return MenuName; }
 	const FString& GetMenuToolTip() const { return MenuToolTip; }
+	bool IsLeaf() const { return bLeaf; }
 
-protected:
+public:
 	/**
 	 * @brief 创建菜单项
 	 * @param Path 菜单路径
 	 * @param Tooltip 菜单提示项
+	 * @param Func 菜单点击事件
 	 */
-	void InitMenu(const FString& Path, const FString& Tooltip);
+	void InitMenu(const FString& Path, const FString& Tooltip, UObject* InOwner = nullptr, UFunction* Func = nullptr);
+
+	void OnMenuClick();
 };

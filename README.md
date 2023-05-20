@@ -141,10 +141,21 @@ GE_Element_GridMapMod_* 将应用于网格上
 - [ ] ENABLE_TURN_BASE_GAMEABILITY: 是否启用回合制游戏模式 
 
 ### 编辑器扩展
-- 目标:
-  为了方便的对UE编辑器扩展以便添加一些自定义功能，需要对UE编辑器进行扩展
-- 方案:
-    - &#10004; 基础框架搭建，支持类似于Unity的MenuItem
+#### 目标 &#10004;
+为了方便的对UE编辑器扩展以便添加一些自定义功能，需要对UE编辑器进行扩展 
+#### 使用方式：
+```c++
+UCLASS()
+class UMyClass : public UObject
+{
+    GENERATED_BODY()
+public:
+    UFUNCTION(meta=(MenuItem="MyTest/Test", ToolTip="这是一个测试方法"))
+    void MyEditorFunction();
+};
+
+// 将会在编辑器的菜单栏中添加一个 MyTest 菜单，点击后会执行 MyEditorFunction 方法
+```
     
 
 

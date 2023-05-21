@@ -87,13 +87,6 @@ void FGridGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Status_Death, "Status.Death", "目标处于死亡状态");
 	AddTag(Status_Death_Dying, "Status.Death.Dying", "目标开始死亡流程");
 	AddTag(Status_Death_Dead, "Status.Death.Dead", "目标结束死亡流程");
-
-	AddTag(Element_Water, "Element.Water", "水元素");
-	AddTag(Element_Fire, "Element.Fire", "火元素");
-	AddTag(Element_Ice, "Element.Ice", "冰元素");
-	AddTag(Element_Oil, "Element.Oil", "油元素");
-	AddTag(Element_Thunder, "Element.Thunder", "雷元素");
-	AddTag(Element_Toxic, "Element.Toxic", "毒元素");
 }
 
 void FGridGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment)

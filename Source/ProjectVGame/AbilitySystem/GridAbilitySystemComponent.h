@@ -39,6 +39,7 @@ public:
 	// ~UActorComponent interface
 	
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
+	virtual FActiveGameplayEffectHandle ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey) override;
 
 	void TickAbilityTurn(int32 Delta);
 

@@ -52,6 +52,12 @@ public:
 	const FGridCardData& GetCardData(const FString& CardId) const;
 	const FGridSkillData& GetSkillData(const FName& SkillId) const;
 
+	// 编辑器方法
+#if WITH_EDITOR
+	UFUNCTION(meta=(MenuItem="GridAssetManager/Reload Game Data", ToolTip="Reloads all game data from disk"))
+	void ReloadGameData();
+#endif
+
 protected:
 
 	template <typename GameDataClass>

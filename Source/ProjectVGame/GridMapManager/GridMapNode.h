@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Object.h"
 #include "GridMapNode.generated.h"
 
@@ -34,6 +35,19 @@ public:
 	void OnChessPieceEnter(AGridChessPiece* InChessPiece) const;
 
 	void OnChessPieceLeave(AGridChessPiece* InChessPiece) const;
+
+	/**
+	 * @brief 为棋子对象添加附加效果
+	 * @param InChessPiece 棋子对象
+	 */
+	void AttachActiveGameplayEffect(const AGridChessPiece* InChessPiece) const;
+
+	/**
+	 * @brief 查找相邻符合要求的节点
+	 * @param OutNearbyTiles 
+	 * @param RequireTags 
+	 */
+	void FindAllNearbyTiles(TArray<const AGridMapNode*>& OutNearbyTiles, const FGameplayTagContainer& RequireTags) const;
 
 private:
 	void InitializeGameplayTags() const;

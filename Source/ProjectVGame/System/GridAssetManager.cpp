@@ -169,6 +169,20 @@ const FGridSkillData& UGridAssetManager::GetSkillData(const FName& SkillId) cons
 	return SkillDataMap.FindChecked(SkillId);
 }
 
+void UGridAssetManager::ReloadGameData()
+{
+	UE_LOG(LogGrid, Log, TEXT("Start to reload game data"));
+	HeroDataMap.Empty();
+	CardDataMap.Empty();
+	SkillDataMap.Empty();
+
+	LoadHeroData();
+	LoadCardData();
+	LoadSkillData();
+
+	UE_LOG(LogGrid, Log, TEXT("Finish to reload game data"));
+}
+
 void UGridAssetManager::LoadHeroData()
 {
 	const auto DataTable = GetAsset(HeroDataTable);

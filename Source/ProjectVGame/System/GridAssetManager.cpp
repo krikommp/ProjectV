@@ -171,14 +171,15 @@ const FGridSkillData& UGridAssetManager::GetSkillData(const FName& SkillId) cons
 
 void UGridAssetManager::ReloadGameData()
 {
+	UGridAssetManager& AssetManager = Get();
 	UE_LOG(LogGrid, Log, TEXT("Start to reload game data"));
-	HeroDataMap.Empty();
-	CardDataMap.Empty();
-	SkillDataMap.Empty();
+	AssetManager.HeroDataMap.Empty();
+	AssetManager.CardDataMap.Empty();
+	AssetManager.SkillDataMap.Empty();
 
-	LoadHeroData();
-	LoadCardData();
-	LoadSkillData();
+	AssetManager.LoadHeroData();
+	AssetManager.LoadCardData();
+	AssetManager.LoadSkillData();
 
 	UE_LOG(LogGrid, Log, TEXT("Finish to reload game data"));
 }

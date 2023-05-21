@@ -6,6 +6,7 @@ DEFINE_LOG_CATEGORY(LogGridAbilitySystem)
 DEFINE_LOG_CATEGORY(LogGridTeam)
 DEFINE_LOG_CATEGORY(LogGridHero)
 DEFINE_LOG_CATEGORY(LogGridAIEvaluation)
+DEFINE_LOG_CATEGORY(LogGridCard)
 
 FString GetClientServerContextString(UObject* ContextObject)
 {

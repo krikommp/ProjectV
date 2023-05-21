@@ -4,6 +4,7 @@
 #include "GridCardInfo.h"
 
 #include "GameplayAbilitySpec.h"
+#include "GridLogChannel.h"
 #include "AbilitySystem/GridAbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/GridGameplayAbility_Card.h"
 #include "Kismet/GameplayStatics.h"
@@ -139,35 +140,57 @@ FText UGridCardInfo::GetCardDescription()
 	{
 		if (UGridGameplayAbility_Card* CardAbility = Cast<UGridGameplayAbility_Card>(AbilitySpec->Ability))
 		{
-			if (const FGridGameplayEffectContainer* FoundContainer = CardAbility->EffectContainers.Find(CardData.ContainerTag))
+			// 当卡牌描述需要进行序列化时执行
+			// 正则判断卡牌描述中是否含有{d+}
+			const FRegexPattern Pattern("\\{\\d+\\}");
+			FRegexMatcher Matcher(Pattern, CardData.CardDescription.ToString());
+			if (!Matcher.FindNext())
 			{
-				FFormatOrderedArguments Args;
-				int32 ArgIndex = 0;
-				for (const TSubclassOf<UGameplayEffect>& EffectClass : FoundContainer->TargetGameplayEffects)
-				{
-					if (ArgIndex >= CardData.AbilityEffectArgs.Num()) break;
-					FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, AbilityLevel, CardAbility->MakeEffectContext(GrantedHandle, AbilitySystemComponent->AbilityActorInfo.Get()));
-					FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
-					FGameplayTagContainer TagContainer;
-					Spec->GetAllAssetTags(TagContainer);
-					if (TagContainer.HasTagExact(CardData.AbilityEffectArgs[ArgIndex].GameplayTag))
-					{
-						float Result = 0.0f;
-						Spec->CalculateModifierMagnitudes();
-						for (int32 ModIdx = 0; ModIdx < Spec->Modifiers.Num();  ++ModIdx)
-						{
-							if (Spec->Def->Modifiers[ModIdx].Attribute == CardData.AbilityEffectArgs[ArgIndex].Attribute)
-							{
-								Result = Spec->Modifiers[ModIdx].GetEvaluatedMagnitude();
-								break;
-							}
-						}
-						Args.Add(Result);
-						++ArgIndex;
-					}
-				}
-				return FText::Format(CardData.CardDescription, Args);
+				// 卡牌描述中不含有任何替换参数，直接返回
+				return CardData.CardDescription;
 			}
+			if (!CardData.ContainerTag.IsValid())
+			{
+				// 卡牌描述中存在无效的 ContainerTag，直接返回原始描述并给出提示
+				UE_LOG(LogGridCard, Warning, TEXT("CardData.ContainerTag is invalid, please check!"));
+				return CardData.CardDescription;
+			}
+			const FGridGameplayEffectContainer* FoundContainer = CardAbility->EffectContainers.Find(CardData.ContainerTag);
+			if (FoundContainer == nullptr)
+			{
+				// CardAbility 中不存在 ContainerTag 对应的容器，直接返回原始描述并给出提示
+				UE_LOG(LogGridCard, Warning, TEXT("CardAbility->EffectContainers does not contain ContainerTag %s, please check!"), *CardData.ContainerTag.ToString());
+				return CardData.CardDescription;
+			}
+
+			FFormatOrderedArguments Args;
+			int32 ArgIndex = 0;
+
+			// 遍历所有的参数列表，分别执行序列化操作
+			for (const TSubclassOf<UGameplayEffect>& EffectClass : FoundContainer->TargetGameplayEffects)
+			{
+				if (ArgIndex >= CardData.AbilityEffectArgs.Num()) break;
+				FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, AbilityLevel, CardAbility->MakeEffectContext(GrantedHandle, AbilitySystemComponent->AbilityActorInfo.Get()));
+				FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+				FGameplayTagContainer TagContainer;
+				Spec->GetAllAssetTags(TagContainer);
+				if (TagContainer.HasTagExact(CardData.AbilityEffectArgs[ArgIndex].GameplayTag))
+				{
+					float Result = 0.0f;
+					Spec->CalculateModifierMagnitudes();
+					for (int32 ModIdx = 0; ModIdx < Spec->Modifiers.Num();  ++ModIdx)
+					{
+						if (Spec->Def->Modifiers[ModIdx].Attribute == CardData.AbilityEffectArgs[ArgIndex].Attribute)
+						{
+							Result = Spec->Modifiers[ModIdx].GetEvaluatedMagnitude();
+							break;
+						}
+					}
+					Args.Add(Result);
+					++ArgIndex;
+				}
+			}
+			return FText::Format(CardData.CardDescription, Args);
 		}
 	}
 

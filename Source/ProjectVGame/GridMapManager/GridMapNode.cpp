@@ -59,7 +59,7 @@ void AGridMapNode::AttachActiveGameplayEffect(const AGridChessPiece* InChessPiec
 
 	// 定义我们要查询的标签
 	FGameplayTagContainer RequireTags;
-	RequireTags.AddTagFast(FGameplayTag::RequestGameplayTag(FName("Ability.Element"), true));
+	RequireTags.AddTagFast(FGameplayTag::RequestGameplayTag(FName("Ability.Element.Attach"), true));
 
 	// 创建查询
 	const FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(RequireTags);
@@ -97,20 +97,32 @@ void AGridMapNode::FindAllNearbyTiles(TArray<const AGridMapNode*>& OutNearbyTile
 	if (!OutNearbyTiles.Contains(this))
 	{
 		OutNearbyTiles.Add(this);
-		// if (const AGridMapManager* GridMapManager = GetWorld()->GetGameState()->FindComponentByClass<UGridMapStateComponent>()->GetGridMapManager())
-		// {
-		// 	for (const FStructIntArray& EdgeIndexArray : GridMapManager->EdgeArrayInteger[TileIndex])
-		// 	{
-		// 		for (const int32 EdgeIndex : EdgeIndexArray.Index)
-		// 		{
-		// 			if (GridMapManager->GridMapNodeArray.IsValidIndex(EdgeIndex))
-		// 			{
-		// 				const auto NearbyTile = GridMapManager->GridMapNodeArray[EdgeIndex];
-		// 				NearbyTile->FindAllNearbyTiles(OutNearbyTiles, RequireTags);
-		// 			}
-		// 		}
-		// 	}
-		// }
+		if (AGridMapManager* GridMapManager = GetWorld()->GetGameState()->FindComponentByClass<UGridMapStateComponent>()->GetGridMapManager())
+		{
+			// foreach EdgeArrayInteger
+			for (int32 i = 0; i < GridMapManager->EdgeArrayInteger.Num(); ++i)
+			{
+				for (const int32 EdgeIndex : GridMapManager->EdgeArrayInteger[i].Index)
+				{
+					if (GridMapManager->GridMapNodeArray.IsValidIndex(EdgeIndex))
+					{
+						const auto NearbyTile = GridMapManager->GridMapNodeArray[EdgeIndex];
+						NearbyTile->FindAllNearbyTiles(OutNearbyTiles, RequireTags);
+					}
+				}
+			}
+			// for (FStructIntArray EdgeIndexArray : GridMapManager->EdgeArrayInteger[TileIndex])
+			// {
+			// 	// for (const int32 EdgeIndex : EdgeIndexArray.Index)
+			// 	// {
+			// 	// 	if (GridMapManager->GridMapNodeArray.IsValidIndex(EdgeIndex))
+			// 	// 	{
+			// 	// 		const auto NearbyTile = GridMapManager->GridMapNodeArray[EdgeIndex];
+			// 	// 		NearbyTile->FindAllNearbyTiles(OutNearbyTiles, RequireTags);
+			// 	// 	}
+			// 	// }
+			// }
+		}
 	}
 }
 

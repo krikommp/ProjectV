@@ -1,3 +1,5 @@
+## [Discord](https://discord.gg/UjgtR7Nqbx)
+
 ### 元素系统 (HIGH)  
 - 目标:
   - &#10004; 基本的元素单位，目前有：火，水，雷，冰，毒，油  

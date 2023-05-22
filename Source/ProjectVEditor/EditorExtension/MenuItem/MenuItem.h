@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-struct FMenuItem : public TSharedFromThis<FMenuItem>
+struct FMenuItem : TSharedFromThis<FMenuItem>
 {
 private:
 	/**

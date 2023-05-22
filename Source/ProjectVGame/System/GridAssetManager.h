@@ -55,7 +55,7 @@ public:
 	// 编辑器方法
 #if WITH_EDITOR
 	UFUNCTION(meta=(MenuItem="Generate/Reload Game Data", ToolTip="Reloads all game data from disk"))
-	void ReloadGameData();
+	static void ReloadGameData();
 #endif
 
 protected:

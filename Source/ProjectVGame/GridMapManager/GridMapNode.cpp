@@ -111,17 +111,6 @@ void AGridMapNode::FindAllNearbyTiles(TArray<const AGridMapNode*>& OutNearbyTile
 					}
 				}
 			}
-			// for (FStructIntArray EdgeIndexArray : GridMapManager->EdgeArrayInteger[TileIndex])
-			// {
-			// 	// for (const int32 EdgeIndex : EdgeIndexArray.Index)
-			// 	// {
-			// 	// 	if (GridMapManager->GridMapNodeArray.IsValidIndex(EdgeIndex))
-			// 	// 	{
-			// 	// 		const auto NearbyTile = GridMapManager->GridMapNodeArray[EdgeIndex];
-			// 	// 		NearbyTile->FindAllNearbyTiles(OutNearbyTiles, RequireTags);
-			// 	// 	}
-			// 	// }
-			// }
 		}
 	}
 }

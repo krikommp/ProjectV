@@ -59,6 +59,7 @@
   - &#10004; 当有单位进入到该Tile中，我们遍历该Tile上所有激活的GameplayEffect, 这个GameplayEffect应该有一个特定类型（GridGameplayEffect_GridMapNode），里面保存了一组进入时给与的GameplayEffect，如果遍历到的一个GE是该类型，那么就对进入Tile的对象施加这个GE
   - &#10004; 每回合都会对当前位于Tile中的对象施加一次
   - &#10004; 相邻位置应用GameplayEffect，对于每个Tile, 查找相邻的Tiles(八方向)，搜索，找到所有相邻的Tiles，然后对每个Tile应用相应的GameplayEffect
+  - [ ] 实现范围攻击的 TargetType
 - 设计方法：
 ```
 GameplayEffect: 引发类型，用来触发实际将会应用的GE

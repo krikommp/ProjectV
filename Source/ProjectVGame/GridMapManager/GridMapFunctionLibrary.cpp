@@ -257,7 +257,7 @@ void UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(AGridMapManager* Gr
 }
 
 UDecalComponent* UGridMapFunctionLibrary::DisplayDecal(AGridMapManager* GridMapManager, int32 Index,
-	UMaterialInterface* DecalMaterial, bool bOverrider)
+	UMaterialInterface* DecalMaterial, bool bOverrider, bool bAdd)
 {
 	check(GridMapManager->VectorFieldArray.IsValidIndex(Index));
 	const FVector TileLocation = GridMapManager->VectorFieldArray[Index] + GridMapManager->GetActorLocation();
@@ -277,13 +277,20 @@ UDecalComponent* UGridMapFunctionLibrary::DisplayDecal(AGridMapManager* GridMapM
 	}
 	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
 		GridMapManager->GetWorld(), DecalMaterial, GridMapManager->DecalSizeSquare, TileLocation, {90.0f, 0.0f, 0.0f});
-	// GridMapManager->CurrentDecalsArray.Add(DecalComponent);
+	if (bAdd)
+		GridMapManager->CurrentDecalsArray.Add(DecalComponent);
 	return DecalComponent;
 }
 
 TArray<int32> UGridMapFunctionLibrary::GetTileIndexesInRange(const AGridMapManager* GridMapManager, int32 Index,
 	int32 Range)
 {
+	if (Range == 0)
+	{
+		UE_LOG(LogGrid, Warning, TEXT("Range equal 0, so return array only include self."));
+		return { Index };
+	}
+	
 	TArray<TPair<int32, int32>> TmpTileIndexAndRange;
 	const int32 TotalRange = (Range + Range + 1);
 	for (int32 x = 0; x < TotalRange; ++x)

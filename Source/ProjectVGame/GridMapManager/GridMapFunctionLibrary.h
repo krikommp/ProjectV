@@ -57,7 +57,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category="GridMap|Helper")
-	static UDecalComponent* DisplayDecal(AGridMapManager* GridMapManager, int32 Index, UMaterialInterface* DecalMaterial, bool bOverrider);
+	static UDecalComponent* DisplayDecal(AGridMapManager* GridMapManager, int32 Index, UMaterialInterface* DecalMaterial, bool bOverrider, bool bAdd = false);
 
 	/**
 	 * @brief 根据位置和范围获取所有地图索引

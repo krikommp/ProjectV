@@ -86,6 +86,17 @@ void AGridMapNode::AttachActiveGameplayEffect(const AGridChessPiece* InChessPiec
 	}
 }
 
+void AGridMapNode::AttachActiveGameplayEffect() const
+{
+	if (AGridMapManager* GridMapManager = GetWorld()->GetGameState()->FindComponentByClass<UGridMapStateComponent>()->GetGridMapManager())
+	{
+		if (const AGridChessPiece* ChessPiece = GridMapManager->PawnArray[GetTileIndex()])
+		{
+			AttachActiveGameplayEffect(ChessPiece);
+		}
+	}
+}
+
 void AGridMapNode::FindAllNearbyTiles(TArray<const AGridMapNode*>& OutNearbyTiles, const FGameplayTagContainer& RequireTags) const
 {
 	check(AbilitySystemComponent);

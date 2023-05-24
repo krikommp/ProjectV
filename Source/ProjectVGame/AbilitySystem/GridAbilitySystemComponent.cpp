@@ -92,6 +92,8 @@ FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpec
 					for (const AGridMapNode* ApplyToGridMapNode : NearbyNodes)
 					{
 						ApplyToGridMapNode->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*ConductionSpecHandle.Data.Get(), PredictionKey);
+						// 为了让效果生效, 需要手动Attach
+						ApplyToGridMapNode->AttachActiveGameplayEffect();
 					}
 				}
 			}

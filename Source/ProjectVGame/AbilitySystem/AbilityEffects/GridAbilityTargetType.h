@@ -46,4 +46,13 @@ public:
 	virtual void GetTargets_Implementation(AActor* TargetingActor, AGameStateBase* GameState, int32 TargetTileIndex, int32 Range, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
 };
 
+UCLASS(NotBlueprintable)
+class PROJECTVGAME_API UGridAbilityTargetType_MultiOnGridMap : public UGridAbilityTargetType
+{
+	GENERATED_BODY()
 
+public:
+	UGridAbilityTargetType_MultiOnGridMap() {}
+
+	virtual void GetTargets_Implementation(AActor* TargetingActor, AGameStateBase* GameState, int32 TargetTileIndex, int32 Range, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
+};

@@ -281,14 +281,30 @@ UDecalComponent* UGridMapFunctionLibrary::DisplayDecal(AGridMapManager* GridMapM
 	return DecalComponent;
 }
 
-TArray<int32> UGridMapFunctionLibrary::GetTileIndexesInRange(const AGridMapManager* GridMapManager, int32 TargetIndex,
+TArray<int32> UGridMapFunctionLibrary::GetTileIndexesInRange(const AGridMapManager* GridMapManager, int32 Index,
 	int32 Range)
 {
-	const int32 x = TargetIndex % GridMapManager->GridSizeX;
-	const int32 y = TargetIndex / GridMapManager->GridSizeX;
-	const int32 z = TargetIndex / (GridMapManager->GridSizeX * GridMapManager->GridSizeY);
+	TArray<TPair<int32, int32>> TmpTileIndexAndRange;
+	const int32 TotalRange = (Range + Range + 1);
+	for (int32 x = 0; x < TotalRange; ++x)
+	{
+		for (int32 y = 0; y < TotalRange; ++y)
+		{
+			TmpTileIndexAndRange.Add({ x - Range, y - Range });
+		}
+	}
 
-	
+	TArray<int32> Result;
+	for (const auto& Vec : TmpTileIndexAndRange)
+	{
+		const int32 TmpIndex = Index + Vec.Key + Vec.Value * GridMapManager->GridSizeX;
+		if (GridMapManager->VectorFieldArray.IsValidIndex(TmpIndex))
+		{
+			Result.Add(TmpIndex);
+		}
+	}
+
+	return Result;
 }
 
 void UGridMapFunctionLibrary::RemoveTileEdge(int32 TileIndex, int32 Edge, AGridMapManager* GridMapManager)

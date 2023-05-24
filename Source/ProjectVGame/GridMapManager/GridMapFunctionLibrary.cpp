@@ -281,6 +281,16 @@ UDecalComponent* UGridMapFunctionLibrary::DisplayDecal(AGridMapManager* GridMapM
 	return DecalComponent;
 }
 
+TArray<int32> UGridMapFunctionLibrary::GetTileIndexesInRange(const AGridMapManager* GridMapManager, int32 TargetIndex,
+	int32 Range)
+{
+	const int32 x = TargetIndex % GridMapManager->GridSizeX;
+	const int32 y = TargetIndex / GridMapManager->GridSizeX;
+	const int32 z = TargetIndex / (GridMapManager->GridSizeX * GridMapManager->GridSizeY);
+
+	
+}
+
 void UGridMapFunctionLibrary::RemoveTileEdge(int32 TileIndex, int32 Edge, AGridMapManager* GridMapManager)
 {
 	// 在TileIndex的邻居中查找Edge的索引

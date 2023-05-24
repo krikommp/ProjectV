@@ -59,6 +59,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category="GridMap|Helper")
 	static UDecalComponent* DisplayDecal(AGridMapManager* GridMapManager, int32 Index, UMaterialInterface* DecalMaterial, bool bOverrider);
 
+	/**
+	 * @brief 获取范围内所有地图索引
+	 * @param GridMapManager 地图管理器
+	 * @param TargetIndex 开始查找位置
+	 * @param Range 查找范围
+	 * @return 返回查找的位置
+	 */
+	UFUNCTION(BlueprintCallable, Category="GridMap|Helper")
+	static TArray<int32> GetTileIndexesInRange(const AGridMapManager* GridMapManager, int32 TargetIndex, int32 Range);
+
 	template <typename T>
 	static void SetArrayElement(T Item, TArray<T>& ItemArray, int32 Index)
 	{

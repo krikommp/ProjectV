@@ -1141,7 +1141,7 @@ void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
                                               const TArray<FStructPathFinding>& InCanMoveToArray,
                                               UMaterialInterface* DecalMat, int32 Index)
 {
-	const FVector StraightEdgeDecalSize = {90.0, 90.0, 90.0};
+	const FVector StraightEdgeDecalSize = {100.0, 100.0, 100.0};
 	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index + 1, StraightEdgeDecalSize,
 	                             270.0,
 	                             DecalMat);
@@ -1158,7 +1158,7 @@ void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
                                               const TArray<int32>& InRangeArray, UMaterialInterface* DecalMat,
                                               int32 Index)
 {
-	const FVector StraightEdgeDecalSize = {90.0, 90.0, 90.0};
+	const FVector StraightEdgeDecalSize = {100.0, 100.0, 100.0};
 	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index, Index + 1,
 	                             StraightEdgeDecalSize, 270.0,
 	                             DecalMat);

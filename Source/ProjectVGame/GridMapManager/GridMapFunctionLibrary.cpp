@@ -287,7 +287,6 @@ TArray<int32> UGridMapFunctionLibrary::GetTileIndexesInRange(const AGridMapManag
 {
 	if (Range == 0)
 	{
-		UE_LOG(LogGrid, Warning, TEXT("Range equal 0, so return array only include self."));
 		return { Index };
 	}
 	

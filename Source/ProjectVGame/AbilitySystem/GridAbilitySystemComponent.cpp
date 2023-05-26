@@ -37,20 +37,21 @@ void UGridAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AAc
 	check(ActorInfo);
 	check(InOwnerActor);
 
-	const bool bHasNewPawnAvatar = Cast<APawn>(InAvatarActor) && (InAvatarActor != ActorInfo->AvatarActor);
-	
 	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
-
-	if(bHasNewPawnAvatar)
+	
+	if (UGridGlobalAbilitySystem* GlobalAbilitySystem = UWorld::GetSubsystem<UGridGlobalAbilitySystem>(GetWorld()))
 	{
-		if (UGridGlobalAbilitySystem* GlobalAbilitySystem = UWorld::GetSubsystem<UGridGlobalAbilitySystem>(GetWorld()))
-		{
-			GlobalAbilitySystem->RegisterASC(this);
-		}
-
+		GlobalAbilitySystem->RegisterASC(this);
+	}
+	if (!OnGameplayEffectAppliedDelegateToSelf.IsBoundToObject(this))
+	{
 		OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &ThisClass::NotifyGameplayEffectActivate);
+	}
+	if (!OnAnyGameplayEffectRemovedDelegate().IsBoundToObject(this))
+	{
 		OnAnyGameplayEffectRemovedDelegate().AddUObject(this, &ThisClass::NotifyGameplayEffectRemoved);
 	}
+	
 }
 
 FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpecToSelf(

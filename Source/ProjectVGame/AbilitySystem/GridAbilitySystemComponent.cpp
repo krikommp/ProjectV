@@ -58,6 +58,12 @@ FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpec
 	const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey)
 {
 	const auto MyHandle = Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
+
+	// // 如果是无效的 Handle, 那么就直接返回
+	if (!MyHandle.IsValid())
+	{
+		return MyHandle;
+	}
 	if (const UGridGameplayEffect* GridGameplayEffect = Cast<UGridGameplayEffect>(GameplayEffect.Def))
 	{
 		// 判断目标身上是否有需要的GameplayTag, 如果有则应用GameplayEffect
@@ -165,6 +171,15 @@ void UGridAbilitySystemComponent::NotifyGameplayEffectRemoved(const FActiveGamep
 		if (const UGridAbilityBuffUIData* UIData = Cast<UGridAbilityBuffUIData>(UAbilitySystemBlueprintLibrary::GetGameplayEffectUIData(Effect->GetClass(), UGridAbilityBuffUIData::StaticClass())))
 		{
 			OnAbilityBuffRemoved.Broadcast(UIData);
+		}
+	}
+	if (const UGridGameplayEffect_GridMapNode* GridMapEffect = Cast<UGridGameplayEffect_GridMapNode>(InActiveEffect.Spec.Def))
+	{
+		// 遍历Conduction Gameplay Effects
+		// 执行移除方法
+		for (const auto& ConductionGameplayEffect : GridMapEffect->ConductionGameplayEffects)
+		{
+			
 		}
 	}
 }

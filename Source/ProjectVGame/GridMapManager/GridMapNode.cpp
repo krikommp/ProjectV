@@ -59,7 +59,7 @@ void AGridMapNode::AttachActiveGameplayEffect(const AGridChessPiece* InChessPiec
 
 	// 定义我们要查询的标签
 	FGameplayTagContainer RequireTags;
-	RequireTags.AddTagFast(FGameplayTag::RequestGameplayTag(FName("Ability.Element.Attach"), true));
+	RequireTags.AddTagFast(FGameplayTag::RequestGameplayTag(FName("Ability.Element"), true));
 
 	// 创建查询
 	const FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(RequireTags);

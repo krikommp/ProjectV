@@ -59,11 +59,6 @@ FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpec
 {
 	const auto MyHandle = Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
 
-	// // 如果是无效的 Handle, 那么就直接返回
-	if (!MyHandle.IsValid())
-	{
-		return MyHandle;
-	}
 	if (const UGridGameplayEffect* GridGameplayEffect = Cast<UGridGameplayEffect>(GameplayEffect.Def))
 	{
 		// 判断目标身上是否有需要的GameplayTag, 如果有则应用GameplayEffect

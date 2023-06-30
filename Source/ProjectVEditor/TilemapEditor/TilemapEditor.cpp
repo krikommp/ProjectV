@@ -3,6 +3,8 @@
 
 #include "TilemapEditor.h"
 
+#include "TilemapEditorViewport.h"
+
 #define LOCTEXT_NAMESPACE "UTilemapEditor"
 
 static const FName TilemapTabName("Tilemap");
@@ -15,7 +17,7 @@ void UTilemapEditor::ShowWindow()
 
 TSharedRef<SEditorWindowViewport> UTilemapEditor::CreateWindow()
 {
-	return Super::CreateWindow();
+	return SNew(STilemapEditorViewport);
 }
 
 const FName& UTilemapEditor::GetTabName() const

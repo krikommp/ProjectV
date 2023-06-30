@@ -12,6 +12,18 @@ class SEditorWindowViewport;
  * UEditorWindow
  *
  * 自定义编辑器窗口
+ *\code
+ * UCLASS()
+ * class PROJECTVEDITOR_API UTestEditorWindow : public UEditorWindow
+ * {
+ *	    GENERATED_BODY()
+ *  public:
+ *	    UFUNCTION(meta=(MenuItem="FeelingSoul/Test Editor", ToolTip="Open Test Editor"))
+ *	    virtual void ShowWindow() override;
+ *
+ *	    virtual TSharedRef<SEditorWindowViewport> CreateWindow() override;
+ * };
+ *\endcode 
  */
 UCLASS()
 class PROJECTVEDITOR_API UEditorWindow : public UObject
@@ -23,18 +35,6 @@ public:
 	virtual const FText& GetDisplayName() const;
 	virtual void ShowWindow();
 	virtual TSharedRef<SEditorWindowViewport> CreateWindow();
-	
+
 	TSharedRef<SDockTab> OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs);
-};
-
-UCLASS()
-class PROJECTVEDITOR_API UTestEditorWindow : public UEditorWindow
-{
-	GENERATED_BODY()
-
-public:
-	UFUNCTION(meta=(MenuItem="FeelingSoul/Map Edit Window", ToolTip="Open Map Editor"))
-	virtual void ShowWindow() override;
-
-	virtual TSharedRef<SEditorWindowViewport> CreateWindow() override;
 };

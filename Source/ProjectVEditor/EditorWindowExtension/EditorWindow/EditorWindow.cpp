@@ -41,13 +41,3 @@ TSharedRef<SDockTab> UEditorWindow::OnSpawnPluginTab(const FSpawnTabArgs& SpawnT
 }
 
 #undef LOCTEXT_NAMESPACE
-
-void UTestEditorWindow::ShowWindow()
-{
-	Super::ShowWindow();
-}
-
-TSharedRef<SEditorWindowViewport> UTestEditorWindow::CreateWindow()
-{
-	return Super::CreateWindow();
-}

@@ -6,6 +6,8 @@
 #include "UObject/Object.h"
 #include "EditorWindow.generated.h"
 
+class SEditorWindowViewport;
+
 /**
  * UEditorWindow
  *
@@ -20,6 +22,7 @@ public:
 	virtual const FName& GetTabName() const;
 	virtual const FText& GetDisplayName() const;
 	virtual void ShowWindow();
+	virtual TSharedRef<SEditorWindowViewport> CreateWindow();
 	
 	TSharedRef<SDockTab> OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs);
 };
@@ -32,4 +35,6 @@ class PROJECTVEDITOR_API UTestEditorWindow : public UEditorWindow
 public:
 	UFUNCTION(meta=(MenuItem="FeelingSoul/Map Edit Window", ToolTip="Open Map Editor"))
 	virtual void ShowWindow() override;
+
+	virtual TSharedRef<SEditorWindowViewport> CreateWindow() override;
 };

@@ -3,6 +3,8 @@
 
 #include "EditorWindow.h"
 
+#include "EditorWindowViewport.h"
+
 #define LOCTEXT_NAMESPACE "UEditorWindow"
 
 static const FName DefaultTabName("Default");
@@ -24,25 +26,17 @@ void UEditorWindow::ShowWindow()
 	FGlobalTabmanager::Get()->TryInvokeTab(GetTabName());
 }
 
+TSharedRef<SEditorWindowViewport> UEditorWindow::CreateWindow()
+{
+	return SNew(SEditorWindowViewport);
+}
+
 TSharedRef<SDockTab> UEditorWindow::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
 {
-	FText WidgetText = FText::Format(
-		LOCTEXT("WindowWidgetText", "Add code to {0} in {1} to override this window's contents"),
-		FText::FromString(TEXT("FTestWindowPluginModule::OnSpawnPluginTab")),
-		FText::FromString(TEXT("TestWindowPlugin.cpp"))
-	);
-
 	return SNew(SDockTab)
 		.TabRole(ETabRole::NomadTab)
 		[
-			// Put your tab content here!
-			SNew(SBox)
-			.HAlign(HAlign_Center)
-			.VAlign(VAlign_Center)
-			[
-				SNew(STextBlock)
-				.Text(WidgetText)
-			]
+			CreateWindow()
 		];
 }
 
@@ -51,4 +45,9 @@ TSharedRef<SDockTab> UEditorWindow::OnSpawnPluginTab(const FSpawnTabArgs& SpawnT
 void UTestEditorWindow::ShowWindow()
 {
 	Super::ShowWindow();
+}
+
+TSharedRef<SEditorWindowViewport> UTestEditorWindow::CreateWindow()
+{
+	return Super::CreateWindow();
 }

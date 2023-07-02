@@ -22,6 +22,11 @@ UObject* STilemapPropertiesTabBody::GetObjectToObserve() const
 
 TSharedRef<SWidget> STilemapPropertiesTabBody::PopulateSlot(TSharedRef<SWidget> PropertyEditorWidget)
 {
+	PropertyEditorWidget->SetEnabled(TAttribute<bool>::Create([this]()-> bool
+	{
+		return !TilemapEditorPtr.Pin()->bEditProperty;
+	}));
+
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.AutoHeight()
@@ -33,31 +38,29 @@ TSharedRef<SWidget> STilemapPropertiesTabBody::PopulateSlot(TSharedRef<SWidget> 
 		[
 			SNew(SBorder)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
-			.Visibility_Lambda([this]() { return EVisibility::Visible; })
 			[
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
-				.FillWidth(1.0f)
-				.HAlign(HAlign_Left)
-				.VAlign(VAlign_Center)
-				.Padding(2.0f)
+				  .FillWidth(1.0f)
+				  .HAlign(HAlign_Fill)
+				  .VAlign(VAlign_Fill)
+				  .Padding(2.0f)
 				[
 					SNew(SButton)
+					.OnClicked_Lambda([this]()
+					{
+						this->TilemapEditorPtr.Pin()->bEditProperty = !this->TilemapEditorPtr.Pin()->bEditProperty;
+						this->EditStatusText->SetText(this->TilemapEditorPtr.Pin()->bEditProperty
+							                              ? LOCTEXT("Stop", "Stop Editing")
+							                              : LOCTEXT("Start", "Start Editing"));
+						return FReply::Handled();
+					})
 					[
-						SNew(STextBlock)
-						.Text(LOCTEXT("NewLevel", "Set Up New Level Spawner"))
-					]
-				]
-				+ SHorizontalBox::Slot()
-				.FillWidth(1.0f)
-				.HAlign(HAlign_Right)
-				.VAlign(VAlign_Center)
-				.Padding(2.0f)
-				[
-					SNew(SButton)
-					[
-						SNew(STextBlock)
-						.Text(LOCTEXT("FindLevel", "Find New Level Spawner"))
+						SAssignNew(EditStatusText, STextBlock)
+						.Justification(ETextJustify::Center)
+						.Text(this->TilemapEditorPtr.Pin()->bEditProperty
+							      ? LOCTEXT("Stop", "Stop Editing")
+							      : LOCTEXT("Start", "Start Editing"))
 					]
 				]
 			]

@@ -33,6 +33,8 @@ public:
 
 	TSharedPtr<STilemapEditorViewport> ViewportPtr;
 
+	bool bEditProperty;
+
 protected:
 	TSharedRef<SDockTab> SpawnTab_Viewport(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnTab_Details(const FSpawnTabArgs& Args);

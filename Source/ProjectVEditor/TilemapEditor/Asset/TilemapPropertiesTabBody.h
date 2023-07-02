@@ -12,6 +12,10 @@ public:
 private:
 	TWeakPtr<FTilemapEditorToolkit> TilemapEditorPtr;
 
+	//~ Begin Slate UI Components
+	TSharedPtr<STextBlock> EditStatusText;
+	//~ Begin Slate UI Components
+
 public:
 	void Construct(const FArguments& InArgs, TSharedPtr<FTilemapEditorToolkit> InTilemapEditor);
 

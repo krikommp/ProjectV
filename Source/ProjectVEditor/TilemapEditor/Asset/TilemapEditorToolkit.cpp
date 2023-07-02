@@ -11,6 +11,7 @@ const FName FTilemapEditorToolkit::DetailsID(TEXT("TilemapDetails"));
 
 FTilemapEditorToolkit::FTilemapEditorToolkit()
 {
+	bEditProperty = false;
 }
 
 void FTilemapEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)

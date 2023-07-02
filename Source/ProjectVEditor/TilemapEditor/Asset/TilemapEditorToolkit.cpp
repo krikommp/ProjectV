@@ -1,8 +1,12 @@
 ﻿#include "TilemapEditorToolkit.h"
+
+#include "KismetWidgets/Public/SSingleObjectDetailsPanel.h"
 #include "Tilemap/TilemapAsset.h"
+#include "TilemapEditor/TilemapEditorViewport.h"
 #define LOCTEXT_NAMESPACE "FTilemapEditorToolkit"
 
-const FName FTilemapEditorToolkit::TestTabId(TEXT("TilemapAssetEditor_TestTab"));
+const FName FTilemapEditorToolkit::ViewportID(TEXT("TilemapViewport"));
+const FName FTilemapEditorToolkit::DetailsID(TEXT("TilemapDetails"));
 
 FTilemapEditorToolkit::FTilemapEditorToolkit()
 {
@@ -11,16 +15,14 @@ FTilemapEditorToolkit::FTilemapEditorToolkit()
 void FTilemapEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
 	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
-
-	InTabManager->RegisterTabSpawner(TestTabId, FOnSpawnTab::CreateSP(this, &FTilemapEditorToolkit::SpawnTestTabs)).
-	            SetDisplayName(LOCTEXT("TilemapAssetTestTab", "TilemapAssetTestTab"));
 }
 
 void FTilemapEditorToolkit::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
 	FAssetEditorToolkit::UnregisterTabSpawners(InTabManager);
 
-	InTabManager->UnregisterTabSpawner(TestTabId);
+	InTabManager->UnregisterTabSpawner(DetailsID);
+	InTabManager->UnregisterTabSpawner(ViewportID);
 }
 
 FName FTilemapEditorToolkit::GetToolkitFName() const
@@ -60,35 +62,43 @@ void FTilemapEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TSha
 		->AddArea
 		(
 			FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
-			->Split
-			(
-				FTabManager::NewSplitter()->SetOrientation(Orient_Horizontal)->SetSizeCoefficient(0.9f)
-				->Split
-				(
-					FTabManager::NewStack()
-					->SetSizeCoefficient(0.7f)
-					->AddTab(TestTabId, ETabState::OpenedTab)
-				)
-			)
+			                             ->Split
+			                             (
+				                             FTabManager::NewSplitter()
+				                             ->SetOrientation(Orient_Horizontal)->SetSizeCoefficient(0.9f)
+				                             ->Split
+				                             (
+					                             FTabManager::NewStack()
+					                             ->SetSizeCoefficient(0.7f)
+					                             ->AddTab(ViewportID, ETabState::OpenedTab)
+				                             )
+			                             )
 		);
 
 	const bool bCreateDefaultStandaloneMenu = true;
 	const bool bCreateDefaultToolbar = true;
 	const FName AppIdentifier = TEXT("TilemapAssetEditor");
-	FAssetEditorToolkit::InitAssetEditor(Mode, InitToolkitHost, AppIdentifier, Layout, bCreateDefaultStandaloneMenu, bCreateDefaultToolbar, Asset);
+	FAssetEditorToolkit::InitAssetEditor(Mode, InitToolkitHost, AppIdentifier, Layout, bCreateDefaultStandaloneMenu,
+	                                     bCreateDefaultToolbar, Asset);
 }
 
-TSharedRef<SDockTab> FTilemapEditorToolkit::SpawnTestTabs(const FSpawnTabArgs& Args)
+TSharedRef<SDockTab> FTilemapEditorToolkit::SpawnTab_Viewport(const FSpawnTabArgs& Args)
 {
-	return
-		SNew(SDockTab)
+	return SNew(SDockTab)
+		.TabRole(NomadTab)
 		[
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot().AutoHeight()
-			[
-				SNew(SButton)
-				.Text(FText::FromString("Test"))
-			]
+			SNew(STilemapEditorViewport)
+		];
+}
+
+TSharedRef<SDockTab> FTilemapEditorToolkit::SpawnTab_Details(const FSpawnTabArgs& Args)
+{
+	TSharedRef<FTilemapEditorToolkit> EditorToolkit = SharedThis(this);
+
+	return SNew(SDockTab)
+		.Label(LOCTEXT("DetailsTab_Tile", "Details"))
+		[
+			SNew(SSingleObjectDetailsPanel, EditorToolkit)
 		];
 }
 

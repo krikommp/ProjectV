@@ -24,8 +24,11 @@ public:
 	
 	void Initialize(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, class UTilemapAsset* Asset);
 
-	TSharedRef<SDockTab> SpawnTestTabs(const FSpawnTabArgs& Args);
+protected:
+	TSharedRef<SDockTab> SpawnTab_Viewport(const FSpawnTabArgs& Args);
+	TSharedRef<SDockTab> SpawnTab_Details(const FSpawnTabArgs& Args);
 
 protected:
-	static const FName TestTabId;
+	static const FName ViewportID;
+	static const FName DetailsID;
 };

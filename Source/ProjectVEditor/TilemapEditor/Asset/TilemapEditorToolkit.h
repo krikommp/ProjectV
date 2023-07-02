@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+class STilemapEditorViewport;
+
 class FTilemapEditorToolkit : public FAssetEditorToolkit, public FGCObject
 {
 public:
@@ -23,6 +25,13 @@ public:
 	//~ Begin FSerializableObject interface
 	
 	void Initialize(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, class UTilemapAsset* Asset);
+
+public:
+	UTilemapAsset* GetTilemapBeingEdited() const { return TilemapBeingEdited; }
+	
+	TObjectPtr<UTilemapAsset> TilemapBeingEdited;
+
+	TSharedPtr<STilemapEditorViewport> ViewportPtr;
 
 protected:
 	TSharedRef<SDockTab> SpawnTab_Viewport(const FSpawnTabArgs& Args);

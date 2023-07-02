@@ -36,6 +36,7 @@ public class ProjectVEditor : ModuleRules
 				"SlateCore",
 				"ToolMenus",
 				"EditorStyle",
+				"KismetWidgets"
 			});
 		
 		DynamicallyLoadedModuleNames.AddRange(

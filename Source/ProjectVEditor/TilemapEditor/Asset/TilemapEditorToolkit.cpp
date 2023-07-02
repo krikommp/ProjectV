@@ -1,5 +1,6 @@
 ﻿#include "TilemapEditorToolkit.h"
 
+#include "TilemapPropertiesTabBody.h"
 #include "KismetWidgets/Public/SSingleObjectDetailsPanel.h"
 #include "Tilemap/TilemapAsset.h"
 #include "TilemapEditor/TilemapEditorViewport.h"
@@ -14,7 +15,23 @@ FTilemapEditorToolkit::FTilemapEditorToolkit()
 
 void FTilemapEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
+	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(
+		LOCTEXT("WorkSpaceMenu_TilemapEditor", "Tilemap Editor"));
+	auto WorkspaceMenuCategoryRef = WorkspaceMenuCategory.ToSharedRef();
+
 	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
+
+	InTabManager->RegisterTabSpawner(FTilemapEditorToolkit::ViewportID,
+	                                 FOnSpawnTab::CreateSP(this, &FTilemapEditorToolkit::SpawnTab_Viewport))
+	            .SetDisplayName(LOCTEXT("ViewportTab", "Viewport"))
+	            .SetGroup(WorkspaceMenuCategoryRef)
+	            .SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.Tabs.Viewports"));
+
+	InTabManager->RegisterTabSpawner(FTilemapEditorToolkit::DetailsID,
+	                                 FOnSpawnTab::CreateSP(this, &FTilemapEditorToolkit::SpawnTab_Details))
+	            .SetDisplayName(LOCTEXT("DetailsTabLabel", "Details"))
+	            .SetGroup(WorkspaceMenuCategoryRef)
+	            .SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.Tabs.Details"));
 }
 
 void FTilemapEditorToolkit::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
@@ -47,7 +64,7 @@ FLinearColor FTilemapEditorToolkit::GetWorldCentricTabColorScale() const
 
 void FTilemapEditorToolkit::AddReferencedObjects(FReferenceCollector& Collector)
 {
-	//Collector.AddReferencedObject()
+	Collector.AddReferencedObject(TilemapBeingEdited);
 }
 
 FString FTilemapEditorToolkit::GetReferencerName() const
@@ -58,21 +75,32 @@ FString FTilemapEditorToolkit::GetReferencerName() const
 void FTilemapEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,
                                        UTilemapAsset* Asset)
 {
+	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->CloseOtherEditors(Asset, this);
+	TilemapBeingEdited = Asset;
+
+	ViewportPtr = SNew(STilemapEditorViewport)
+		.TilemapBeingEdited(this, &FTilemapEditorToolkit::GetTilemapBeingEdited);
+
 	TSharedRef<FTabManager::FLayout> Layout = FTabManager::NewLayout("TilemapAssetEditor_Layout")
-		->AddArea
-		(
-			FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
-			                             ->Split
-			                             (
-				                             FTabManager::NewSplitter()
-				                             ->SetOrientation(Orient_Horizontal)->SetSizeCoefficient(0.9f)
-				                             ->Split
-				                             (
-					                             FTabManager::NewStack()
-					                             ->SetSizeCoefficient(0.7f)
-					                             ->AddTab(ViewportID, ETabState::OpenedTab)
-				                             )
-			                             )
+		->AddArea(
+			FTabManager::NewPrimaryArea()
+			->SetOrientation(Orient_Vertical)
+			->Split(
+				FTabManager::NewSplitter()
+				->SetOrientation(Orient_Horizontal)
+				->SetSizeCoefficient(0.9f)
+				->Split(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(0.8f)
+					->SetHideTabWell(true)
+					->AddTab(FTilemapEditorToolkit::ViewportID, ETabState::OpenedTab)
+				)
+				->Split(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(0.2f)
+					->AddTab(FTilemapEditorToolkit::DetailsID, ETabState::OpenedTab)
+				)
+			)
 		);
 
 	const bool bCreateDefaultStandaloneMenu = true;
@@ -87,7 +115,7 @@ TSharedRef<SDockTab> FTilemapEditorToolkit::SpawnTab_Viewport(const FSpawnTabArg
 	return SNew(SDockTab)
 		.TabRole(NomadTab)
 		[
-			SNew(STilemapEditorViewport)
+			ViewportPtr.ToSharedRef()
 		];
 }
 
@@ -98,7 +126,7 @@ TSharedRef<SDockTab> FTilemapEditorToolkit::SpawnTab_Details(const FSpawnTabArgs
 	return SNew(SDockTab)
 		.Label(LOCTEXT("DetailsTab_Tile", "Details"))
 		[
-			SNew(SSingleObjectDetailsPanel, EditorToolkit)
+			SNew(STilemapPropertiesTabBody, EditorToolkit)
 		];
 }
 

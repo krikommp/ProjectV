@@ -20,9 +20,9 @@ void UEditorWindowManager::Deinitialize()
 	Super::Deinitialize();
 }
 
-const UEditorWindowManager& UEditorWindowManager::Get()
+UEditorWindowManager* UEditorWindowManager::Get()
 {
-	return *GEngine->GetEngineSubsystem<UEditorWindowManager>();
+	return GEngine ? GEngine->GetEngineSubsystem<UEditorWindowManager>() : nullptr;
 }
 
 void UEditorWindowManager::RebuildEditorWindows()

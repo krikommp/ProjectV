@@ -62,7 +62,7 @@ FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpec
 	if (const UGridGameplayEffect* GridGameplayEffect = Cast<UGridGameplayEffect>(GameplayEffect.Def))
 	{
 		// 判断目标身上是否有需要的GameplayTag, 如果有则应用GameplayEffect
-		for (const FConditionalGameplayEffect& ConditionalGameplayEffect : GridGameplayEffect->ConditionalGameplayEffectsToTarget)
+		for (const FConditionalGameplayEffect& ConditionalGameplayEffect : GridGameplayEffect->GridConditionalGameplayEffectsToTarget)
 		{
 			if (GridGameplayEffect->StaticClass() == ConditionalGameplayEffect.EffectClass)
 			{

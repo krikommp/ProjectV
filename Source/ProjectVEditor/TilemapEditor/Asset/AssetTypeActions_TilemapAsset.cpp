@@ -1,5 +1,6 @@
 ﻿#include "AssetTypeActions_TilemapAsset.h"
 
+#include "TilemapEditorToolkit.h"
 #include "Tilemap/TilemapAsset.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
@@ -27,7 +28,17 @@ UClass* FAssetTypeActions_TilemapAsset::GetSupportedClass() const
 void FAssetTypeActions_TilemapAsset::OpenAssetEditor(const TArray<UObject*>& InObjects,
 	TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
-	FSimpleAssetEditor::CreateEditor(EToolkitMode::Standalone, EditWithinLevelEditor, InObjects);
+	EToolkitMode::Type Mode = EToolkitMode::Standalone;
+
+	for (auto ObjIt = InObjects.CreateConstIterator(); ObjIt; ++ObjIt)
+	{
+		auto Asset = Cast<UTilemapAsset>(*ObjIt);
+		if (Asset != NULL)
+		{
+			TSharedRef< FTilemapEditorToolkit > NewToolkit(new FTilemapEditorToolkit());
+			NewToolkit->Initialize(Mode, EditWithinLevelEditor, Asset);
+		}
+	}
 }
 
 uint32 FAssetTypeActions_TilemapAsset::GetCategories()

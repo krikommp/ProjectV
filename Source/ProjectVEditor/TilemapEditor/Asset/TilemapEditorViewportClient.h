@@ -3,6 +3,7 @@
 
 class UTilemapAsset;
 class UBoxComponent;
+class UStaticMeshComponent;
 
 class FTilemapEditorViewportClient : public FEditorViewportClient
 {
@@ -23,6 +24,7 @@ protected:
 	TObjectPtr<UTilemapAsset> TilemapBeingEdited;
 	TObjectPtr<ULineBatchComponent> LineBatcher;
 	TObjectPtr<UBoxComponent> Heightmap;
+	TObjectPtr<UStaticMeshComponent> CollisionPlane;
 
 	FTilemapEditDelegates::FOnTilemapEditStatueChanged::FDelegate OnTilemapEditStatueChangedHandle;
 	FDelegateHandle OnTilemapEditStatueChangedDelegateHandle;

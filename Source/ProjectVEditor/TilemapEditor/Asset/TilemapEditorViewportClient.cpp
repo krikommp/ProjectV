@@ -19,6 +19,9 @@ FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsse
 	Heightmap->SetBoxExtent(FVector::One() * TilemapBeingEdited->GridSize);
 	Heightmap->SetVisibility(false);
 
+	// 获取碰撞组件
+	
+
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
 

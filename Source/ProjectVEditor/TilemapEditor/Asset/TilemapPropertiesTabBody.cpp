@@ -54,6 +54,7 @@ TSharedRef<SWidget> STilemapPropertiesTabBody::PopulateSlot(TSharedRef<SWidget> 
 						this->EditStatusText->SetText(this->TilemapEditorPtr.Pin()->bEditProperty
 							                              ? LOCTEXT("Stop", "Stop Editing")
 							                              : LOCTEXT("Start", "Start Editing"));
+						this->TilemapEditorPtr.Pin()->ViewportPtr->DrawGrid(FVector::Zero(), 5, 5, 100, 100, FLinearColor::Red, 2.0f);
 						return FReply::Handled();
 					})
 					[

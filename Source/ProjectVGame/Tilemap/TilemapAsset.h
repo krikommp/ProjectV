@@ -21,15 +21,21 @@ public:
 	UPROPERTY(EditAnywhere, Category="Level Values")
 	int32 Floors = 0;
 
-	UPROPERTY(EditAnywhere, Category="Level Values")
-	int32 LevelWidth = 0;
+	UPROPERTY(EditAnywhere, Category="Level Values", meta=(DisplayName="LevelWidth"))
+	int32 LevelSizeX = 0;
 
-	UPROPERTY(EditAnywhere, Category="Level Values")
-	int32 LevelDepth = 0;
+	UPROPERTY(EditAnywhere, Category="Level Values", meta=(DisplayName="LevelDepth"))
+	int32 LevelSizeY = 0;
 
 	UPROPERTY(EditAnywhere, Category="Grid Values")
 	int32 FloorsHeight = 1;
 
 	UPROPERTY(EditAnywhere, Category="Grid Values")
-	int32 GridSize = 1;
+	int32 GridSize = 100;
+
+	UPROPERTY(EditAnywhere, Category="Grid Values")
+	int32 HeightSize = 200;
+
+	int32 GetMaxLevelHeight() const { return Floors * HeightSize; }
+	int32 GetMinLevelHeight() const { return 0; }
 };

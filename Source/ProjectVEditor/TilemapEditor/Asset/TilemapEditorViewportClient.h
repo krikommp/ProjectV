@@ -15,7 +15,8 @@ public:
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
 	//~ Begin FEditorViewportClient interface
 
-	void DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize, float ZOffset, const FLinearColor& Color, float Thickness = 3.0f) const;
+	void DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize, float ZOffset,
+	              const FLinearColor& Color, float Thickness = 3.0f) const;
 	void Clear() const;
 
 protected:
@@ -27,4 +28,6 @@ protected:
 	FDelegateHandle OnTilemapEditStatueChangedDelegateHandle;
 
 	void OnTilemapEditStatueChanged(bool Statue);
+
+	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
 };

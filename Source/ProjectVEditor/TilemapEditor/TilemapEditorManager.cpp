@@ -7,6 +7,8 @@
 #include "IAssetTools.h"
 #include "Asset/AssetTypeActions_TilemapAsset.h"
 
+FTilemapEditDelegates::FOnTilemapEditStatueChanged FTilemapEditDelegates::OnTilemapEditStatueChanged;
+
 #define LOCTEXT_NAMESPACE "UTilemapEditorManager"
 
 void UTilemapEditorManager::Initialize(FSubsystemCollectionBase& Collection)

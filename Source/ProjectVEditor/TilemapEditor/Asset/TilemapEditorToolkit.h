@@ -25,13 +25,15 @@ public:
 	//~ Begin FSerializableObject interface
 	
 	void Initialize(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, class UTilemapAsset* Asset);
-
+	
 public:
 	UTilemapAsset* GetTilemapBeingEdited() const { return TilemapBeingEdited; }
 	
 	TObjectPtr<UTilemapAsset> TilemapBeingEdited;
 
 	TSharedPtr<STilemapEditorViewport> ViewportPtr;
+
+	int32 CurrentFloor;
 
 	bool bEditProperty;
 

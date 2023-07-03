@@ -8,6 +8,12 @@
 
 class FAssetTypeActions_TilemapAsset;
 
+struct PROJECTVEDITOR_API FTilemapEditDelegates
+{
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnTilemapEditStatueChanged, bool);
+	static FOnTilemapEditStatueChanged OnTilemapEditStatueChanged;
+};
+
 /**
  * UTilemapEditorManager
  *

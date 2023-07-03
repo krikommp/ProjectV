@@ -2,9 +2,11 @@
 #include "EditorWindowExtension/EditorWindow/EditorWindowViewport.h"
 
 
+class FTilemapEditorViewportClient;
 class ULineBatchComponent;
 class UTilemapAsset;
 class FPreviewScene;
+class UBoxComponent;
 
 class STilemapEditorViewport : public SEditorViewport, public ICommonEditorViewportToolbarInfoProvider
 {
@@ -31,13 +33,13 @@ public:
 	virtual TSharedPtr<SWidget> MakeViewportToolbar() override;
 	// End of SEditorViewport interface
 
-	void DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize, float ZOffset, const FLinearColor& Color, float Thickness = 3.0f) const;
-
 protected:
 	/** SEditorViewport interface */
 	virtual TSharedRef<FEditorViewportClient> MakeEditorViewportClient() override;
 
+	TObjectPtr<UTilemapAsset> TilemapBeingEdited;
+
 	TSharedPtr<FPreviewScene> PreviewScene;
-	
-	TObjectPtr<ULineBatchComponent> LineBatcher;
+
+	TSharedPtr<FTilemapEditorViewportClient> TilemapAssetPreviewClient;
 };

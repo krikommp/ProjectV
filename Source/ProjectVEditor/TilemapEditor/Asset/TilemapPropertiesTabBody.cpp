@@ -3,6 +3,7 @@
 #include "TilemapEditorToolkit.h"
 #include "Tilemap/TilemapAsset.h"
 #include "TilemapEditorViewport.h"
+#include "TilemapEditor/TilemapEditorManager.h"
 
 #define LOCTEXT_NAMESPACE "STilemapPropertiesTabBody"
 
@@ -54,7 +55,7 @@ TSharedRef<SWidget> STilemapPropertiesTabBody::PopulateSlot(TSharedRef<SWidget> 
 						this->EditStatusText->SetText(this->TilemapEditorPtr.Pin()->bEditProperty
 							                              ? LOCTEXT("Stop", "Stop Editing")
 							                              : LOCTEXT("Start", "Start Editing"));
-						this->TilemapEditorPtr.Pin()->ViewportPtr->DrawGrid(FVector::Zero(), 5, 5, 100, 100, FLinearColor::Red, 2.0f);
+						FTilemapEditDelegates::OnTilemapEditStatueChanged.Broadcast(this->TilemapEditorPtr.Pin()->bEditProperty);
 						return FReply::Handled();
 					})
 					[

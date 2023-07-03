@@ -1,9 +1,10 @@
 #include "TilemapEditorViewport.h"
-
-#include "Components/LineBatchComponent.h"
+#include "TilemapEditorViewportClient.h"
 
 void STilemapEditorViewport::Construct(const FArguments& InArgs)
 {
+	TilemapBeingEdited = InArgs._TilemapBeingEdited.Get();
+	PreviewScene = MakeShareable(new FPreviewScene());
 	SEditorViewport::Construct(SEditorViewport::FArguments());
 }
 
@@ -35,31 +36,13 @@ TSharedPtr<SWidget> STilemapEditorViewport::MakeViewportToolbar()
 	return SNew(SCommonEditorViewportToolbarBase, SharedThis(this));
 }
 
-void STilemapEditorViewport::DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize,
-	float ZOffset, const FLinearColor& Color, float Thickness) const
-{
-	if (LineBatcher)
-	{
-		for (int32 i = 0; i <= RowCount; ++i)
-		{
-			LineBatcher->DrawLine(Location + FVector(0, i * CellSize, ZOffset), Location + FVector(ColCount * CellSize, i * CellSize, ZOffset), Color, 0, Thickness);
-		}
-
-		for (int32 i = 0; i <= ColCount; ++i)
-		{
-			LineBatcher->DrawLine(Location + FVector(i * CellSize, 0, ZOffset), Location + FVector(i * CellSize, ColCount * CellSize, ZOffset), Color, 0, Thickness);
-		}
-	}
-}
-
 TSharedRef<FEditorViewportClient> STilemapEditorViewport::MakeEditorViewportClient()
 {
-	PreviewScene = MakeShareable(new FPreviewScene());
+	if (!TilemapAssetPreviewClient.IsValid())
+	{
+		TilemapAssetPreviewClient = MakeShareable(
+			new FTilemapEditorViewportClient(TilemapBeingEdited, *PreviewScene));
+	}
 
-	LineBatcher = PreviewScene->GetLineBatcher();
-
-	TSharedPtr<FEditorViewportClient> EditorViewportClient = MakeShareable(
-		new FEditorViewportClient(nullptr, PreviewScene.Get()));
-
-	return EditorViewportClient.ToSharedRef();
+	return TilemapAssetPreviewClient.ToSharedRef();
 }

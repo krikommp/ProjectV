@@ -3,6 +3,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/LineBatchComponent.h"
 #include "Tilemap/TilemapAsset.h"
+#include "TilemapEditor/Tilemap3DEditorSettings.h"
 
 FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsset, FPreviewScene& InPreviewScene)
 	: FEditorViewportClient(nullptr, &InPreviewScene)
@@ -13,6 +14,8 @@ FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsse
 	// 获取线框绘制器
 	LineBatcher = PreviewScene->GetLineBatcher();
 
+	UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
+
 	// 获取编辑范围可视化组件
 	Heightmap = NewObject<UBoxComponent>();
 	PreviewScene->AddComponent(Heightmap, FTransform::Identity);
@@ -20,7 +23,11 @@ FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsse
 	Heightmap->SetVisibility(false);
 
 	// 获取碰撞组件
-	
+	CollisionPlane = NewObject<UStaticMeshComponent>();
+	PreviewScene->AddComponent(CollisionPlane, FTransform::Identity);
+	CollisionPlane->SetStaticMesh(Settings->CollisionMesh.LoadSynchronous());
+	CollisionPlane->SetMaterial(0, Settings->CollisionPlaneMat.LoadSynchronous());
+	CollisionPlane->SetVisibility(false);
 
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
@@ -77,6 +84,10 @@ void FTilemapEditorViewportClient::Clear() const
 	{
 		Heightmap->SetVisibility(false);
 	}
+	if (CollisionPlane)
+	{
+		CollisionPlane->SetVisibility(false);
+	}
 }
 
 void FTilemapEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
@@ -105,6 +116,17 @@ void FTilemapEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		HeightmapTransform.SetScale3D(FVector(HeightmapScaleX, HeightmapScaleY, ScaleHeight));
 		Heightmap->SetWorldTransform(HeightmapTransform);
 		Heightmap->SetVisibility(true);
+
+		// 绘制碰撞器
+		FTransform CollisionTransform;
+		float CollisionScaleX, CollisionScaleY;
+		FVector CollisionLocation;
+		GetEditRangeScaleAndLocation( CollisionLocation, CollisionScaleX,
+														 CollisionScaleY);
+		CollisionTransform.SetLocation(CollisionLocation + FVector::Zero());
+		CollisionTransform.SetScale3D(FVector(CollisionScaleX, CollisionScaleY, 1.0));
+		CollisionPlane->SetWorldTransform(CollisionTransform);
+		CollisionPlane->SetVisibility(true);
 	}
 	else
 	{

@@ -2,6 +2,7 @@
 
 #include "TilemapEditorToolkit.h"
 #include "Tilemap/TilemapAsset.h"
+#include "TilemapEditorViewport.h"
 
 #define LOCTEXT_NAMESPACE "STilemapPropertiesTabBody"
 

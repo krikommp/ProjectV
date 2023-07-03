@@ -1,9 +1,9 @@
 ﻿#include "TilemapEditorToolkit.h"
 
 #include "TilemapPropertiesTabBody.h"
-#include "KismetWidgets/Public/SSingleObjectDetailsPanel.h"
 #include "Tilemap/TilemapAsset.h"
-#include "TilemapEditor/TilemapEditorViewport.h"
+#include "TilemapEditorViewport.h"
+
 #define LOCTEXT_NAMESPACE "FTilemapEditorToolkit"
 
 const FName FTilemapEditorToolkit::ViewportID(TEXT("TilemapViewport"));

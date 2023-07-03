@@ -52,14 +52,14 @@ void FTilemapEditorViewportClient::DrawGrid(const FVector& Location, int32 RowCo
 	{
 		for (int32 i = 0; i <= RowCount; ++i)
 		{
-			LineBatcher->DrawLine(Location + FVector(0, i * CellSize, ZOffset),
-			                      Location + FVector(ColCount * CellSize, i * CellSize, ZOffset), Color, 0, Thickness);
+			LineBatcher->DrawLine(Location + FVector(i * CellSize, 0, ZOffset),
+			                      Location + FVector(i * CellSize, ColCount * CellSize, ZOffset), Color, 0, Thickness);
 		}
 
 		for (int32 i = 0; i <= ColCount; ++i)
 		{
-			LineBatcher->DrawLine(Location + FVector(i * CellSize, 0, ZOffset),
-			                      Location + FVector(i * CellSize, ColCount * CellSize, ZOffset), Color, 0, Thickness);
+			LineBatcher->DrawLine(Location + FVector(0, i * CellSize, ZOffset),
+			                      Location + FVector(RowCount * CellSize, i * CellSize, ZOffset), Color, 0, Thickness);
 		}
 	}
 }
@@ -92,8 +92,10 @@ void FTilemapEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		float HeightmapScaleX, HeightmapScaleY;
 		GetEditRangeScaleAndLocation(HeightmapLocation, HeightmapScaleX,
 		                             HeightmapScaleY);
-		const float HalfHeight = (TilemapBeingEdited->GetMaxLevelHeight() + TilemapBeingEdited->GetMinLevelHeight()) / 2.0f;
-		const float ScaleHeight = (TilemapBeingEdited->GetMaxLevelHeight() - TilemapBeingEdited->GetMinLevelHeight()) / 200.0f;
+		const float HalfHeight = (TilemapBeingEdited->GetMaxLevelHeight() + TilemapBeingEdited->GetMinLevelHeight()) /
+			2.0f;
+		const float ScaleHeight = (TilemapBeingEdited->GetMaxLevelHeight() - TilemapBeingEdited->GetMinLevelHeight()) /
+			200.0f;
 		HeightmapLocation.Z = HalfHeight;
 		FTransform HeightmapTransform;
 		HeightmapTransform.SetLocation(HeightmapLocation + FVector::Zero());
@@ -112,12 +114,8 @@ void FTilemapEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Locatio
 	ScaleX = TilemapBeingEdited->LevelSizeX * (TilemapBeingEdited->GridSize / 200.0f);
 	ScaleY = TilemapBeingEdited->LevelSizeY * (TilemapBeingEdited->GridSize / 200.0f);
 	// 注意我们需要计算的是正中间
-	const float X = (TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->GridSize / 2.0f) - (TilemapBeingEdited->
-		GridSize /
-		2.0f);
-	const float Y = (TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->GridSize) / 2.0f - (TilemapBeingEdited->
-		GridSize /
-		2.0f);
+	const float X = (TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->GridSize) / 2.0f;
+	const float Y = (TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->GridSize) / 2.0f;
 
 	Location = FVector(X, Y, 0.1);
 }

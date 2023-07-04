@@ -1,9 +1,11 @@
 #pragma once
+#include "Tilemap/TilemapAsset.h"
 #include "TilemapEditor/TilemapEditorManager.h"
 
 class UTilemapAsset;
 class UBoxComponent;
 class UStaticMeshComponent;
+class UProceduralMeshComponent;
 
 class FTilemapEditorViewportClient : public FEditorViewportClient
 {
@@ -26,11 +28,14 @@ protected:
 	TObjectPtr<ULineBatchComponent> LineBatcher;
 	TObjectPtr<UBoxComponent> Heightmap;
 	TObjectPtr<UStaticMeshComponent> CollisionPlane;
+	TObjectPtr<UProceduralMeshComponent> TerrainMesh;
 
 	float HitResultTraceDistance;
 
 	FTilemapEditDelegates::FOnTilemapEditStatueChanged::FDelegate OnTilemapEditStatueChangedHandle;
 	FDelegateHandle OnTilemapEditStatueChangedDelegateHandle;
+
+	TArray<EBlock> Blocks;
 
 	void OnTilemapEditStatueChanged(bool Statue);
 

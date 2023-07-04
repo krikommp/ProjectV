@@ -7,6 +7,20 @@
 #include "TilemapAsset.generated.h"
 
 /**
+ * EBlock
+ *
+ * Block 类型
+ */
+UENUM(BlueprintType)
+enum class EBlock : uint8
+{
+	Air = 0,
+	Cube = 1,
+	Mesh = 2,
+	Unknown UMETA(Hidden)
+};
+
+/**
  * UTilemapAsset
  *
  * 3d tilemap 资产

@@ -4,7 +4,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/LineBatchComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Tilemap/TilemapAsset.h"
+#include "ProceduralMeshComponent.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
 FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsset, FPreviewScene& InPreviewScene)
@@ -31,6 +31,10 @@ FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsse
 	CollisionPlane->SetMaterial(0, Settings->CollisionPlaneMat.LoadSynchronous());
 	CollisionPlane->SetCollisionResponseToChannel(PathTrace, ECR_Block);
 	CollisionPlane->SetVisibility(false);
+
+	// 创建地形组件
+	TerrainMesh = NewObject<UProceduralMeshComponent>();
+	PreviewScene->AddComponent(TerrainMesh, FTransform::Identity);
 
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
@@ -127,6 +131,9 @@ void FTilemapEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 	{
 		Clear();
 
+		// 初始化
+		Blocks.SetNum(TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->Floors);
+
 		// 绘制编辑区域
 		DrawGrid(FVector::Zero(), TilemapBeingEdited->LevelSizeX, TilemapBeingEdited->LevelSizeY,
 		         TilemapBeingEdited->GridSize, 0.f,
@@ -173,5 +180,5 @@ void FTilemapEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Locatio
 	const float X = (TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->GridSize) / 2.0f;
 	const float Y = (TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->GridSize) / 2.0f;
 
-	Location = FVector(X, Y, 0.1);
+	Location = FVector(X, Y, 0.f);
 }

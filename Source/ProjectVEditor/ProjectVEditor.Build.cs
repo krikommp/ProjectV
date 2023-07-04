@@ -37,7 +37,8 @@ public class ProjectVEditor : ModuleRules
 				"ToolMenus",
 				"EditorStyle",
 				"KismetWidgets",
-				"Settings"
+				"Settings",
+				"ProceduralMeshComponent"
 			});
 		
 		DynamicallyLoadedModuleNames.AddRange(

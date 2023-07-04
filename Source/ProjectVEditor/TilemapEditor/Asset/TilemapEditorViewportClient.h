@@ -27,6 +27,8 @@ protected:
 	TObjectPtr<UBoxComponent> Heightmap;
 	TObjectPtr<UStaticMeshComponent> CollisionPlane;
 
+	float HitResultTraceDistance;
+
 	FTilemapEditDelegates::FOnTilemapEditStatueChanged::FDelegate OnTilemapEditStatueChangedHandle;
 	FDelegateHandle OnTilemapEditStatueChangedDelegateHandle;
 

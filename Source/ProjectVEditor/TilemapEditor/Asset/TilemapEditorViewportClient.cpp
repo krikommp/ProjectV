@@ -29,10 +29,13 @@ FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsse
 	PreviewScene->AddComponent(CollisionPlane, FTransform::Identity);
 	CollisionPlane->SetStaticMesh(Settings->CollisionMesh.LoadSynchronous());
 	CollisionPlane->SetMaterial(0, Settings->CollisionPlaneMat.LoadSynchronous());
+	CollisionPlane->SetCollisionResponseToChannel(PathTrace, ECR_Block);
 	CollisionPlane->SetVisibility(false);
 
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
+
+	HitResultTraceDistance = 10000.0f;
 
 	OnTilemapEditStatueChangedHandle = FTilemapEditDelegates::FOnTilemapEditStatueChanged::FDelegate::CreateRaw(
 		this, &FTilemapEditorViewportClient::OnTilemapEditStatueChanged);
@@ -59,17 +62,17 @@ void FTilemapEditorViewportClient::AddReferencedObjects(FReferenceCollector& Col
 
 bool FTilemapEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	if (EventArgs.Key.ToString() == "LeftMouseButton" && EventArgs.Event == IE_Pressed)
+	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
-		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
+ 		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
+
 		FHitResult HitResult;
-		float HitResultTraceDistance = 10000.0f;
 		const TArray<AActor*> IgnoreActor;
 		UKismetSystemLibrary::LineTraceSingle(
 			GetWorld(),
 			CursorLocation.GetOrigin(),
-			CursorLocation.GetOrigin() + CursorLocation.GetDirection() + HitResultTraceDistance,
-			UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),
+			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
+			UEngineTypes::ConvertToTraceType(PathTrace),
 			false,
 			IgnoreActor,
 			EDrawDebugTrace::Persistent,
@@ -77,11 +80,7 @@ bool FTilemapEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Hit"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("No Hit"));
+			
 		}
 	}
 	return FEditorViewportClient::InputKey(EventArgs);

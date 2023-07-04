@@ -1,7 +1,9 @@
 #include "TilemapEditorViewportClient.h"
 
+#include "GridTraceChannel.h"
 #include "Components/BoxComponent.h"
 #include "Components/LineBatchComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Tilemap/TilemapAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
@@ -53,6 +55,36 @@ void FTilemapEditorViewportClient::AddReferencedObjects(FReferenceCollector& Col
 {
 	Collector.AddReferencedObject(TilemapBeingEdited);
 	Collector.AddReferencedObject(Heightmap);
+}
+
+bool FTilemapEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
+{
+	if (EventArgs.Key.ToString() == "LeftMouseButton" && EventArgs.Event == IE_Pressed)
+	{
+		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
+		FHitResult HitResult;
+		float HitResultTraceDistance = 10000.0f;
+		const TArray<AActor*> IgnoreActor;
+		UKismetSystemLibrary::LineTraceSingle(
+			GetWorld(),
+			CursorLocation.GetOrigin(),
+			CursorLocation.GetOrigin() + CursorLocation.GetDirection() + HitResultTraceDistance,
+			UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),
+			false,
+			IgnoreActor,
+			EDrawDebugTrace::Persistent,
+			HitResult,
+			false);
+		if (HitResult.bBlockingHit)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Hit"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("No Hit"));
+		}
+	}
+	return FEditorViewportClient::InputKey(EventArgs);
 }
 
 void FTilemapEditorViewportClient::DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize,
@@ -121,8 +153,8 @@ void FTilemapEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		FTransform CollisionTransform;
 		float CollisionScaleX, CollisionScaleY;
 		FVector CollisionLocation;
-		GetEditRangeScaleAndLocation( CollisionLocation, CollisionScaleX,
-														 CollisionScaleY);
+		GetEditRangeScaleAndLocation(CollisionLocation, CollisionScaleX,
+		                             CollisionScaleY);
 		CollisionTransform.SetLocation(CollisionLocation + FVector::Zero());
 		CollisionTransform.SetScale3D(FVector(CollisionScaleX, CollisionScaleY, 1.0));
 		CollisionPlane->SetWorldTransform(CollisionTransform);

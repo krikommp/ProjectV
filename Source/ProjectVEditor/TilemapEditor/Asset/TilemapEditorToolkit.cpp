@@ -12,6 +12,15 @@ const FName FTilemapEditorToolkit::DetailsID(TEXT("TilemapDetails"));
 FTilemapEditorToolkit::FTilemapEditorToolkit()
 {
 	bEditProperty = false;
+
+	bool c  = __has_trivial_destructor(UE::Math::TVector4<float>);
+	if (c)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UE::Math::TVector4<float> has trivial destruct."))
+	}else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UE::Math::TVector4<float> no trivial destruct."))
+	}
 }
 
 void FTilemapEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)

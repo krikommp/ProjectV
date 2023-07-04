@@ -14,6 +14,7 @@ public:
 	//~ Begin FEditorViewportClient interface
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+	virtual bool InputKey(const FInputKeyEventArgs& EventArgs) override;
 	//~ Begin FEditorViewportClient interface
 
 	void DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize, float ZOffset,

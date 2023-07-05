@@ -1,29 +1,20 @@
-﻿#include "TilemapEditorToolkit.h"
+﻿#include "Tilemap3DEditorToolkit.h"
 
-#include "TilemapPropertiesTabBody.h"
+#include "Tilemap3DPropertiesTabBody.h"
 #include "Tilemap/TilemapAsset.h"
-#include "TilemapEditorViewport.h"
+#include "Tilemap3DEditorViewport.h"
 
-#define LOCTEXT_NAMESPACE "FTilemapEditorToolkit"
+#define LOCTEXT_NAMESPACE "FTilemap3DEditorToolkit"
 
-const FName FTilemapEditorToolkit::ViewportID(TEXT("TilemapViewport"));
-const FName FTilemapEditorToolkit::DetailsID(TEXT("TilemapDetails"));
+const FName FTilemap3DEditorToolkit::ViewportID(TEXT("TilemapViewport"));
+const FName FTilemap3DEditorToolkit::DetailsID(TEXT("TilemapDetails"));
 
-FTilemapEditorToolkit::FTilemapEditorToolkit()
+FTilemap3DEditorToolkit::FTilemap3DEditorToolkit()
 {
 	bEditProperty = false;
-
-	bool c  = __has_trivial_destructor(UE::Math::TVector4<float>);
-	if (c)
-	{
-		UE_LOG(LogTemp, Error, TEXT("UE::Math::TVector4<float> has trivial destruct."))
-	}else
-	{
-		UE_LOG(LogTemp, Error, TEXT("UE::Math::TVector4<float> no trivial destruct."))
-	}
 }
 
-void FTilemapEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
+void FTilemap3DEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
 	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(
 		LOCTEXT("WorkSpaceMenu_TilemapEditor", "Tilemap Editor"));
@@ -31,20 +22,20 @@ void FTilemapEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager>& I
 
 	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
 
-	InTabManager->RegisterTabSpawner(FTilemapEditorToolkit::ViewportID,
-	                                 FOnSpawnTab::CreateSP(this, &FTilemapEditorToolkit::SpawnTab_Viewport))
+	InTabManager->RegisterTabSpawner(FTilemap3DEditorToolkit::ViewportID,
+	                                 FOnSpawnTab::CreateSP(this, &FTilemap3DEditorToolkit::SpawnTab_Viewport))
 	            .SetDisplayName(LOCTEXT("ViewportTab", "Viewport"))
 	            .SetGroup(WorkspaceMenuCategoryRef)
 	            .SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.Tabs.Viewports"));
 
-	InTabManager->RegisterTabSpawner(FTilemapEditorToolkit::DetailsID,
-	                                 FOnSpawnTab::CreateSP(this, &FTilemapEditorToolkit::SpawnTab_Details))
+	InTabManager->RegisterTabSpawner(FTilemap3DEditorToolkit::DetailsID,
+	                                 FOnSpawnTab::CreateSP(this, &FTilemap3DEditorToolkit::SpawnTab_Details))
 	            .SetDisplayName(LOCTEXT("DetailsTabLabel", "Details"))
 	            .SetGroup(WorkspaceMenuCategoryRef)
 	            .SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.Tabs.Details"));
 }
 
-void FTilemapEditorToolkit::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
+void FTilemap3DEditorToolkit::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
 	FAssetEditorToolkit::UnregisterTabSpawners(InTabManager);
 
@@ -52,44 +43,44 @@ void FTilemapEditorToolkit::UnregisterTabSpawners(const TSharedRef<FTabManager>&
 	InTabManager->UnregisterTabSpawner(ViewportID);
 }
 
-FName FTilemapEditorToolkit::GetToolkitFName() const
+FName FTilemap3DEditorToolkit::GetToolkitFName() const
 {
 	return FName("TilemapAssetName");
 }
 
-FText FTilemapEditorToolkit::GetBaseToolkitName() const
+FText FTilemap3DEditorToolkit::GetBaseToolkitName() const
 {
 	return LOCTEXT("TilemapAssetLabel", "TilemapAssetBase");
 }
 
-FString FTilemapEditorToolkit::GetWorldCentricTabPrefix() const
+FString FTilemap3DEditorToolkit::GetWorldCentricTabPrefix() const
 {
 	return LOCTEXT("TilemapAssetTabPrefix", "TilemapAssetPrefix ").ToString();
 }
 
-FLinearColor FTilemapEditorToolkit::GetWorldCentricTabColorScale() const
+FLinearColor FTilemap3DEditorToolkit::GetWorldCentricTabColorScale() const
 {
 	return FLinearColor(0, 0.5f, 0.6f, 0.5f);
 }
 
-void FTilemapEditorToolkit::AddReferencedObjects(FReferenceCollector& Collector)
+void FTilemap3DEditorToolkit::AddReferencedObjects(FReferenceCollector& Collector)
 {
 	Collector.AddReferencedObject(TilemapBeingEdited);
 }
 
-FString FTilemapEditorToolkit::GetReferencerName() const
+FString FTilemap3DEditorToolkit::GetReferencerName() const
 {
-	return TEXT("FTilemapEditorToolkit");
+	return TEXT("FTilemap3DEditorToolkit");
 }
 
-void FTilemapEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,
+void FTilemap3DEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,
                                        UTilemapAsset* Asset)
 {
 	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->CloseOtherEditors(Asset, this);
 	TilemapBeingEdited = Asset;
 
-	ViewportPtr = SNew(STilemapEditorViewport)
-		.TilemapBeingEdited(this, &FTilemapEditorToolkit::GetTilemapBeingEdited);
+	ViewportPtr = SNew(STilemap3DEditorViewport)
+		.TilemapBeingEdited(this, &FTilemap3DEditorToolkit::GetTilemapBeingEdited);
 
 	TSharedRef<FTabManager::FLayout> Layout = FTabManager::NewLayout("TilemapAssetEditor_Layout")
 		->AddArea(
@@ -103,12 +94,12 @@ void FTilemapEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TSha
 					FTabManager::NewStack()
 					->SetSizeCoefficient(0.8f)
 					->SetHideTabWell(true)
-					->AddTab(FTilemapEditorToolkit::ViewportID, ETabState::OpenedTab)
+					->AddTab(FTilemap3DEditorToolkit::ViewportID, ETabState::OpenedTab)
 				)
 				->Split(
 					FTabManager::NewStack()
 					->SetSizeCoefficient(0.2f)
-					->AddTab(FTilemapEditorToolkit::DetailsID, ETabState::OpenedTab)
+					->AddTab(FTilemap3DEditorToolkit::DetailsID, ETabState::OpenedTab)
 				)
 			)
 		);
@@ -120,7 +111,7 @@ void FTilemapEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TSha
 	                                     bCreateDefaultToolbar, Asset);
 }
 
-TSharedRef<SDockTab> FTilemapEditorToolkit::SpawnTab_Viewport(const FSpawnTabArgs& Args)
+TSharedRef<SDockTab> FTilemap3DEditorToolkit::SpawnTab_Viewport(const FSpawnTabArgs& Args)
 {
 	return SNew(SDockTab)
 		.TabRole(NomadTab)
@@ -129,14 +120,14 @@ TSharedRef<SDockTab> FTilemapEditorToolkit::SpawnTab_Viewport(const FSpawnTabArg
 		];
 }
 
-TSharedRef<SDockTab> FTilemapEditorToolkit::SpawnTab_Details(const FSpawnTabArgs& Args)
+TSharedRef<SDockTab> FTilemap3DEditorToolkit::SpawnTab_Details(const FSpawnTabArgs& Args)
 {
-	TSharedRef<FTilemapEditorToolkit> EditorToolkit = SharedThis(this);
+	TSharedRef<FTilemap3DEditorToolkit> EditorToolkit = SharedThis(this);
 
 	return SNew(SDockTab)
 		.Label(LOCTEXT("DetailsTab_Tile", "Details"))
 		[
-			SNew(STilemapPropertiesTabBody, EditorToolkit)
+			SNew(STilemap3DPropertiesTabBody, EditorToolkit)
 		];
 }
 

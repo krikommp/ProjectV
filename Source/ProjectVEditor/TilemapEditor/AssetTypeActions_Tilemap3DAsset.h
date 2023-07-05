@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include "AssetTypeActions_Base.h"
 
-class FAssetTypeActions_TilemapAsset : public FAssetTypeActions_Base
+class FAssetTypeActions_Tilemap3DAsset : public FAssetTypeActions_Base
 {
 public:
-	FAssetTypeActions_TilemapAsset(EAssetTypeCategories::Type InAssetCategory);
+	FAssetTypeActions_Tilemap3DAsset(EAssetTypeCategories::Type InAssetCategory);
 
 	//~ Begin IAssetTypeActions interface
 	virtual FText GetName() const override;

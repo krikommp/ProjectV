@@ -1,17 +1,17 @@
 #pragma once
 #include "Tilemap/TilemapAsset.h"
-#include "TilemapEditor/TilemapEditorManager.h"
+#include "Tilemap3DEditorManager.h"
 
 class UTilemapAsset;
 class UBoxComponent;
 class UStaticMeshComponent;
 class UProceduralMeshComponent;
 
-class FTilemapEditorViewportClient : public FEditorViewportClient
+class FTilemap3DEditorViewportClient : public FEditorViewportClient
 {
 public:
-	explicit FTilemapEditorViewportClient(UTilemapAsset* InAsset, FPreviewScene& InPreviewScene);
-	virtual ~FTilemapEditorViewportClient() override;
+	explicit FTilemap3DEditorViewportClient(UTilemapAsset* InAsset, FPreviewScene& InPreviewScene);
+	virtual ~FTilemap3DEditorViewportClient() override;
 
 	//~ Begin FEditorViewportClient interface
 	virtual void Tick(float DeltaSeconds) override;
@@ -32,7 +32,7 @@ protected:
 
 	float HitResultTraceDistance;
 
-	FTilemapEditDelegates::FOnTilemapEditStatueChanged::FDelegate OnTilemapEditStatueChangedHandle;
+	FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate OnTilemapEditStatueChangedHandle;
 	FDelegateHandle OnTilemapEditStatueChangedDelegateHandle;
 
 	TArray<EBlock> Blocks;
@@ -40,4 +40,6 @@ protected:
 	void OnTilemapEditStatueChanged(bool Statue);
 
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
+
+	int32 VectorToIndex(const FVector& Location, int32 Floor) const;
 };

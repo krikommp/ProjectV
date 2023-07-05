@@ -1,23 +1,23 @@
 #pragma once
 #include "SSingleObjectDetailsPanel.h"
 
-class FTilemapEditorToolkit;
+class FTilemap3DEditorToolkit;
 
-class STilemapPropertiesTabBody : public SSingleObjectDetailsPanel
+class STilemap3DPropertiesTabBody : public SSingleObjectDetailsPanel
 {
 public:
-	SLATE_BEGIN_ARGS(STilemapPropertiesTabBody) {}
+	SLATE_BEGIN_ARGS(STilemap3DPropertiesTabBody) {}
 	SLATE_END_ARGS()
 
 private:
-	TWeakPtr<FTilemapEditorToolkit> TilemapEditorPtr;
+	TWeakPtr<FTilemap3DEditorToolkit> TilemapEditorPtr;
 
 	//~ Begin Slate UI Components
 	TSharedPtr<STextBlock> EditStatusText;
 	//~ Begin Slate UI Components
 
 public:
-	void Construct(const FArguments& InArgs, TSharedPtr<FTilemapEditorToolkit> InTilemapEditor);
+	void Construct(const FArguments& InArgs, TSharedPtr<FTilemap3DEditorToolkit> InTilemapEditor);
 
 	//~ Begin SSingleObjectDetailsPanel interface
 	virtual UObject* GetObjectToObserve() const override;

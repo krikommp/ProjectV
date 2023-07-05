@@ -1,11 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TilemapAssetFactory.h"
+#include "Tilemap3DAssetFactory.h"
 
 #include "Tilemap/TilemapAsset.h"
 
-UTilemapAssetFactory::UTilemapAssetFactory(const FObjectInitializer& ObjectInitializer)
+UTilemapAsset3DFactory::UTilemapAsset3DFactory(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
 	bCreateNew = true;
@@ -13,7 +13,7 @@ UTilemapAssetFactory::UTilemapAssetFactory(const FObjectInitializer& ObjectIniti
 	SupportedClass = UTilemapAsset::StaticClass();
 }
 
-UObject* UTilemapAssetFactory::FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags,
+UObject* UTilemapAsset3DFactory::FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags,
 	UObject* Context, FFeedbackContext* Warn, FName CallingContext)
 {
 	UTilemapAsset* MyAsset = NewObject<UTilemapAsset>(InParent, InName, Flags | RF_Transactional);

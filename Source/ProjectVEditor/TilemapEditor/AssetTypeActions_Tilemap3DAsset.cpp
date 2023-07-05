@@ -1,31 +1,31 @@
-﻿#include "AssetTypeActions_TilemapAsset.h"
+﻿#include "AssetTypeActions_Tilemap3DAsset.h"
 
-#include "TilemapEditorToolkit.h"
+#include "Tilemap3DEditorToolkit.h"
 #include "Tilemap/TilemapAsset.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
 
-FAssetTypeActions_TilemapAsset::FAssetTypeActions_TilemapAsset(EAssetTypeCategories::Type InAssetCategory)
+FAssetTypeActions_Tilemap3DAsset::FAssetTypeActions_Tilemap3DAsset(EAssetTypeCategories::Type InAssetCategory)
 	: MyAssetCategory(InAssetCategory)
 {
 }
 
-FText FAssetTypeActions_TilemapAsset::GetName() const
+FText FAssetTypeActions_Tilemap3DAsset::GetName() const
 {
 	return LOCTEXT("FAssetTypeActions_TilemapAssetName", "3D Tilemap");
 }
 
-FColor FAssetTypeActions_TilemapAsset::GetTypeColor() const
+FColor FAssetTypeActions_Tilemap3DAsset::GetTypeColor() const
 {
 	return FColor(129, 196, 115);
 }
 
-UClass* FAssetTypeActions_TilemapAsset::GetSupportedClass() const
+UClass* FAssetTypeActions_Tilemap3DAsset::GetSupportedClass() const
 {
 	return UTilemapAsset::StaticClass();
 }
 
-void FAssetTypeActions_TilemapAsset::OpenAssetEditor(const TArray<UObject*>& InObjects,
+void FAssetTypeActions_Tilemap3DAsset::OpenAssetEditor(const TArray<UObject*>& InObjects,
 	TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
 	EToolkitMode::Type Mode = EToolkitMode::Standalone;
@@ -35,13 +35,13 @@ void FAssetTypeActions_TilemapAsset::OpenAssetEditor(const TArray<UObject*>& InO
 		auto Asset = Cast<UTilemapAsset>(*ObjIt);
 		if (Asset != NULL)
 		{
-			TSharedRef< FTilemapEditorToolkit > NewToolkit(new FTilemapEditorToolkit());
+			TSharedRef< FTilemap3DEditorToolkit > NewToolkit(new FTilemap3DEditorToolkit());
 			NewToolkit->Initialize(Mode, EditWithinLevelEditor, Asset);
 		}
 	}
 }
 
-uint32 FAssetTypeActions_TilemapAsset::GetCategories()
+uint32 FAssetTypeActions_Tilemap3DAsset::GetCategories()
 {
 	return MyAssetCategory;
 }

@@ -1,13 +1,13 @@
-#include "TilemapPropertiesTabBody.h"
+#include "Tilemap3DPropertiesTabBody.h"
 
-#include "TilemapEditorToolkit.h"
+#include "Tilemap3DEditorToolkit.h"
 #include "Tilemap/TilemapAsset.h"
-#include "TilemapEditorViewport.h"
-#include "TilemapEditor/TilemapEditorManager.h"
+#include "Tilemap3DEditorViewport.h"
+#include "Tilemap3DEditorManager.h"
 
-#define LOCTEXT_NAMESPACE "STilemapPropertiesTabBody"
+#define LOCTEXT_NAMESPACE "STilemap3DPropertiesTabBody"
 
-void STilemapPropertiesTabBody::Construct(const FArguments& InArgs, TSharedPtr<FTilemapEditorToolkit> InTilemapEditor)
+void STilemap3DPropertiesTabBody::Construct(const FArguments& InArgs, TSharedPtr<FTilemap3DEditorToolkit> InTilemapEditor)
 {
 	TilemapEditorPtr = InTilemapEditor;
 
@@ -17,12 +17,12 @@ void STilemapPropertiesTabBody::Construct(const FArguments& InArgs, TSharedPtr<F
 		/*bAutomaticallyObserveViaGetObjectToObserve=*/ true, /*bAllowSearch=*/ true);
 }
 
-UObject* STilemapPropertiesTabBody::GetObjectToObserve() const
+UObject* STilemap3DPropertiesTabBody::GetObjectToObserve() const
 {
 	return TilemapEditorPtr.Pin()->GetTilemapBeingEdited();
 }
 
-TSharedRef<SWidget> STilemapPropertiesTabBody::PopulateSlot(TSharedRef<SWidget> PropertyEditorWidget)
+TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget> PropertyEditorWidget)
 {
 	PropertyEditorWidget->SetEnabled(TAttribute<bool>::Create([this]()-> bool
 	{
@@ -55,7 +55,7 @@ TSharedRef<SWidget> STilemapPropertiesTabBody::PopulateSlot(TSharedRef<SWidget> 
 						this->EditStatusText->SetText(this->TilemapEditorPtr.Pin()->bEditProperty
 							                              ? LOCTEXT("Stop", "Stop Editing")
 							                              : LOCTEXT("Start", "Start Editing"));
-						FTilemapEditDelegates::OnTilemapEditStatueChanged.Broadcast(this->TilemapEditorPtr.Pin()->bEditProperty);
+						FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(this->TilemapEditorPtr.Pin()->bEditProperty);
 						return FReply::Handled();
 					})
 					[

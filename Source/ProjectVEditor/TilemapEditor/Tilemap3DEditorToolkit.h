@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-class STilemapEditorViewport;
+class STilemap3DEditorViewport;
 
-class FTilemapEditorToolkit : public FAssetEditorToolkit, public FGCObject
+class FTilemap3DEditorToolkit : public FAssetEditorToolkit, public FGCObject
 {
 public:
-	FTilemapEditorToolkit();
+	FTilemap3DEditorToolkit();
 
 	//~ Begin IToolkit interface
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
@@ -31,7 +31,7 @@ public:
 	
 	TObjectPtr<UTilemapAsset> TilemapBeingEdited;
 
-	TSharedPtr<STilemapEditorViewport> ViewportPtr;
+	TSharedPtr<STilemap3DEditorViewport> ViewportPtr;
 
 	int32 CurrentFloor;
 

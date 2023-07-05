@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "TilemapEditorManager.generated.h"
+#include "Tilemap3DEditorManager.generated.h"
 
-class FAssetTypeActions_TilemapAsset;
+class FAssetTypeActions_Tilemap3DAsset;
 
-struct PROJECTVEDITOR_API FTilemapEditDelegates
+struct PROJECTVEDITOR_API FTilemap3DEditDelegates
 {
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnTilemapEditStatueChanged, bool);
 	static FOnTilemapEditStatueChanged OnTilemapEditStatueChanged;
@@ -20,7 +20,7 @@ struct PROJECTVEDITOR_API FTilemapEditDelegates
  * Tilemap 编辑管理器
  */
 UCLASS()
-class PROJECTVEDITOR_API UTilemapEditorManager final : public UEngineSubsystem
+class PROJECTVEDITOR_API UTilemap3DEditorManager final : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
@@ -31,5 +31,5 @@ public:
 	//~ Begin UEngineSubsystem interface
 
 private:
-	TSharedPtr<FAssetTypeActions_TilemapAsset> ActionType;
+	TSharedPtr<FAssetTypeActions_Tilemap3DAsset> ActionType;
 };

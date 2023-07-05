@@ -1,19 +1,19 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TilemapEditorManager.h"
+#include "Tilemap3DEditorManager.h"
 
 #include "AssetToolsModule.h"
 #include "IAssetTools.h"
 #include "ISettingsModule.h"
 #include "Tilemap3DEditorSettings.h"
-#include "Asset/AssetTypeActions_TilemapAsset.h"
+#include "AssetTypeActions_Tilemap3DAsset.h"
 
-FTilemapEditDelegates::FOnTilemapEditStatueChanged FTilemapEditDelegates::OnTilemapEditStatueChanged;
+FTilemap3DEditDelegates::FOnTilemapEditStatueChanged FTilemap3DEditDelegates::OnTilemapEditStatueChanged;
 
 #define LOCTEXT_NAMESPACE "UTilemapEditorManager"
 
-void UTilemapEditorManager::Initialize(FSubsystemCollectionBase& Collection)
+void UTilemap3DEditorManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
@@ -21,7 +21,7 @@ void UTilemapEditorManager::Initialize(FSubsystemCollectionBase& Collection)
 	IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 	// 定义资产分类名
 	const EAssetTypeCategories::Type AssetCategory = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("Tilemap")), FText::FromName(TEXT("Tilemap")));
-	ActionType = MakeShareable(new FAssetTypeActions_TilemapAsset(AssetCategory));
+	ActionType = MakeShareable(new FAssetTypeActions_Tilemap3DAsset(AssetCategory));
 	AssetTools.RegisterAssetTypeActions(ActionType.ToSharedRef());
 
 	// 注册配置菜单
@@ -36,7 +36,7 @@ void UTilemapEditorManager::Initialize(FSubsystemCollectionBase& Collection)
 #endif
 }
 
-void UTilemapEditorManager::Deinitialize()
+void UTilemap3DEditorManager::Deinitialize()
 {
 	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
 	{

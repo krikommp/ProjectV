@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 
-#include "TilemapAssetFactory.generated.h"
+#include "Tilemap3DAssetFactory.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTVEDITOR_API UTilemapAssetFactory : public UFactory
+class PROJECTVEDITOR_API UTilemapAsset3DFactory : public UFactory
 {
 	GENERATED_UCLASS_BODY()
 

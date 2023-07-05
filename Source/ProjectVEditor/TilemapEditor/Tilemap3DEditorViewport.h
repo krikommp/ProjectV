@@ -2,16 +2,16 @@
 #include "EditorWindowExtension/EditorWindow/EditorWindowViewport.h"
 
 
-class FTilemapEditorViewportClient;
+class FTilemap3DEditorViewportClient;
 class ULineBatchComponent;
 class UTilemapAsset;
 class FPreviewScene;
 class UBoxComponent;
 
-class STilemapEditorViewport : public SEditorViewport, public ICommonEditorViewportToolbarInfoProvider
+class STilemap3DEditorViewport : public SEditorViewport, public ICommonEditorViewportToolbarInfoProvider
 {
 public:
-	SLATE_BEGIN_ARGS(STilemapEditorViewport)
+	SLATE_BEGIN_ARGS(STilemap3DEditorViewport)
 		:_TilemapBeingEdited((UTilemapAsset*)nullptr)
 		{
 		}
@@ -20,8 +20,8 @@ public:
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
-	STilemapEditorViewport();
-	virtual ~STilemapEditorViewport() override;
+	STilemap3DEditorViewport();
+	virtual ~STilemap3DEditorViewport() override;
 
 	// ICommonEditorViewportToolbarInfoProvider interface
 	virtual TSharedRef<class SEditorViewport> GetViewportWidget() override;
@@ -41,5 +41,5 @@ protected:
 
 	TSharedPtr<FPreviewScene> PreviewScene;
 
-	TSharedPtr<FTilemapEditorViewportClient> TilemapAssetPreviewClient;
+	TSharedPtr<FTilemap3DEditorViewportClient> TilemapAssetPreviewClient;
 };

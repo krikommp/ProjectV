@@ -1,4 +1,4 @@
-#include "TilemapEditorViewportClient.h"
+#include "Tilemap3DEditorViewportClient.h"
 
 #include "GridTraceChannel.h"
 #include "Components/BoxComponent.h"
@@ -7,7 +7,7 @@
 #include "ProceduralMeshComponent.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
-FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsset, FPreviewScene& InPreviewScene)
+FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(UTilemapAsset* InAsset, FPreviewScene& InPreviewScene)
 	: FEditorViewportClient(nullptr, &InPreviewScene)
 	  , TilemapBeingEdited(InAsset)
 {
@@ -41,34 +41,34 @@ FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsse
 
 	HitResultTraceDistance = 10000.0f;
 
-	OnTilemapEditStatueChangedHandle = FTilemapEditDelegates::FOnTilemapEditStatueChanged::FDelegate::CreateRaw(
-		this, &FTilemapEditorViewportClient::OnTilemapEditStatueChanged);
-	OnTilemapEditStatueChangedDelegateHandle = FTilemapEditDelegates::OnTilemapEditStatueChanged.Add(
+	OnTilemapEditStatueChangedHandle = FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate::CreateRaw(
+		this, &FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged);
+	OnTilemapEditStatueChangedDelegateHandle = FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Add(
 		OnTilemapEditStatueChangedHandle);
 }
 
-FTilemapEditorViewportClient::~FTilemapEditorViewportClient()
+FTilemap3DEditorViewportClient::~FTilemap3DEditorViewportClient()
 {
-	FTilemapEditDelegates::OnTilemapEditStatueChanged.Remove(OnTilemapEditStatueChangedDelegateHandle);
+	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Remove(OnTilemapEditStatueChangedDelegateHandle);
 }
 
-void FTilemapEditorViewportClient::Tick(float DeltaSeconds)
+void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
 {
 	FEditorViewportClient::Tick(DeltaSeconds);
 	PreviewScene->GetWorld()->Tick(LEVELTICK_All, DeltaSeconds);
 }
 
-void FTilemapEditorViewportClient::AddReferencedObjects(FReferenceCollector& Collector)
+void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& Collector)
 {
 	Collector.AddReferencedObject(TilemapBeingEdited);
 	Collector.AddReferencedObject(Heightmap);
 }
 
-bool FTilemapEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
+bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
- 		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
+		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
 
 		FHitResult HitResult;
 		const TArray<AActor*> IgnoreActor;
@@ -84,13 +84,17 @@ bool FTilemapEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			
+			int32 Index = VectorToIndex(HitResult.Location, 0);
+			if (Blocks.IsValidIndex(Index))
+			{
+				Blocks[Index] = EBlock::Cube;
+			}
 		}
 	}
 	return FEditorViewportClient::InputKey(EventArgs);
 }
 
-void FTilemapEditorViewportClient::DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize,
+void FTilemap3DEditorViewportClient::DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize,
                                             float ZOffset, const FLinearColor& Color, float Thickness) const
 {
 	if (LineBatcher)
@@ -109,7 +113,7 @@ void FTilemapEditorViewportClient::DrawGrid(const FVector& Location, int32 RowCo
 	}
 }
 
-void FTilemapEditorViewportClient::Clear() const
+void FTilemap3DEditorViewportClient::Clear() const
 {
 	if (LineBatcher)
 	{
@@ -125,7 +129,7 @@ void FTilemapEditorViewportClient::Clear() const
 	}
 }
 
-void FTilemapEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
+void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 {
 	if (Statue)
 	{
@@ -135,7 +139,8 @@ void FTilemapEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		Blocks.SetNum(TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->Floors);
 
 		// 绘制编辑区域
-		DrawGrid(-1 * FVector(TilemapBeingEdited->GridSize / 2.0f, TilemapBeingEdited->GridSize / 2.0f, 0.0f), TilemapBeingEdited->LevelSizeX, TilemapBeingEdited->LevelSizeY,
+		DrawGrid(-1 * FVector(TilemapBeingEdited->GridSize / 2.0f, TilemapBeingEdited->GridSize / 2.0f, 0.0f),
+		         TilemapBeingEdited->LevelSizeX, TilemapBeingEdited->LevelSizeY,
 		         TilemapBeingEdited->GridSize, 0.f,
 		         FLinearColor::White);
 
@@ -172,13 +177,35 @@ void FTilemapEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 	}
 }
 
-void FTilemapEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const
+void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const
 {
 	ScaleX = TilemapBeingEdited->LevelSizeX * (TilemapBeingEdited->GridSize / 200.0f);
 	ScaleY = TilemapBeingEdited->LevelSizeY * (TilemapBeingEdited->GridSize / 200.0f);
 	// 注意我们需要计算的是正中间
-	const float X = (TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->GridSize) / 2.0f - TilemapBeingEdited->GridSize / 2.0f;
-	const float Y = (TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->GridSize) / 2.0f - TilemapBeingEdited->GridSize / 2.0f;
+	const float X = (TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->GridSize) / 2.0f - TilemapBeingEdited->
+		GridSize / 2.0f;
+	const float Y = (TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->GridSize) / 2.0f - TilemapBeingEdited->
+		GridSize / 2.0f;
 
 	Location = FVector(X, Y, 0.f);
+}
+
+int32 FTilemap3DEditorViewportClient::VectorToIndex(const FVector& Location, int32 Floor) const
+{
+	const float PivotX = (TilemapBeingEdited->GridSize * 0.5) + Location.X;
+	const float PivotY = (TilemapBeingEdited->GridSize * 0.5) + Location.Y;
+
+	const float ModX = FMath::Floor(FMath::Fmod(PivotX, TilemapBeingEdited->GridSize));
+	const float ModY = FMath::Floor(FMath::Fmod(PivotY, TilemapBeingEdited->GridSize));
+
+	const int AddX = ModX ? 1 : 0;
+	const int AddY = ModY ? 1 : 0;
+
+	const int X = FMath::Floor(((PivotX + AddX)) / TilemapBeingEdited->GridSize);
+	const int Y = FMath::Floor(((PivotY + AddY)) / TilemapBeingEdited->GridSize) *
+		TilemapBeingEdited->LevelSizeX;
+
+	const int32 Result = X + Y;
+
+	return Result + TilemapBeingEdited->GridSize * TilemapBeingEdited->GridSize * Floor;
 }

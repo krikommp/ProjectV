@@ -16,7 +16,7 @@ FTilemapEditorViewportClient::FTilemapEditorViewportClient(UTilemapAsset* InAsse
 	// 获取线框绘制器
 	LineBatcher = PreviewScene->GetLineBatcher();
 
-	UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
+	const UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
 
 	// 获取编辑范围可视化组件
 	Heightmap = NewObject<UBoxComponent>();
@@ -79,7 +79,7 @@ bool FTilemapEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 			UEngineTypes::ConvertToTraceType(PathTrace),
 			false,
 			IgnoreActor,
-			EDrawDebugTrace::Persistent,
+			EDrawDebugTrace::None,
 			HitResult,
 			false);
 		if (HitResult.bBlockingHit)
@@ -135,7 +135,7 @@ void FTilemapEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		Blocks.SetNum(TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->Floors);
 
 		// 绘制编辑区域
-		DrawGrid(FVector::Zero(), TilemapBeingEdited->LevelSizeX, TilemapBeingEdited->LevelSizeY,
+		DrawGrid(-1 * FVector(TilemapBeingEdited->GridSize / 2.0f, TilemapBeingEdited->GridSize / 2.0f, 0.0f), TilemapBeingEdited->LevelSizeX, TilemapBeingEdited->LevelSizeY,
 		         TilemapBeingEdited->GridSize, 0.f,
 		         FLinearColor::White);
 
@@ -177,8 +177,8 @@ void FTilemapEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Locatio
 	ScaleX = TilemapBeingEdited->LevelSizeX * (TilemapBeingEdited->GridSize / 200.0f);
 	ScaleY = TilemapBeingEdited->LevelSizeY * (TilemapBeingEdited->GridSize / 200.0f);
 	// 注意我们需要计算的是正中间
-	const float X = (TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->GridSize) / 2.0f;
-	const float Y = (TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->GridSize) / 2.0f;
+	const float X = (TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->GridSize) / 2.0f - TilemapBeingEdited->GridSize / 2.0f;
+	const float Y = (TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->GridSize) / 2.0f - TilemapBeingEdited->GridSize / 2.0f;
 
 	Location = FVector(X, Y, 0.f);
 }

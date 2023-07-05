@@ -41,15 +41,19 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(UTilemapAsset* In
 
 	HitResultTraceDistance = 10000.0f;
 
-	OnTilemapEditStatueChangedHandle = FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate::CreateRaw(
+	OnTilemapEditStatueChangedDelegate = FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate::CreateRaw(
 		this, &FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged);
 	OnTilemapEditStatueChangedDelegateHandle = FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Add(
-		OnTilemapEditStatueChangedHandle);
+		OnTilemapEditStatueChangedDelegate);
+
+	OnTilemapModelChangedDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FTilemap3DEditorViewportClient::OnTilemapModelChanged);
+	OnTilemapModelChangedDelegateHandle = FTilemap3DEditDelegates::OnTilemapModelChanged.Add(OnTilemapModelChangedDelegate);
 }
 
 FTilemap3DEditorViewportClient::~FTilemap3DEditorViewportClient()
 {
 	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Remove(OnTilemapEditStatueChangedDelegateHandle);
+	FTilemap3DEditDelegates::OnTilemapModelChanged.Remove(OnTilemapModelChangedDelegateHandle);
 }
 
 void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
@@ -61,7 +65,6 @@ void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
 void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& Collector)
 {
 	Collector.AddReferencedObject(TilemapBeingEdited);
-	Collector.AddReferencedObject(Heightmap);
 }
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
@@ -85,9 +88,10 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 		if (HitResult.bBlockingHit)
 		{
 			int32 Index = VectorToIndex(HitResult.Location, 0);
-			if (Blocks.IsValidIndex(Index))
+			if (TilemapBeingEdited->Blocks.IsValidIndex(Index))
 			{
-				Blocks[Index] = EBlock::Cube;
+				TilemapBeingEdited->Blocks[Index] = EBlock::Cube;
+				FTilemap3DEditDelegates::OnTilemapModelChanged.Broadcast();
 			}
 		}
 	}
@@ -136,7 +140,7 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		Clear();
 
 		// 初始化
-		Blocks.SetNum(TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->Floors);
+		TilemapBeingEdited->Blocks.SetNum(TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->Floors);
 
 		// 绘制编辑区域
 		DrawGrid(-1 * FVector(TilemapBeingEdited->GridSize / 2.0f, TilemapBeingEdited->GridSize / 2.0f, 0.0f),
@@ -174,6 +178,23 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 	else
 	{
 		Clear();
+	}
+}
+
+void FTilemap3DEditorViewportClient::OnTilemapModelChanged()
+{
+	for (int32 x = 0; x < TilemapBeingEdited->LevelSizeX; ++x)
+	{
+		for (int32 y = 0; y < TilemapBeingEdited->LevelSizeY; ++y)
+		{
+			for (int32 z = 0; z < TilemapBeingEdited->Floors; ++z)
+			{
+				if (TilemapBeingEdited->Blocks[TilemapBeingEdited->GetBlockIndex(x, y, z)] != EBlock::Air)
+				{
+					
+				}
+			}
+		}
 	}
 }
 

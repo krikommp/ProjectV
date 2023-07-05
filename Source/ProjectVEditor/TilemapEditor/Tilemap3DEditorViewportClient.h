@@ -32,12 +32,13 @@ protected:
 
 	float HitResultTraceDistance;
 
-	FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate OnTilemapEditStatueChangedHandle;
+	FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate OnTilemapEditStatueChangedDelegate;
 	FDelegateHandle OnTilemapEditStatueChangedDelegateHandle;
-
-	TArray<EBlock> Blocks;
+	FSimpleMulticastDelegate::FDelegate OnTilemapModelChangedDelegate;
+	FDelegateHandle OnTilemapModelChangedDelegateHandle;
 
 	void OnTilemapEditStatueChanged(bool Statue);
+	void OnTilemapModelChanged();
 
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
 

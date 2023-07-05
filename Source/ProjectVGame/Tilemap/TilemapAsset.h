@@ -48,8 +48,12 @@ public:
 	int32 GridSize = 100;
 
 	UPROPERTY(EditAnywhere, Category="Grid Values")
-	int32 HeightSize = 200;
+	int32 HeightSize = 100;
+
+	UPROPERTY()
+	TArray<EBlock> Blocks;
 
 	int32 GetMaxLevelHeight() const { return Floors * HeightSize; }
 	int32 GetMinLevelHeight() const { return 0; }
+	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const { return Z * LevelSizeX * LevelSizeY + Y * LevelSizeX + X; }
 };

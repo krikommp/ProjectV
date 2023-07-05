@@ -10,6 +10,7 @@
 #include "AssetTypeActions_Tilemap3DAsset.h"
 
 FTilemap3DEditDelegates::FOnTilemapEditStatueChanged FTilemap3DEditDelegates::OnTilemapEditStatueChanged;
+FSimpleMulticastDelegate FTilemap3DEditDelegates::OnTilemapModelChanged;
 
 #define LOCTEXT_NAMESPACE "UTilemapEditorManager"
 

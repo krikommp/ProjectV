@@ -20,6 +20,15 @@ enum class EBlock : uint8
 	Unknown UMETA(Hidden)
 };
 
+USTRUCT(BlueprintType)
+struct FBlock
+{
+	GENERATED_BODY()
+	
+	EBlock Type = EBlock::Air;
+	bool bMarked = false;
+};
+
 /**
  * UTilemapAsset
  *
@@ -51,7 +60,7 @@ public:
 	int32 HeightSize = 100;
 
 	UPROPERTY()
-	TArray<EBlock> Blocks;
+	TArray<FBlock> Blocks;
 
 	int32 GetMaxLevelHeight() const { return Floors * HeightSize; }
 	int32 GetMinLevelHeight() const { return 0; }

@@ -5,6 +5,7 @@
 #include "Components/LineBatchComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProceduralMeshComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
 FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(UTilemapAsset* InAsset, FPreviewScene& InPreviewScene)
@@ -35,6 +36,9 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(UTilemapAsset* In
 	// 创建地形组件
 	TerrainMesh = NewObject<UProceduralMeshComponent>();
 	PreviewScene->AddComponent(TerrainMesh, FTransform::Identity);
+	TerrainInstancedMesh = NewObject<UInstancedStaticMeshComponent>();
+	TerrainInstancedMesh->SetStaticMesh(Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, TEXT("/Engine/BasicShapes/Cube"))));
+	PreviewScene->AddComponent(TerrainInstancedMesh, FTransform::Identity);
 
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
@@ -90,7 +94,7 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 			int32 Index = VectorToIndex(HitResult.Location, 0);
 			if (TilemapBeingEdited->Blocks.IsValidIndex(Index))
 			{
-				TilemapBeingEdited->Blocks[Index] = EBlock::Cube;
+				TilemapBeingEdited->Blocks[Index].Type = EBlock::Cube;
 				FTilemap3DEditDelegates::OnTilemapModelChanged.Broadcast();
 			}
 		}
@@ -189,9 +193,13 @@ void FTilemap3DEditorViewportClient::OnTilemapModelChanged()
 		{
 			for (int32 z = 0; z < TilemapBeingEdited->Floors; ++z)
 			{
-				if (TilemapBeingEdited->Blocks[TilemapBeingEdited->GetBlockIndex(x, y, z)] != EBlock::Air)
+				const int32 Index = TilemapBeingEdited->GetBlockIndex(x, y, z);
+				if (TilemapBeingEdited->Blocks[Index].Type != EBlock::Air && TilemapBeingEdited->Blocks[Index].bMarked == false)
 				{
-					
+					FTransform TileTransform;
+					TileTransform.SetLocation(FVector(x * TilemapBeingEdited->GridSize, y * TilemapBeingEdited->GridSize, z * TilemapBeingEdited->HeightSize));
+					TerrainInstancedMesh->AddInstance(TileTransform);
+					TilemapBeingEdited->Blocks[Index].bMarked = true;
 				}
 			}
 		}

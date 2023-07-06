@@ -25,4 +25,7 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category="Collision")
 	TSoftObjectPtr<UStaticMesh> CollisionMesh;
+
+	UPROPERTY(Config, EditAnywhere, Category="Terrain")
+	TSoftObjectPtr<UStaticMesh> TerrainCubeMesh;
 };

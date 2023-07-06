@@ -6,6 +6,7 @@ class UTilemapAsset;
 class UBoxComponent;
 class UStaticMeshComponent;
 class UProceduralMeshComponent;
+class UInstancedStaticMeshComponent;
 
 class FTilemap3DEditorViewportClient : public FEditorViewportClient
 {
@@ -29,6 +30,7 @@ protected:
 	TObjectPtr<UBoxComponent> Heightmap;
 	TObjectPtr<UStaticMeshComponent> CollisionPlane;
 	TObjectPtr<UProceduralMeshComponent> TerrainMesh;
+	TObjectPtr<UInstancedStaticMeshComponent> TerrainInstancedMesh;
 
 	float HitResultTraceDistance;
 

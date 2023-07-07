@@ -51,9 +51,6 @@ public:
 	int32 LevelSizeY = 0;
 
 	UPROPERTY(EditAnywhere, Category="Grid Values")
-	int32 FloorsHeight = 1;
-
-	UPROPERTY(EditAnywhere, Category="Grid Values")
 	int32 GridSize = 100;
 
 	UPROPERTY(EditAnywhere, Category="Grid Values")

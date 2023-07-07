@@ -79,8 +79,71 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 		+ SVerticalBox::Slot()
 		.AutoHeight()
 		[
-			SNew(STextBlock)
-			.Text(LOCTEXT("TilemapDetail_Floor", "Current Floor: " + CurrentFloor))
+			SNew(SBorder)
+			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+			.Visibility_Lambda([this]()
+			             {
+				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
+			             })
+			[
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				  .FillWidth(1.0f)
+				  .HAlign(HAlign_Fill)
+				  .VAlign(VAlign_Fill)
+				  .Padding(2.0f)
+				[
+					SNew(STextBlock)
+					.Text_Lambda([this]()
+					{
+						return FText::Format(LOCTEXT("TilemapFloorEntryLabel", "Floor {0}"), CurrentFloor.Get());
+					})
+				]
+				+ SHorizontalBox::Slot()
+				  .FillWidth(1.0f)
+				  .HAlign(HAlign_Fill)
+				  .VAlign(VAlign_Fill)
+				  .Padding(2.0f)
+				[
+					SNew(SHorizontalBox)
+					+ SHorizontalBox::Slot()
+					  .FillWidth(1.0f)
+					  .HAlign(HAlign_Fill)
+					  .VAlign(VAlign_Fill)
+					[
+						SNew(SButton)
+						.OnClicked_Lambda([this]()
+						{
+							CurrentFloor = FMath::Max(CurrentFloor.Get() - 1, 0);
+							return FReply::Handled();
+						})
+						[
+							SNew(STextBlock)
+							.Justification(ETextJustify::Center)
+							.Text(LOCTEXT("TilemapFloorUpArrow", "<"))
+						]
+					]
+					+ SHorizontalBox::Slot()
+					  .FillWidth(1.0f)
+					  .HAlign(HAlign_Fill)
+					  .VAlign(VAlign_Fill)
+					[
+						SNew(SButton)
+						.OnClicked_Lambda([this]()
+						{
+							CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors,
+							                          CurrentFloor.Get() + 1);
+							return FReply::Handled();
+						})
+						[
+							SNew(STextBlock)
+							.Justification(ETextJustify::Center)
+							.Text(LOCTEXT("TilemapFloorDownArrow", ">"))
+						]
+					]
+				]
+			]
+
 		];
 }
 

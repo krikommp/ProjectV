@@ -20,7 +20,7 @@ private:
 
 	bool bEditProperty = false;
 
-	int32 CurrentFloor = 0;
+	TAttribute<int32> CurrentFloor = 0;
 
 	//~ Begin Widget
 	TSharedRef<SWidget> DrawEditStatusWidget();
@@ -34,5 +34,5 @@ public:
 	//~ Begin SSingleObjectDetailsPanel interface
 
 	UTilemapAsset* GetTilemapAsset() const { return TilemapEditorPtr.Pin()->TilemapBeingEdited; }
-	int32 GetCurrentFloor() const { return CurrentFloor; } 
+	int32 GetCurrentFloor() const { return CurrentFloor.Get(); } 
 };

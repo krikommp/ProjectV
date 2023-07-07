@@ -1,17 +1,18 @@
 #pragma once
 #include "Tilemap/TilemapAsset.h"
 #include "Tilemap3DEditorManager.h"
+#include "Tilemap3DPropertiesTabBody.h"
 
-class UTilemapAsset;
 class UBoxComponent;
 class UStaticMeshComponent;
 class UProceduralMeshComponent;
 class UInstancedStaticMeshComponent;
+class STilemap3DPropertiesTabBody;
 
 class FTilemap3DEditorViewportClient : public FEditorViewportClient
 {
 public:
-	explicit FTilemap3DEditorViewportClient(UTilemapAsset* InAsset, FPreviewScene& InPreviewScene);
+	explicit FTilemap3DEditorViewportClient(TSharedPtr<STilemap3DPropertiesTabBody> InDetailPtr, FPreviewScene& InPreviewScene);
 	virtual ~FTilemap3DEditorViewportClient() override;
 
 	//~ Begin FEditorViewportClient interface
@@ -21,11 +22,14 @@ public:
 	//~ Begin FEditorViewportClient interface
 
 	void DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize, float ZOffset,
-	              const FLinearColor& Color, float Thickness = 3.0f) const;
+				  const FLinearColor& Color, float Thickness = 3.0f) const;
 	void Clear() const;
 
 protected:
-	TObjectPtr<UTilemapAsset> TilemapBeingEdited;
+	TSharedPtr<STilemap3DPropertiesTabBody> DetailPtr;
+	UTilemapAsset* GetTilemapAsset() const { return DetailPtr->GetTilemapAsset(); }
+	int32 GetCurrentFloor() const { return DetailPtr->GetCurrentFloor(); }
+	
 	TObjectPtr<ULineBatchComponent> LineBatcher;
 	TObjectPtr<UBoxComponent> Heightmap;
 	TObjectPtr<UStaticMeshComponent> CollisionPlane;

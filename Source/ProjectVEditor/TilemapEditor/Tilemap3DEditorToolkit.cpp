@@ -11,7 +11,6 @@ const FName FTilemap3DEditorToolkit::DetailsID(TEXT("TilemapDetails"));
 
 FTilemap3DEditorToolkit::FTilemap3DEditorToolkit()
 {
-	bEditProperty = false;
 }
 
 void FTilemap3DEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
@@ -78,9 +77,12 @@ void FTilemap3DEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TS
 {
 	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->CloseOtherEditors(Asset, this);
 	TilemapBeingEdited = Asset;
+	
+	TSharedRef<FTilemap3DEditorToolkit> EditorToolkit = SharedThis(this);
+	DetailPtr = SNew(STilemap3DPropertiesTabBody, EditorToolkit);
 
 	ViewportPtr = SNew(STilemap3DEditorViewport)
-		.TilemapBeingEdited(this, &FTilemap3DEditorToolkit::GetTilemapBeingEdited);
+		.TilemapDetailPtr(this, &FTilemap3DEditorToolkit::GetDetailPtr);
 
 	TSharedRef<FTabManager::FLayout> Layout = FTabManager::NewLayout("TilemapAssetEditor_Layout")
 		->AddArea(
@@ -122,12 +124,10 @@ TSharedRef<SDockTab> FTilemap3DEditorToolkit::SpawnTab_Viewport(const FSpawnTabA
 
 TSharedRef<SDockTab> FTilemap3DEditorToolkit::SpawnTab_Details(const FSpawnTabArgs& Args)
 {
-	TSharedRef<FTilemap3DEditorToolkit> EditorToolkit = SharedThis(this);
-
 	return SNew(SDockTab)
 		.Label(LOCTEXT("DetailsTab_Tile", "Details"))
 		[
-			SNew(STilemap3DPropertiesTabBody, EditorToolkit)
+			DetailPtr.ToSharedRef()
 		];
 }
 

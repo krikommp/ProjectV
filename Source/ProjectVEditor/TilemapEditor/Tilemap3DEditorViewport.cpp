@@ -3,7 +3,7 @@
 
 void STilemap3DEditorViewport::Construct(const FArguments& InArgs)
 {
-	TilemapBeingEdited = InArgs._TilemapBeingEdited.Get();
+	DetailPtr = InArgs._TilemapDetailPtr.Get();
 	PreviewScene = MakeShareable(new FPreviewScene());
 	SEditorViewport::Construct(SEditorViewport::FArguments());
 }
@@ -41,7 +41,7 @@ TSharedRef<FEditorViewportClient> STilemap3DEditorViewport::MakeEditorViewportCl
 	if (!TilemapAssetPreviewClient.IsValid())
 	{
 		TilemapAssetPreviewClient = MakeShareable(
-			new FTilemap3DEditorViewportClient(TilemapBeingEdited, *PreviewScene));
+			new FTilemap3DEditorViewportClient(DetailPtr, *PreviewScene));
 	}
 
 	return TilemapAssetPreviewClient.ToSharedRef();

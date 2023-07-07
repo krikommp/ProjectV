@@ -7,9 +7,12 @@
 
 #define LOCTEXT_NAMESPACE "STilemap3DPropertiesTabBody"
 
-void STilemap3DPropertiesTabBody::Construct(const FArguments& InArgs, TSharedPtr<FTilemap3DEditorToolkit> InTilemapEditor)
+void STilemap3DPropertiesTabBody::Construct(const FArguments& InArgs,
+                                            TSharedPtr<FTilemap3DEditorToolkit> InTilemapEditor)
 {
 	TilemapEditorPtr = InTilemapEditor;
+	bEditProperty = false;
+	CurrentFloor = 0;
 
 	SSingleObjectDetailsPanel::Construct(
 		SSingleObjectDetailsPanel::FArguments().HostCommandList(InTilemapEditor->GetToolkitCommands()).
@@ -26,7 +29,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 {
 	PropertyEditorWidget->SetEnabled(TAttribute<bool>::Create([this]()-> bool
 	{
-		return !TilemapEditorPtr.Pin()->bEditProperty;
+		return !bEditProperty;
 	}));
 
 	return SNew(SVerticalBox)
@@ -51,17 +54,17 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 					SNew(SButton)
 					.OnClicked_Lambda([this]()
 					{
-						this->TilemapEditorPtr.Pin()->bEditProperty = !this->TilemapEditorPtr.Pin()->bEditProperty;
-						this->EditStatusText->SetText(this->TilemapEditorPtr.Pin()->bEditProperty
+						bEditProperty = !bEditProperty;
+						this->EditStatusText->SetText(bEditProperty
 							                              ? LOCTEXT("Stop", "Stop Editing")
 							                              : LOCTEXT("Start", "Start Editing"));
-						FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(this->TilemapEditorPtr.Pin()->bEditProperty);
+						FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
 						return FReply::Handled();
 					})
 					[
 						SAssignNew(EditStatusText, STextBlock)
 						.Justification(ETextJustify::Center)
-						.Text(this->TilemapEditorPtr.Pin()->bEditProperty
+						.Text(bEditProperty
 							      ? LOCTEXT("Stop", "Stop Editing")
 							      : LOCTEXT("Start", "Start Editing"))
 					]

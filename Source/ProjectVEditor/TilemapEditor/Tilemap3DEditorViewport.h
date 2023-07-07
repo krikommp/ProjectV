@@ -2,21 +2,23 @@
 #include "EditorWindowExtension/EditorWindow/EditorWindowViewport.h"
 
 
+class STilemap3DPropertiesTabBody;
 class FTilemap3DEditorViewportClient;
 class ULineBatchComponent;
 class UTilemapAsset;
 class FPreviewScene;
 class UBoxComponent;
+class STilemap3DPropertiesTabBody;
 
 class STilemap3DEditorViewport : public SEditorViewport, public ICommonEditorViewportToolbarInfoProvider
 {
 public:
 	SLATE_BEGIN_ARGS(STilemap3DEditorViewport)
-		:_TilemapBeingEdited((UTilemapAsset*)nullptr)
+		:_TilemapDetailPtr(MakeShareable((STilemap3DPropertiesTabBody*)nullptr))
 		{
 		}
 
-	SLATE_ATTRIBUTE(UTilemapAsset*, TilemapBeingEdited)
+	SLATE_ATTRIBUTE(TSharedPtr<STilemap3DPropertiesTabBody>, TilemapDetailPtr)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -37,9 +39,9 @@ protected:
 	/** SEditorViewport interface */
 	virtual TSharedRef<FEditorViewportClient> MakeEditorViewportClient() override;
 
-	TObjectPtr<UTilemapAsset> TilemapBeingEdited;
-
 	TSharedPtr<FPreviewScene> PreviewScene;
 
 	TSharedPtr<FTilemap3DEditorViewportClient> TilemapAssetPreviewClient;
+
+	TSharedPtr<STilemap3DPropertiesTabBody> DetailPtr;
 };

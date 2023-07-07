@@ -8,9 +8,9 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
-FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(UTilemapAsset* InAsset, FPreviewScene& InPreviewScene)
+FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilemap3DPropertiesTabBody> InDetailPtr, FPreviewScene& InPreviewScene)
 	: FEditorViewportClient(nullptr, &InPreviewScene)
-	  , TilemapBeingEdited(InAsset)
+	  , DetailPtr(InDetailPtr)
 {
 	SetRealtime(true); //实时绘制
 
@@ -22,7 +22,7 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(UTilemapAsset* In
 	// 获取编辑范围可视化组件
 	Heightmap = NewObject<UBoxComponent>();
 	PreviewScene->AddComponent(Heightmap, FTransform::Identity);
-	Heightmap->SetBoxExtent(FVector::One() * TilemapBeingEdited->GridSize);
+	Heightmap->SetBoxExtent(FVector::One() * GetTilemapAsset()->GridSize);
 	Heightmap->SetVisibility(false);
 
 	// 获取碰撞组件
@@ -68,7 +68,6 @@ void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
 
 void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& Collector)
 {
-	Collector.AddReferencedObject(TilemapBeingEdited);
 }
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
@@ -91,10 +90,10 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			int32 Index = VectorToIndex(HitResult.Location, 0);
-			if (TilemapBeingEdited->Blocks.IsValidIndex(Index))
+			int32 Index = VectorToIndex(HitResult.Location, GetCurrentFloor());
+			if (GetTilemapAsset()->Blocks.IsValidIndex(Index))
 			{
-				TilemapBeingEdited->Blocks[Index].Type = EBlock::Cube;
+				GetTilemapAsset()->Blocks[Index].Type = EBlock::Cube;
 				FTilemap3DEditDelegates::OnTilemapModelChanged.Broadcast();
 			}
 		}
@@ -144,12 +143,12 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		Clear();
 
 		// 初始化
-		TilemapBeingEdited->Blocks.SetNum(TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->Floors);
+		GetTilemapAsset()->Blocks.SetNum(GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->Floors);
 
 		// 绘制编辑区域
-		DrawGrid(-1 * FVector(TilemapBeingEdited->GridSize / 2.0f, TilemapBeingEdited->GridSize / 2.0f, 0.0f),
-		         TilemapBeingEdited->LevelSizeX, TilemapBeingEdited->LevelSizeY,
-		         TilemapBeingEdited->GridSize, 0.f,
+		DrawGrid(-1 * FVector(GetTilemapAsset()->GridSize / 2.0f, GetTilemapAsset()->GridSize / 2.0f, 0.0f),
+		         GetTilemapAsset()->LevelSizeX, GetTilemapAsset()->LevelSizeY,
+		         GetTilemapAsset()->GridSize, 0.f,
 		         FLinearColor::White);
 
 		// 绘制编辑范围
@@ -157,9 +156,9 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		float HeightmapScaleX, HeightmapScaleY;
 		GetEditRangeScaleAndLocation(HeightmapLocation, HeightmapScaleX,
 		                             HeightmapScaleY);
-		const float HalfHeight = (TilemapBeingEdited->GetMaxLevelHeight() + TilemapBeingEdited->GetMinLevelHeight()) /
+		const float HalfHeight = (GetTilemapAsset()->GetMaxLevelHeight() + GetTilemapAsset()->GetMinLevelHeight()) /
 			2.0f;
-		const float ScaleHeight = (TilemapBeingEdited->GetMaxLevelHeight() - TilemapBeingEdited->GetMinLevelHeight()) /
+		const float ScaleHeight = (GetTilemapAsset()->GetMaxLevelHeight() - GetTilemapAsset()->GetMinLevelHeight()) /
 			200.0f;
 		HeightmapLocation.Z = HalfHeight;
 		FTransform HeightmapTransform;
@@ -187,19 +186,19 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 
 void FTilemap3DEditorViewportClient::OnTilemapModelChanged()
 {
-	for (int32 x = 0; x < TilemapBeingEdited->LevelSizeX; ++x)
+	for (int32 x = 0; x < GetTilemapAsset()->LevelSizeX; ++x)
 	{
-		for (int32 y = 0; y < TilemapBeingEdited->LevelSizeY; ++y)
+		for (int32 y = 0; y < GetTilemapAsset()->LevelSizeY; ++y)
 		{
-			for (int32 z = 0; z < TilemapBeingEdited->Floors; ++z)
+			for (int32 z = 0; z < GetTilemapAsset()->Floors; ++z)
 			{
-				const int32 Index = TilemapBeingEdited->GetBlockIndex(x, y, z);
-				if (TilemapBeingEdited->Blocks[Index].Type != EBlock::Air && TilemapBeingEdited->Blocks[Index].bMarked == false)
+				const int32 Index = GetTilemapAsset()->GetBlockIndex(x, y, z);
+				if (GetTilemapAsset()->Blocks[Index].Type != EBlock::Air && GetTilemapAsset()->Blocks[Index].bMarked == false)
 				{
 					FTransform TileTransform;
-					TileTransform.SetLocation(FVector(x * TilemapBeingEdited->GridSize, y * TilemapBeingEdited->GridSize, z * TilemapBeingEdited->HeightSize));
+					TileTransform.SetLocation(FVector(x * GetTilemapAsset()->GridSize, y * GetTilemapAsset()->GridSize, z * GetTilemapAsset()->HeightSize));
 					TerrainInstancedMesh->AddInstance(TileTransform);
-					TilemapBeingEdited->Blocks[Index].bMarked = true;
+					GetTilemapAsset()->Blocks[Index].bMarked = true;
 				}
 			}
 		}
@@ -208,12 +207,12 @@ void FTilemap3DEditorViewportClient::OnTilemapModelChanged()
 
 void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const
 {
-	ScaleX = TilemapBeingEdited->LevelSizeX * (TilemapBeingEdited->GridSize / 200.0f);
-	ScaleY = TilemapBeingEdited->LevelSizeY * (TilemapBeingEdited->GridSize / 200.0f);
+	ScaleX = GetTilemapAsset()->LevelSizeX * (GetTilemapAsset()->GridSize / 200.0f);
+	ScaleY = GetTilemapAsset()->LevelSizeY * (GetTilemapAsset()->GridSize / 200.0f);
 	// 注意我们需要计算的是正中间
-	const float X = (TilemapBeingEdited->LevelSizeX * TilemapBeingEdited->GridSize) / 2.0f - TilemapBeingEdited->
+	const float X = (GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->GridSize) / 2.0f - GetTilemapAsset()->
 		GridSize / 2.0f;
-	const float Y = (TilemapBeingEdited->LevelSizeY * TilemapBeingEdited->GridSize) / 2.0f - TilemapBeingEdited->
+	const float Y = (GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->GridSize) / 2.0f - GetTilemapAsset()->
 		GridSize / 2.0f;
 
 	Location = FVector(X, Y, 0.f);
@@ -221,20 +220,20 @@ void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Locat
 
 int32 FTilemap3DEditorViewportClient::VectorToIndex(const FVector& Location, int32 Floor) const
 {
-	const float PivotX = (TilemapBeingEdited->GridSize * 0.5) + Location.X;
-	const float PivotY = (TilemapBeingEdited->GridSize * 0.5) + Location.Y;
+	const float PivotX = (GetTilemapAsset()->GridSize * 0.5) + Location.X;
+	const float PivotY = (GetTilemapAsset()->GridSize * 0.5) + Location.Y;
 
-	const float ModX = FMath::Floor(FMath::Fmod(PivotX, TilemapBeingEdited->GridSize));
-	const float ModY = FMath::Floor(FMath::Fmod(PivotY, TilemapBeingEdited->GridSize));
+	const float ModX = FMath::Floor(FMath::Fmod(PivotX, GetTilemapAsset()->GridSize));
+	const float ModY = FMath::Floor(FMath::Fmod(PivotY, GetTilemapAsset()->GridSize));
 
 	const int AddX = ModX ? 1 : 0;
 	const int AddY = ModY ? 1 : 0;
 
-	const int X = FMath::Floor(((PivotX + AddX)) / TilemapBeingEdited->GridSize);
-	const int Y = FMath::Floor(((PivotY + AddY)) / TilemapBeingEdited->GridSize) *
-		TilemapBeingEdited->LevelSizeX;
+	const int X = FMath::Floor(((PivotX + AddX)) / GetTilemapAsset()->GridSize);
+	const int Y = FMath::Floor(((PivotY + AddY)) / GetTilemapAsset()->GridSize) *
+		GetTilemapAsset()->LevelSizeX;
 
 	const int32 Result = X + Y;
 
-	return Result + TilemapBeingEdited->GridSize * TilemapBeingEdited->GridSize * Floor;
+	return Result + GetTilemapAsset()->GridSize * GetTilemapAsset()->GridSize * Floor;
 }

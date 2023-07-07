@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class STilemap3DEditorViewport;
+class STilemap3DPropertiesTabBody;
 
 class FTilemap3DEditorToolkit : public FAssetEditorToolkit, public FGCObject
 {
@@ -28,14 +29,13 @@ public:
 	
 public:
 	UTilemapAsset* GetTilemapBeingEdited() const { return TilemapBeingEdited; }
+	TSharedPtr<STilemap3DPropertiesTabBody> GetDetailPtr() const { return DetailPtr; }
 	
 	TObjectPtr<UTilemapAsset> TilemapBeingEdited;
 
 	TSharedPtr<STilemap3DEditorViewport> ViewportPtr;
 
-	int32 CurrentFloor;
-
-	bool bEditProperty;
+	TSharedPtr<STilemap3DPropertiesTabBody> DetailPtr;
 
 protected:
 	TSharedRef<SDockTab> SpawnTab_Viewport(const FSpawnTabArgs& Args);

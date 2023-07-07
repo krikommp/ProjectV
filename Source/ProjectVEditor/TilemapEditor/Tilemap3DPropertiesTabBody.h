@@ -21,6 +21,10 @@ private:
 	bool bEditProperty = false;
 
 	int32 CurrentFloor = 0;
+
+	//~ Begin Widget
+	TSharedRef<SWidget> DrawEditStatusWidget();
+	//~ Begin Widget 
 public:
 	void Construct(const FArguments& InArgs, TSharedPtr<FTilemap3DEditorToolkit> InTilemapEditor);
 

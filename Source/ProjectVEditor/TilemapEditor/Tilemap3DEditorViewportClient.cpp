@@ -173,6 +173,7 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		FVector CollisionLocation;
 		GetEditRangeScaleAndLocation(CollisionLocation, CollisionScaleX,
 		                             CollisionScaleY);
+		CollisionLocation.Z += GetCurrentFloor() * GetTilemapAsset()->HeightSize;
 		CollisionTransform.SetLocation(CollisionLocation + FVector::Zero());
 		CollisionTransform.SetScale3D(FVector(CollisionScaleX, CollisionScaleY, 1.0));
 		CollisionPlane->SetWorldTransform(CollisionTransform);

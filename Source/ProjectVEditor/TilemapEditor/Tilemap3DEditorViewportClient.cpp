@@ -5,6 +5,7 @@
 #include "Components/LineBatchComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProceduralMeshComponent.h"
+#include "Tilemap3DSelected.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
@@ -42,6 +43,9 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 		Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, TEXT("/Engine/BasicShapes/Cube"))));
 	PreviewScene->AddComponent(TerrainInstancedMesh, FTransform::Identity);
 
+	// 创建预览 actor
+	TilemapSelectedPreview = GetWorld()->SpawnActor<ATilemap3DSelected>(ATilemap3DSelected::StaticClass());
+
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
 
@@ -73,6 +77,7 @@ void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
 
 void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& Collector)
 {
+	Collector.AddReferencedObject(TilemapSelectedPreview);
 }
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)

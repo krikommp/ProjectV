@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Tilemap/Tileset3DDataTable.h"
 #include "UObject/Object.h"
 #include "Tilemap3DEditorSettings.generated.h"
 
@@ -28,4 +29,7 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category="Terrain")
 	TSoftObjectPtr<UStaticMesh> TerrainCubeMesh;
+
+	UPROPERTY(Config, EditAnywhere, Category="Tileset")
+	TSoftObjectPtr<FTileset3DDataTable> DefaultTilesetData;
 };

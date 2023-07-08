@@ -8,6 +8,7 @@ class UStaticMeshComponent;
 class UProceduralMeshComponent;
 class UInstancedStaticMeshComponent;
 class STilemap3DPropertiesTabBody;
+class ATilemap3DSelected;
 
 class FTilemap3DEditorViewportClient : public FEditorViewportClient
 {
@@ -35,6 +36,7 @@ protected:
 	TObjectPtr<UStaticMeshComponent> CollisionPlane;
 	TObjectPtr<UProceduralMeshComponent> TerrainMesh;
 	TObjectPtr<UInstancedStaticMeshComponent> TerrainInstancedMesh;
+	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
 
 	float HitResultTraceDistance;
 

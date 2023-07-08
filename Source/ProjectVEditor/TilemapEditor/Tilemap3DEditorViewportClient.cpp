@@ -7,29 +7,29 @@
 #include "ProceduralMeshComponent.h"
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DSelected.h"
-#include "Components/InstancedStaticMeshComponent.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
-
-void FTilemap3DTerrainMeshData::Clear()
-{
-	Vertices.Empty();
-	Triangles.Empty();
-	Normals.Empty();
-	Colors.Empty();
-	UV0.Empty();
-	VertexCount = 0;
-}
 
 class FTilemap3DTerrainGenerate
 {
 public:
+	static void ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+	                        const FVector& Position, const EBlock Block, const int32 Floor);
+	static int32 VectorToIndex(UTilemapAsset* TilemapAsset, const FVector& Location, int32 Floor);
+
+private:
 	static bool Check(UTilemapAsset* TilemapAsset, const FVector& Position);
-	static void CreateFace(FTilemap3DTerrainMeshData& MeshData, const ETilemapDirection Direction,
+	static void CreateFace(UTilemapAsset* TilemapAsset, const ETilemapDirection Direction,
 	                       const FVector& Position, const FColor& Color);
 	static TArray<FVector> GetFaceVertices(const ETilemapDirection Direction, const FVector& Position);
 	static FVector GetPositionInDirection(const ETilemapDirection Direction, const FVector& Position);
 	static FVector GetNormal(const ETilemapDirection Direction);
-	static void ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position, const EBlock Block);
+	static void ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position, const EBlock Block,
+	                            const int32 Floor);
+
+
+	static void ClearMesh(UTilemapAsset* TilemapAsset);
+	static void GenerateMesh(UTilemapAsset* TilemapAsset);
+	static void ApplyMesh(const UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent);
 
 private:
 	inline static const FVector BlockVertexData[8] = {
@@ -53,12 +53,90 @@ private:
 	};
 };
 
-void FTilemap3DTerrainGenerate::ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position,
-                                                const EBlock Block)
+int32 FTilemap3DTerrainGenerate::VectorToIndex(UTilemapAsset* TilemapAsset, const FVector& Location, int32 Floor)
 {
-	const int32 Index = TilemapAsset->GetBlockIndex(Position.X, Position.Y, Position.Z);
+	const float PivotX = (TilemapAsset->GridSize * 0.5) + Location.X;
+	const float PivotY = (TilemapAsset->GridSize * 0.5) + Location.Y;
+
+	const float ModX = FMath::Floor(FMath::Fmod(PivotX, TilemapAsset->GridSize));
+	const float ModY = FMath::Floor(FMath::Fmod(PivotY, TilemapAsset->GridSize));
+
+	const int AddX = ModX ? 1 : 0;
+	const int AddY = ModY ? 1 : 0;
+
+	const int X = FMath::Floor(((PivotX + AddX)) / TilemapAsset->GridSize);
+	const int Y = FMath::Floor(((PivotY + AddY)) / TilemapAsset->GridSize) *
+		TilemapAsset->LevelSizeX;
+
+	const int32 Result = X + Y;
+
+	return Result + TilemapAsset->LevelSizeX * TilemapAsset->LevelSizeY * Floor;
+}
+
+void FTilemap3DTerrainGenerate::ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+                                            const FVector& Position,
+                                            const EBlock Block, const int32 Floor)
+{
+	ModifyVoxelData(TilemapAsset, Position, Block, Floor);
+	ClearMesh(TilemapAsset);
+	GenerateMesh(TilemapAsset);
+	ApplyMesh(TilemapAsset, MeshComponent);
+}
+
+void FTilemap3DTerrainGenerate::ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position,
+                                                const EBlock Block, const int32 Floor)
+{
+	const int32 Index = VectorToIndex(TilemapAsset, Position, Floor);
 
 	TilemapAsset->Blocks[Index].Type = Block;
+}
+
+void FTilemap3DTerrainGenerate::ClearMesh(UTilemapAsset* TilemapAsset)
+{
+	TilemapAsset->MeshData.Clear();
+}
+
+void FTilemap3DTerrainGenerate::GenerateMesh(UTilemapAsset* TilemapAsset)
+{
+	for (int32 x = 0; x < TilemapAsset->LevelSizeX; ++x)
+	{
+		for (int32 y = 0; y < TilemapAsset->LevelSizeY; ++y)
+		{
+			for (int32 z = 0; z < TilemapAsset->Floors; ++z)
+			{
+				const int32 Index = TilemapAsset->GetBlockIndex(x, y, z);
+				if (TilemapAsset->Blocks[Index].Type != EBlock::Air)
+				{
+					const auto Position = FVector(x, y, z);
+					for (const auto Direction : {
+						     ETilemapDirection::Forward, ETilemapDirection::Right, ETilemapDirection::Back,
+						     ETilemapDirection::Left, ETilemapDirection::Up, ETilemapDirection::Down
+					     })
+					{
+						if (Check(TilemapAsset, GetPositionInDirection(Direction, Position)))
+						{
+							CreateFace(TilemapAsset, Direction, Position * 100, FColor::Red);
+						}
+					}
+					TilemapAsset->Blocks[Index].bMarked = true;
+				}
+			}
+		}
+	}
+}
+
+void FTilemap3DTerrainGenerate::ApplyMesh(const UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent)
+{
+	MeshComponent->CreateMeshSection(
+		0,
+		TilemapAsset->MeshData.Vertices,
+		TilemapAsset->MeshData.Triangles,
+		TilemapAsset->MeshData.Normals,
+		TilemapAsset->MeshData.UV0,
+		TilemapAsset->MeshData.Colors,
+		TArray<FProcMeshTangent>(),
+		true
+	);
 }
 
 bool FTilemap3DTerrainGenerate::Check(UTilemapAsset* TilemapAsset, const FVector& Position)
@@ -70,21 +148,22 @@ bool FTilemap3DTerrainGenerate::Check(UTilemapAsset* TilemapAsset, const FVector
 	return TilemapAsset->Blocks[TilemapAsset->GetBlockIndex(Position.X, Position.Y, Position.Z)].Type == EBlock::Air;
 }
 
-void FTilemap3DTerrainGenerate::CreateFace(FTilemap3DTerrainMeshData& MeshData, const ETilemapDirection Direction,
+void FTilemap3DTerrainGenerate::CreateFace(UTilemapAsset* TilemapAsset, const ETilemapDirection Direction,
                                            const FVector& Position, const FColor& Color)
 {
 	const auto Normal = GetNormal(Direction);
 
-	MeshData.Vertices.Append(GetFaceVertices(Direction, Position));
-	MeshData.Triangles.Append({
-		MeshData.VertexCount + 3, MeshData.VertexCount + 2, MeshData.VertexCount, MeshData.VertexCount + 2,
-		MeshData.VertexCount + 1, MeshData.VertexCount
+	TilemapAsset->MeshData.Vertices.Append(GetFaceVertices(Direction, Position));
+	TilemapAsset->MeshData.Triangles.Append({
+		TilemapAsset->MeshData.VertexCount + 3, TilemapAsset->MeshData.VertexCount + 2,
+		TilemapAsset->MeshData.VertexCount, TilemapAsset->MeshData.VertexCount + 2,
+		TilemapAsset->MeshData.VertexCount + 1, TilemapAsset->MeshData.VertexCount
 	});
-	MeshData.Normals.Append({Normal, Normal, Normal, Normal});
-	MeshData.Colors.Append({Color, Color, Color, Color});
-	MeshData.UV0.Append({FVector2D(1, 1), FVector2D(1, 0), FVector2D(0, 0), FVector2D(0, 1)});
+	TilemapAsset->MeshData.Normals.Append({Normal, Normal, Normal, Normal});
+	TilemapAsset->MeshData.Colors.Append({Color, Color, Color, Color});
+	TilemapAsset->MeshData.UV0.Append({FVector2D(1, 1), FVector2D(1, 0), FVector2D(0, 0), FVector2D(0, 1)});
 
-	MeshData.VertexCount += 4;
+	TilemapAsset->MeshData.VertexCount += 4;
 }
 
 TArray<FVector> FTilemap3DTerrainGenerate::GetFaceVertices(const ETilemapDirection Direction, const FVector& Position)
@@ -156,10 +235,9 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	// 创建地形组件
 	TerrainMesh = NewObject<UProceduralMeshComponent>();
 	PreviewScene->AddComponent(TerrainMesh, FTransform::Identity);
-	MeshData.Clear();
 
 	// 创建预览 actor
-	TilemapSelectedPreview = GetWorld()->SpawnActor<ATilemap3DSelected>(ATilemap3DSelected::StaticClass());
+	TilemapSelectedPreview = FEditorViewportClient::GetWorld()->SpawnActor<ATilemap3DSelected>(ATilemap3DSelected::StaticClass());
 
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
@@ -215,12 +293,8 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			int32 Index = VectorToIndex(HitResult.Location, GetCurrentFloor());
-			if (GetTilemapAsset()->Blocks.IsValidIndex(Index))
-			{
-				GetTilemapAsset()->Blocks[Index].Type = EBlock::Cube;
-				FTilemap3DEditDelegates::OnTilemapModelChanged.Broadcast();
-			}
+			FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location, EBlock::Cube,
+			                                       GetCurrentFloor());
 		}
 	}
 	return FEditorViewportClient::InputKey(EventArgs);
@@ -315,49 +389,6 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 	}
 }
 
-void FTilemap3DEditorViewportClient::OnTilemapModelChanged()
-{
-	for (int32 x = 0; x < GetTilemapAsset()->LevelSizeX; ++x)
-	{
-		for (int32 y = 0; y < GetTilemapAsset()->LevelSizeY; ++y)
-		{
-			for (int32 z = 0; z < GetTilemapAsset()->Floors; ++z)
-			{
-				const int32 Index = GetTilemapAsset()->GetBlockIndex(x, y, z);
-				if (GetTilemapAsset()->Blocks[Index].Type != EBlock::Air && GetTilemapAsset()->Blocks[Index].bMarked ==
-					false)
-				{
-					const auto Position = FVector(x, y, z);
-					for (auto Direction : {
-						     ETilemapDirection::Forward, ETilemapDirection::Right, ETilemapDirection::Back,
-						     ETilemapDirection::Left, ETilemapDirection::Up, ETilemapDirection::Down
-					     })
-					{
-						if (FTilemap3DTerrainGenerate::Check(GetTilemapAsset(),
-						                                     FTilemap3DTerrainGenerate::GetPositionInDirection(
-							                                     Direction, Position)))
-						{
-							FTilemap3DTerrainGenerate::CreateFace(MeshData, Direction, Position * 100, FColor::Red);
-						}
-					}
-					GetTilemapAsset()->Blocks[Index].bMarked = true;
-				}
-			}
-		}
-	}
-
-	TerrainMesh->CreateMeshSection(
-		0,
-		MeshData.Vertices,
-		MeshData.Triangles,
-		MeshData.Normals,
-		MeshData.UV0,
-		MeshData.Colors,
-		TArray<FProcMeshTangent>(),
-		true
-	);
-}
-
 void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const
 {
 	ScaleX = GetTilemapAsset()->LevelSizeX * (GetTilemapAsset()->GridSize / 200.0f);
@@ -369,24 +400,4 @@ void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Locat
 		GridSize / 2.0f;
 
 	Location = FVector(X, Y, 0.f);
-}
-
-int32 FTilemap3DEditorViewportClient::VectorToIndex(const FVector& Location, int32 Floor) const
-{
-	const float PivotX = (GetTilemapAsset()->GridSize * 0.5) + Location.X;
-	const float PivotY = (GetTilemapAsset()->GridSize * 0.5) + Location.Y;
-
-	const float ModX = FMath::Floor(FMath::Fmod(PivotX, GetTilemapAsset()->GridSize));
-	const float ModY = FMath::Floor(FMath::Fmod(PivotY, GetTilemapAsset()->GridSize));
-
-	const int AddX = ModX ? 1 : 0;
-	const int AddY = ModY ? 1 : 0;
-
-	const int X = FMath::Floor(((PivotX + AddX)) / GetTilemapAsset()->GridSize);
-	const int Y = FMath::Floor(((PivotY + AddY)) / GetTilemapAsset()->GridSize) *
-		GetTilemapAsset()->LevelSizeX;
-
-	const int32 Result = X + Y;
-
-	return Result + GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * Floor;
 }

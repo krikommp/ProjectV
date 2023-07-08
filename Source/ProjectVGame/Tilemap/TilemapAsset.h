@@ -45,6 +45,31 @@ struct FBlock
 	bool bMarked = false;
 };
 
+USTRUCT(BlueprintType)
+struct FTilemap3DTerrainMeshData
+{
+	GENERATED_BODY();
+
+public:
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FColor> Colors;
+	TArray<FVector2D> UV0;
+	int32 VertexCount = 0;
+
+	void Clear()
+	{
+		Vertices.Empty();
+		Triangles.Empty();
+		Normals.Empty();
+		Colors.Empty();
+		UV0.Empty();
+		VertexCount = 0;
+	}
+
+};
+
 /**
  * UTilemapAsset
  *
@@ -73,6 +98,9 @@ public:
 
 	UPROPERTY()
 	TArray<FBlock> Blocks;
+
+	UPROPERTY()
+	FTilemap3DTerrainMeshData MeshData;
 
 	int32 GetMaxLevelHeight() const { return Floors * HeightSize; }
 	int32 GetMinLevelHeight() const { return 0; }

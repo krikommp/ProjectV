@@ -9,18 +9,6 @@ class UInstancedStaticMeshComponent;
 class STilemap3DPropertiesTabBody;
 class ATilemap3DSelected;
 
-struct FTilemap3DTerrainMeshData
-{
-	TArray<FVector> Vertices;
-	TArray<int32> Triangles;
-	TArray<FVector> Normals;
-	TArray<FColor> Colors;
-	TArray<FVector2D> UV0;
-	int32 VertexCount = 0;
-
-	void Clear();
-};
-
 class FTilemap3DEditorViewportClient : public FEditorViewportClient
 {
 public:
@@ -47,7 +35,6 @@ protected:
 	TObjectPtr<UBoxComponent> Heightmap;
 	TObjectPtr<UStaticMeshComponent> CollisionPlane;
 	TObjectPtr<UProceduralMeshComponent> TerrainMesh;
-	FTilemap3DTerrainMeshData MeshData;
 	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
 
 	float HitResultTraceDistance;
@@ -56,6 +43,4 @@ protected:
 	void OnTilemapModelChanged();
 
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
-
-	int32 VectorToIndex(const FVector& Location, int32 Floor) const;
 };

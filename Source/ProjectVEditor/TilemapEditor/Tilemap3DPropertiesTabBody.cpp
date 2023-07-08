@@ -96,7 +96,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 					SNew(STextBlock)
 					.Text_Lambda([this]()
 					{
-						return FText::Format(LOCTEXT("TilemapFloorEntryLabel", "Floor {0}"), CurrentFloor.Get());
+						return FText::Format(LOCTEXT("TilemapFloorEntryLabel", "Floor: {0}"), CurrentFloor.Get());
 					})
 				]
 				+ SHorizontalBox::Slot()
@@ -115,6 +115,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 						.OnClicked_Lambda([this]()
 						{
 							CurrentFloor = FMath::Max(CurrentFloor.Get() - 1, 0);
+							FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
 							return FReply::Handled();
 						})
 						[
@@ -133,6 +134,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 						{
 							CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors,
 							                          CurrentFloor.Get() + 1);
+							FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
 							return FReply::Handled();
 						})
 						[

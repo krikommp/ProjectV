@@ -38,11 +38,6 @@ protected:
 
 	float HitResultTraceDistance;
 
-	FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate OnTilemapEditStatueChangedDelegate;
-	FDelegateHandle OnTilemapEditStatueChangedDelegateHandle;
-	FSimpleMulticastDelegate::FDelegate OnTilemapModelChangedDelegate;
-	FDelegateHandle OnTilemapModelChangedDelegateHandle;
-
 	void OnTilemapEditStatueChanged(bool Statue);
 	void OnTilemapModelChanged();
 

@@ -8,7 +8,8 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
-FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilemap3DPropertiesTabBody> InDetailPtr, FPreviewScene& InPreviewScene)
+FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilemap3DPropertiesTabBody> InDetailPtr,
+                                                               FPreviewScene& InPreviewScene)
 	: FEditorViewportClient(nullptr, &InPreviewScene)
 	  , DetailPtr(InDetailPtr)
 {
@@ -37,7 +38,8 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	TerrainMesh = NewObject<UProceduralMeshComponent>();
 	PreviewScene->AddComponent(TerrainMesh, FTransform::Identity);
 	TerrainInstancedMesh = NewObject<UInstancedStaticMeshComponent>();
-	TerrainInstancedMesh->SetStaticMesh(Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, TEXT("/Engine/BasicShapes/Cube"))));
+	TerrainInstancedMesh->SetStaticMesh(
+		Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, TEXT("/Engine/BasicShapes/Cube"))));
 	PreviewScene->AddComponent(TerrainInstancedMesh, FTransform::Identity);
 
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
@@ -45,19 +47,22 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 
 	HitResultTraceDistance = 10000.0f;
 
-	OnTilemapEditStatueChangedDelegate = FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate::CreateRaw(
-		this, &FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged);
-	OnTilemapEditStatueChangedDelegateHandle = FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Add(
+	const auto OnTilemapEditStatueChangedDelegate =
+		FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate::CreateRaw(
+			this, &FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged);
+	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Add(
 		OnTilemapEditStatueChangedDelegate);
 
-	OnTilemapModelChangedDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FTilemap3DEditorViewportClient::OnTilemapModelChanged);
-	OnTilemapModelChangedDelegateHandle = FTilemap3DEditDelegates::OnTilemapModelChanged.Add(OnTilemapModelChangedDelegate);
+	const auto OnTilemapModelChangedDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(
+		this, &FTilemap3DEditorViewportClient::OnTilemapModelChanged);
+	FTilemap3DEditDelegates::OnTilemapModelChanged.Add(
+		OnTilemapModelChangedDelegate);
 }
 
 FTilemap3DEditorViewportClient::~FTilemap3DEditorViewportClient()
 {
-	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Remove(OnTilemapEditStatueChangedDelegateHandle);
-	FTilemap3DEditDelegates::OnTilemapModelChanged.Remove(OnTilemapModelChangedDelegateHandle);
+	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.RemoveAll(this);
+	FTilemap3DEditDelegates::OnTilemapModelChanged.RemoveAll(this);
 }
 
 void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
@@ -102,7 +107,7 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 }
 
 void FTilemap3DEditorViewportClient::DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize,
-                                            float ZOffset, const FLinearColor& Color, float Thickness) const
+                                              float ZOffset, const FLinearColor& Color, float Thickness) const
 {
 	if (LineBatcher)
 	{
@@ -143,12 +148,17 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		Clear();
 
 		// 初始化
-		GetTilemapAsset()->Blocks.SetNum(GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->Floors);
+		if (GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->Floors !=
+			GetTilemapAsset()->Blocks.Num())
+		{
+			GetTilemapAsset()->Blocks.SetNum(
+				GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->Floors);
+		}
 
 		// 绘制编辑区域
 		DrawGrid(-1 * FVector(GetTilemapAsset()->GridSize / 2.0f, GetTilemapAsset()->GridSize / 2.0f, 0.0f),
 		         GetTilemapAsset()->LevelSizeX, GetTilemapAsset()->LevelSizeY,
-		         GetTilemapAsset()->GridSize, 0.f,
+		         GetTilemapAsset()->GridSize, GetCurrentFloor() * GetTilemapAsset()->HeightSize,
 		         FLinearColor::White);
 
 		// 绘制编辑范围
@@ -194,10 +204,12 @@ void FTilemap3DEditorViewportClient::OnTilemapModelChanged()
 			for (int32 z = 0; z < GetTilemapAsset()->Floors; ++z)
 			{
 				const int32 Index = GetTilemapAsset()->GetBlockIndex(x, y, z);
-				if (GetTilemapAsset()->Blocks[Index].Type != EBlock::Air && GetTilemapAsset()->Blocks[Index].bMarked == false)
+				if (GetTilemapAsset()->Blocks[Index].Type != EBlock::Air && GetTilemapAsset()->Blocks[Index].bMarked ==
+					false)
 				{
 					FTransform TileTransform;
-					TileTransform.SetLocation(FVector(x * GetTilemapAsset()->GridSize, y * GetTilemapAsset()->GridSize, z * GetTilemapAsset()->HeightSize));
+					TileTransform.SetLocation(FVector(x * GetTilemapAsset()->GridSize, y * GetTilemapAsset()->GridSize,
+					                                  z * GetTilemapAsset()->HeightSize));
 					TerrainInstancedMesh->AddInstance(TileTransform);
 					GetTilemapAsset()->Blocks[Index].bMarked = true;
 				}
@@ -236,5 +248,5 @@ int32 FTilemap3DEditorViewportClient::VectorToIndex(const FVector& Location, int
 
 	const int32 Result = X + Y;
 
-	return Result + GetTilemapAsset()->GridSize * GetTilemapAsset()->GridSize * Floor;
+	return Result + GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * Floor;
 }

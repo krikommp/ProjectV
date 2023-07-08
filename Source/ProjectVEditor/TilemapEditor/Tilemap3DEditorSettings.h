@@ -29,7 +29,4 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category="Terrain")
 	TSoftObjectPtr<UStaticMesh> TerrainCubeMesh;
-
-	UPROPERTY(Config, EditAnywhere, Category="Tileset")
-	TSoftObjectPtr<FTileset3DDataTable> DefaultTilesetData;
 };

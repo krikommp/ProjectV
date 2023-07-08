@@ -1,6 +1,5 @@
 #pragma once
 #include "Tilemap/TilemapAsset.h"
-#include "Tilemap3DEditorManager.h"
 #include "Tilemap3DPropertiesTabBody.h"
 
 class UBoxComponent;
@@ -10,10 +9,23 @@ class UInstancedStaticMeshComponent;
 class STilemap3DPropertiesTabBody;
 class ATilemap3DSelected;
 
+struct FTilemap3DTerrainMeshData
+{
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FColor> Colors;
+	TArray<FVector2D> UV0;
+	int32 VertexCount = 0;
+
+	void Clear();
+};
+
 class FTilemap3DEditorViewportClient : public FEditorViewportClient
 {
 public:
-	explicit FTilemap3DEditorViewportClient(TSharedPtr<STilemap3DPropertiesTabBody> InDetailPtr, FPreviewScene& InPreviewScene);
+	explicit FTilemap3DEditorViewportClient(TSharedPtr<STilemap3DPropertiesTabBody> InDetailPtr,
+	                                        FPreviewScene& InPreviewScene);
 	virtual ~FTilemap3DEditorViewportClient() override;
 
 	//~ Begin FEditorViewportClient interface
@@ -23,19 +35,19 @@ public:
 	//~ Begin FEditorViewportClient interface
 
 	void DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize, float ZOffset,
-				  const FLinearColor& Color, float Thickness = 3.0f) const;
+	              const FLinearColor& Color, float Thickness = 3.0f) const;
 	void Clear() const;
 
 protected:
 	TSharedPtr<STilemap3DPropertiesTabBody> DetailPtr;
 	UTilemapAsset* GetTilemapAsset() const { return DetailPtr->GetTilemapAsset(); }
 	int32 GetCurrentFloor() const { return DetailPtr->GetCurrentFloor(); }
-	
+
 	TObjectPtr<ULineBatchComponent> LineBatcher;
 	TObjectPtr<UBoxComponent> Heightmap;
 	TObjectPtr<UStaticMeshComponent> CollisionPlane;
 	TObjectPtr<UProceduralMeshComponent> TerrainMesh;
-	TObjectPtr<UInstancedStaticMeshComponent> TerrainInstancedMesh;
+	FTilemap3DTerrainMeshData MeshData;
 	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
 
 	float HitResultTraceDistance;

@@ -5,9 +5,127 @@
 #include "Components/LineBatchComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProceduralMeshComponent.h"
+#include "Tilemap3DEditorManager.h"
 #include "Tilemap3DSelected.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
+
+void FTilemap3DTerrainMeshData::Clear()
+{
+	Vertices.Empty();
+	Triangles.Empty();
+	Normals.Empty();
+	Colors.Empty();
+	UV0.Empty();
+	VertexCount = 0;
+}
+
+class FTilemap3DTerrainGenerate
+{
+public:
+	static bool Check(UTilemapAsset* TilemapAsset, const FVector& Position);
+	static void CreateFace(FTilemap3DTerrainMeshData& MeshData, const ETilemapDirection Direction,
+	                       const FVector& Position, const FColor& Color);
+	static TArray<FVector> GetFaceVertices(const ETilemapDirection Direction, const FVector& Position);
+	static FVector GetPositionInDirection(const ETilemapDirection Direction, const FVector& Position);
+	static FVector GetNormal(const ETilemapDirection Direction);
+	static void ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position, const EBlock Block);
+
+private:
+	inline static const FVector BlockVertexData[8] = {
+		FVector(50, 50, 50),
+		FVector(50, -50, 50),
+		FVector(50, -50, -50),
+		FVector(50, 50, -50),
+		FVector(-50, -50, 50),
+		FVector(-50, 50, 50),
+		FVector(-50, 50, -50),
+		FVector(-50, -50, -50)
+	};
+
+	inline static const int BlockTriangleData[24] = {
+		0, 1, 2, 3, // Forward
+		5, 0, 3, 6, // Right
+		4, 5, 6, 7, // Back
+		1, 4, 7, 2, // Left
+		5, 4, 1, 0, // Up
+		3, 2, 7, 6 // Down
+	};
+};
+
+void FTilemap3DTerrainGenerate::ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position,
+                                                const EBlock Block)
+{
+	const int32 Index = TilemapAsset->GetBlockIndex(Position.X, Position.Y, Position.Z);
+
+	TilemapAsset->Blocks[Index].Type = Block;
+}
+
+bool FTilemap3DTerrainGenerate::Check(UTilemapAsset* TilemapAsset, const FVector& Position)
+{
+	if (Position.X >= TilemapAsset->LevelSizeX || Position.Y >= TilemapAsset->LevelSizeY || Position.X < 0 || Position.Y
+		< 0 || Position.Z < 0)
+		return true;
+	if (Position.Z >= TilemapAsset->Floors) return true;
+	return TilemapAsset->Blocks[TilemapAsset->GetBlockIndex(Position.X, Position.Y, Position.Z)].Type == EBlock::Air;
+}
+
+void FTilemap3DTerrainGenerate::CreateFace(FTilemap3DTerrainMeshData& MeshData, const ETilemapDirection Direction,
+                                           const FVector& Position, const FColor& Color)
+{
+	const auto Normal = GetNormal(Direction);
+
+	MeshData.Vertices.Append(GetFaceVertices(Direction, Position));
+	MeshData.Triangles.Append({
+		MeshData.VertexCount + 3, MeshData.VertexCount + 2, MeshData.VertexCount, MeshData.VertexCount + 2,
+		MeshData.VertexCount + 1, MeshData.VertexCount
+	});
+	MeshData.Normals.Append({Normal, Normal, Normal, Normal});
+	MeshData.Colors.Append({Color, Color, Color, Color});
+	MeshData.UV0.Append({FVector2D(1, 1), FVector2D(1, 0), FVector2D(0, 0), FVector2D(0, 1)});
+
+	MeshData.VertexCount += 4;
+}
+
+TArray<FVector> FTilemap3DTerrainGenerate::GetFaceVertices(const ETilemapDirection Direction, const FVector& Position)
+{
+	TArray<FVector> Vertices;
+
+	for (int i = 0; i < 4; i++)
+	{
+		Vertices.Add(BlockVertexData[BlockTriangleData[i + static_cast<int>(Direction) * 4]] + Position);
+	}
+
+	return Vertices;
+}
+
+FVector FTilemap3DTerrainGenerate::GetPositionInDirection(const ETilemapDirection Direction, const FVector& Position)
+{
+	switch (Direction)
+	{
+	case ETilemapDirection::Forward: return Position + FVector::ForwardVector;
+	case ETilemapDirection::Back: return Position + FVector::BackwardVector;
+	case ETilemapDirection::Left: return Position + FVector::LeftVector;
+	case ETilemapDirection::Right: return Position + FVector::RightVector;
+	case ETilemapDirection::Up: return Position + FVector::UpVector;
+	case ETilemapDirection::Down: return Position + FVector::DownVector;
+	default: throw std::invalid_argument("Invalid direction");
+	}
+}
+
+FVector FTilemap3DTerrainGenerate::GetNormal(const ETilemapDirection Direction)
+{
+	switch (Direction)
+	{
+	case ETilemapDirection::Forward: return FVector::ForwardVector;
+	case ETilemapDirection::Right: return FVector::RightVector;
+	case ETilemapDirection::Back: return FVector::BackwardVector;
+	case ETilemapDirection::Left: return FVector::LeftVector;
+	case ETilemapDirection::Up: return FVector::UpVector;
+	case ETilemapDirection::Down: return FVector::DownVector;
+	default: throw std::invalid_argument("Invalid direction");
+	}
+}
 
 FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilemap3DPropertiesTabBody> InDetailPtr,
                                                                FPreviewScene& InPreviewScene)
@@ -38,10 +156,7 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	// 创建地形组件
 	TerrainMesh = NewObject<UProceduralMeshComponent>();
 	PreviewScene->AddComponent(TerrainMesh, FTransform::Identity);
-	TerrainInstancedMesh = NewObject<UInstancedStaticMeshComponent>();
-	TerrainInstancedMesh->SetStaticMesh(
-		Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, TEXT("/Engine/BasicShapes/Cube"))));
-	PreviewScene->AddComponent(TerrainInstancedMesh, FTransform::Identity);
+	MeshData.Clear();
 
 	// 创建预览 actor
 	TilemapSelectedPreview = GetWorld()->SpawnActor<ATilemap3DSelected>(ATilemap3DSelected::StaticClass());
@@ -212,15 +327,35 @@ void FTilemap3DEditorViewportClient::OnTilemapModelChanged()
 				if (GetTilemapAsset()->Blocks[Index].Type != EBlock::Air && GetTilemapAsset()->Blocks[Index].bMarked ==
 					false)
 				{
-					FTransform TileTransform;
-					TileTransform.SetLocation(FVector(x * GetTilemapAsset()->GridSize, y * GetTilemapAsset()->GridSize,
-					                                  z * GetTilemapAsset()->HeightSize));
-					TerrainInstancedMesh->AddInstance(TileTransform);
+					const auto Position = FVector(x, y, z);
+					for (auto Direction : {
+						     ETilemapDirection::Forward, ETilemapDirection::Right, ETilemapDirection::Back,
+						     ETilemapDirection::Left, ETilemapDirection::Up, ETilemapDirection::Down
+					     })
+					{
+						if (FTilemap3DTerrainGenerate::Check(GetTilemapAsset(),
+						                                     FTilemap3DTerrainGenerate::GetPositionInDirection(
+							                                     Direction, Position)))
+						{
+							FTilemap3DTerrainGenerate::CreateFace(MeshData, Direction, Position * 100, FColor::Red);
+						}
+					}
 					GetTilemapAsset()->Blocks[Index].bMarked = true;
 				}
 			}
 		}
 	}
+
+	TerrainMesh->CreateMeshSection(
+		0,
+		MeshData.Vertices,
+		MeshData.Triangles,
+		MeshData.Normals,
+		MeshData.UV0,
+		MeshData.Colors,
+		TArray<FProcMeshTangent>(),
+		true
+	);
 }
 
 void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const

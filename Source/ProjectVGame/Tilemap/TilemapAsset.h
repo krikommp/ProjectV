@@ -20,11 +20,27 @@ enum class EBlock : uint8
 	Unknown UMETA(Hidden)
 };
 
+/**
+ * ETilemapDirection
+ *
+ * 方向
+ */
+UENUM(BlueprintType)
+enum class ETilemapDirection : uint8
+{
+	Forward = 0,
+	Right = 1,
+	Back = 2,
+	Left = 3,
+	Up = 4,
+	Down = 5
+};
+
 USTRUCT(BlueprintType)
 struct FBlock
 {
 	GENERATED_BODY()
-	
+
 	EBlock Type = EBlock::Air;
 	bool bMarked = false;
 };
@@ -40,7 +56,6 @@ class PROJECTVGAME_API UTilemapAsset : public UObject
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(EditAnywhere, Category="Level Values")
 	int32 Floors = 0;
 
@@ -61,5 +76,9 @@ public:
 
 	int32 GetMaxLevelHeight() const { return Floors * HeightSize; }
 	int32 GetMinLevelHeight() const { return 0; }
-	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const { return Z * LevelSizeX * LevelSizeY + Y * LevelSizeX + X; }
+
+	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const
+	{
+		return Z * LevelSizeX * LevelSizeY + Y * LevelSizeX + X;
+	}
 };

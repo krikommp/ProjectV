@@ -40,7 +40,6 @@ protected:
 	float HitResultTraceDistance;
 
 	void OnTilemapEditStatueChanged(bool Statue);
-	void OnTilemapModelChanged();
-
+	
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
 };

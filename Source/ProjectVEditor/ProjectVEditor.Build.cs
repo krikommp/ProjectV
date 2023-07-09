@@ -38,7 +38,8 @@ public class ProjectVEditor : ModuleRules
 				"EditorStyle",
 				"KismetWidgets",
 				"Settings",
-				"ProceduralMeshComponent"
+				"ProceduralMeshComponent",
+				"AdvancedPreviewScene"
 			});
 		
 		DynamicallyLoadedModuleNames.AddRange(

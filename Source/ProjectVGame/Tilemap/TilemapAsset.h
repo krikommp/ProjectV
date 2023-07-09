@@ -41,7 +41,10 @@ struct FBlock
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	EBlock Type = EBlock::Air;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bMarked = false;
 };
 

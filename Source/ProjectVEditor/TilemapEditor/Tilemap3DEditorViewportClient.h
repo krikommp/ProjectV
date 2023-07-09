@@ -35,6 +35,7 @@ protected:
 	TObjectPtr<UBoxComponent> Heightmap;
 	TObjectPtr<UStaticMeshComponent> CollisionPlane;
 	TObjectPtr<UProceduralMeshComponent> TerrainMesh;
+	TObjectPtr<UMaterialInterface> TerrainMat;
 	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
 
 	float HitResultTraceDistance;

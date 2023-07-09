@@ -28,5 +28,5 @@ public:
 	TSoftObjectPtr<UStaticMesh> CollisionMesh;
 
 	UPROPERTY(Config, EditAnywhere, Category="Terrain")
-	TSoftObjectPtr<UStaticMesh> TerrainCubeMesh;
+	TSoftObjectPtr<UMaterialInterface> DefaultTerrainMesh;
 };

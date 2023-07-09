@@ -1,10 +1,13 @@
 #include "Tilemap3DEditorViewport.h"
+
+#include "AdvancedPreviewScene.h"
 #include "Tilemap3DEditorViewportClient.h"
 
 void STilemap3DEditorViewport::Construct(const FArguments& InArgs)
 {
 	DetailPtr = InArgs._TilemapDetailPtr.Get();
-	PreviewScene = MakeShareable(new FPreviewScene());
+	PreviewScene = MakeShareable(new FAdvancedPreviewScene(FPreviewScene::ConstructionValues()));
+	PreviewScene->SetFloorVisibility(false, false);
 	SEditorViewport::Construct(SEditorViewport::FArguments());
 }
 

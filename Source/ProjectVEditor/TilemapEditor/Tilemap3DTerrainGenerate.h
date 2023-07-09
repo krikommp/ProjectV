@@ -5,24 +5,28 @@ class UProceduralMeshComponent;
 class FTilemap3DTerrainGenerate
 {
 public:
+	static void Setup(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent, UMaterialInterface* Material);
 	static void ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
-	                        const FVector& Position, const EBlock Block, const int32 Floor);
+	                        const FVector& Position, const EBlock Block, const int32 Floor,
+	                        UMaterialInterface* Material);
 	static int32 VectorToIndex(UTilemapAsset* TilemapAsset, const FVector& Location, int32 Floor);
 
 private:
 	static bool Check(UTilemapAsset* TilemapAsset, const FVector& Position);
 	static void CreateFace(UTilemapAsset* TilemapAsset, const ETilemapDirection Direction,
-	                       const FVector& Position, const FColor& Color);
+	                       const FVector& Position);
 	static TArray<FVector> GetFaceVertices(const ETilemapDirection Direction, const FVector& Position);
 	static FVector GetPositionInDirection(const ETilemapDirection Direction, const FVector& Position);
 	static FVector GetNormal(const ETilemapDirection Direction);
 	static void ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position, const EBlock Block,
 	                            const int32 Floor);
+	static int32 GetTextureIndex(const EBlock Block, const FVector& Normal);
 
 
 	static void ClearMesh(UTilemapAsset* TilemapAsset);
 	static void GenerateMesh(UTilemapAsset* TilemapAsset);
-	static void ApplyMesh(const UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent);
+	static void ApplyMesh(const UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+	                      UMaterialInterface* Material);
 
 private:
 	inline static const FVector BlockVertexData[8] = {

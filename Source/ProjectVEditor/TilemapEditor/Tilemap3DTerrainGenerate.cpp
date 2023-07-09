@@ -22,14 +22,22 @@ int32 FTilemap3DTerrainGenerate::VectorToIndex(UTilemapAsset* TilemapAsset, cons
 	return Result + TilemapAsset->LevelSizeX * TilemapAsset->LevelSizeY * Floor;
 }
 
+void FTilemap3DTerrainGenerate::Setup(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+	UMaterialInterface* Material)
+{
+	ClearMesh(TilemapAsset);
+	GenerateMesh(TilemapAsset);
+	ApplyMesh(TilemapAsset, MeshComponent, Material);
+}
+
 void FTilemap3DTerrainGenerate::ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
                                             const FVector& Position,
-                                            const EBlock Block, const int32 Floor)
+                                            const EBlock Block, const int32 Floor, UMaterialInterface* Material)
 {
 	ModifyVoxelData(TilemapAsset, Position, Block, Floor);
 	ClearMesh(TilemapAsset);
 	GenerateMesh(TilemapAsset);
-	ApplyMesh(TilemapAsset, MeshComponent);
+	ApplyMesh(TilemapAsset, MeshComponent, Material);
 }
 
 void FTilemap3DTerrainGenerate::ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position,
@@ -38,6 +46,13 @@ void FTilemap3DTerrainGenerate::ModifyVoxelData(UTilemapAsset* TilemapAsset, con
 	const int32 Index = VectorToIndex(TilemapAsset, Position, Floor);
 
 	TilemapAsset->Blocks[Index].Type = Block;
+}
+
+int32 FTilemap3DTerrainGenerate::GetTextureIndex(const EBlock Block, const FVector& Normal)
+{
+	if (Normal == FVector::UpVector)
+		return 0;
+	return 1;
 }
 
 void FTilemap3DTerrainGenerate::ClearMesh(UTilemapAsset* TilemapAsset)
@@ -64,7 +79,7 @@ void FTilemap3DTerrainGenerate::GenerateMesh(UTilemapAsset* TilemapAsset)
 					{
 						if (Check(TilemapAsset, GetPositionInDirection(Direction, Position)))
 						{
-							CreateFace(TilemapAsset, Direction, Position * 100, FColor::Red);
+							CreateFace(TilemapAsset, Direction, Position * 100);
 						}
 					}
 					TilemapAsset->Blocks[Index].bMarked = true;
@@ -74,8 +89,10 @@ void FTilemap3DTerrainGenerate::GenerateMesh(UTilemapAsset* TilemapAsset)
 	}
 }
 
-void FTilemap3DTerrainGenerate::ApplyMesh(const UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent)
+void FTilemap3DTerrainGenerate::ApplyMesh(const UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+                                          UMaterialInterface* Material)
 {
+	MeshComponent->SetMaterial(0, Material);
 	MeshComponent->CreateMeshSection(
 		0,
 		TilemapAsset->MeshData.Vertices,
@@ -98,9 +115,10 @@ bool FTilemap3DTerrainGenerate::Check(UTilemapAsset* TilemapAsset, const FVector
 }
 
 void FTilemap3DTerrainGenerate::CreateFace(UTilemapAsset* TilemapAsset, const ETilemapDirection Direction,
-                                           const FVector& Position, const FColor& Color)
+                                           const FVector& Position)
 {
 	const auto Normal = GetNormal(Direction);
+	const auto Color = FColor(0, 0, 0, GetTextureIndex(EBlock::Cube, Normal));
 
 	TilemapAsset->MeshData.Vertices.Append(GetFaceVertices(Direction, Position));
 	TilemapAsset->MeshData.Triangles.Append({
@@ -110,7 +128,7 @@ void FTilemap3DTerrainGenerate::CreateFace(UTilemapAsset* TilemapAsset, const ET
 	});
 	TilemapAsset->MeshData.Normals.Append({Normal, Normal, Normal, Normal});
 	TilemapAsset->MeshData.Colors.Append({Color, Color, Color, Color});
-	TilemapAsset->MeshData.UV0.Append({FVector2D(1, 1), FVector2D(1, 0), FVector2D(0, 0), FVector2D(0, 1)});
+	TilemapAsset->MeshData.UV0.Append({FVector2D(0, 0), FVector2D(1, 0), FVector2D(1, 1), FVector2D(0, 1)});
 
 	TilemapAsset->MeshData.VertexCount += 4;
 }

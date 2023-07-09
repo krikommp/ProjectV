@@ -39,9 +39,11 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	// 创建地形组件
 	TerrainMesh = NewObject<UProceduralMeshComponent>();
 	PreviewScene->AddComponent(TerrainMesh, FTransform::Identity);
+	TerrainMat = Settings->DefaultTerrainMesh.LoadSynchronous();
 
 	// 创建预览 actor
-	TilemapSelectedPreview = FEditorViewportClient::GetWorld()->SpawnActor<ATilemap3DSelected>(ATilemap3DSelected::StaticClass());
+	TilemapSelectedPreview = FEditorViewportClient::GetWorld()->SpawnActor<ATilemap3DSelected>(
+		ATilemap3DSelected::StaticClass());
 
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
@@ -53,6 +55,8 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 			this, &FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged);
 	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Add(
 		OnTilemapEditStatueChangedDelegate);
+
+	FTilemap3DTerrainGenerate::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat);
 }
 
 FTilemap3DEditorViewportClient::~FTilemap3DEditorViewportClient()
@@ -70,11 +74,12 @@ void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
 void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& Collector)
 {
 	Collector.AddReferencedObject(TilemapSelectedPreview);
+	Collector.AddReferencedObject(TerrainMat);
 }
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
+	if ((EventArgs.Key == EKeys::LeftMouseButton || EventArgs.Key == EKeys::RightMouseButton) && EventArgs.Event == IE_Pressed)
 	{
 		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
 
@@ -92,8 +97,12 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location, EBlock::Cube,
-			                                       GetCurrentFloor());
+			if (EventArgs.Key == EKeys::LeftMouseButton) 
+				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location, EBlock::Cube,
+			                                       GetCurrentFloor(), TerrainMat);
+			else if (EventArgs.Key == EKeys::RightMouseButton)
+				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location, EBlock::Air,
+												   GetCurrentFloor(), TerrainMat);
 		}
 	}
 	return FEditorViewportClient::InputKey(EventArgs);

@@ -2,6 +2,7 @@
 #include "EditorWindowExtension/EditorWindow/EditorWindowViewport.h"
 
 
+class FAdvancedPreviewScene;
 class STilemap3DPropertiesTabBody;
 class FTilemap3DEditorViewportClient;
 class ULineBatchComponent;
@@ -39,7 +40,7 @@ protected:
 	/** SEditorViewport interface */
 	virtual TSharedRef<FEditorViewportClient> MakeEditorViewportClient() override;
 
-	TSharedPtr<FPreviewScene> PreviewScene;
+	TSharedPtr<FAdvancedPreviewScene> PreviewScene;
 
 	TSharedPtr<FTilemap3DEditorViewportClient> TilemapAssetPreviewClient;
 

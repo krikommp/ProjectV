@@ -52,6 +52,8 @@ int32 FTilemap3DTerrainGenerate::GetTextureIndex(const EBlock Block, const FVect
 {
 	if (Normal == FVector::UpVector)
 		return 0;
+	if (Normal == FVector::DownVector)
+		return 2;
 	return 1;
 }
 

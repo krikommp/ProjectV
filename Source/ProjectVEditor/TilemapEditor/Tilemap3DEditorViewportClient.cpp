@@ -57,6 +57,7 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 		OnTilemapEditStatueChangedDelegate);
 
 	FTilemap3DTerrainGenerate::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat);
+	Clear();
 }
 
 FTilemap3DEditorViewportClient::~FTilemap3DEditorViewportClient()
@@ -140,6 +141,7 @@ void FTilemap3DEditorViewportClient::Clear() const
 	if (CollisionPlane)
 	{
 		CollisionPlane->SetVisibility(false);
+		CollisionPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
@@ -190,6 +192,7 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		CollisionTransform.SetScale3D(FVector(CollisionScaleX, CollisionScaleY, 1.0));
 		CollisionPlane->SetWorldTransform(CollisionTransform);
 		CollisionPlane->SetVisibility(true);
+		CollisionPlane->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	}
 	else
 	{

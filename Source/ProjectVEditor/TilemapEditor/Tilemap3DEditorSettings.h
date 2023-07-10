@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tilemap/Tileset3DDataTable.h"
 #include "UObject/Object.h"
 #include "Tilemap3DEditorSettings.generated.h"
 
 class UMaterialInterface;
 class UStaticMesh;
+class UTileSet3DAsset;
 
 /**
  * UTilemap3DEditorSettings
@@ -29,4 +29,7 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category="Terrain")
 	TSoftObjectPtr<UMaterialInterface> DefaultTerrainMesh;
+
+	UPROPERTY(Config, EditAnywhere, Category="TileSet")
+	TSoftObjectPtr<UTileSet3DAsset> DefaultTileSet;
 };

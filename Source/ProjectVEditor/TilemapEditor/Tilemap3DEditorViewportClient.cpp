@@ -8,6 +8,7 @@
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DSelected.h"
 #include "Tilemap3DTerrainGenerate.h"
+#include "Tilemap/TileSet3DAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
 FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilemap3DPropertiesTabBody> InDetailPtr,
@@ -45,6 +46,9 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	TilemapSelectedPreview = FEditorViewportClient::GetWorld()->SpawnActor<ATilemap3DSelected>(
 		ATilemap3DSelected::StaticClass());
 
+	// 获取默认数据
+	CurrentTileSet = Settings->DefaultTileSet.LoadSynchronous();
+
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
 
@@ -80,7 +84,8 @@ void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& C
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	if ((EventArgs.Key == EKeys::LeftMouseButton || EventArgs.Key == EKeys::RightMouseButton) && EventArgs.Event == IE_Pressed)
+	if ((EventArgs.Key == EKeys::LeftMouseButton || EventArgs.Key == EKeys::RightMouseButton) && EventArgs.Event ==
+		IE_Pressed)
 	{
 		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
 
@@ -98,12 +103,12 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			if (EventArgs.Key == EKeys::LeftMouseButton) 
+			if (EventArgs.Key == EKeys::LeftMouseButton)
 				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location, EBlock::Cube,
-			                                       GetCurrentFloor(), TerrainMat);
+				                                       GetCurrentFloor(), TerrainMat);
 			else if (EventArgs.Key == EKeys::RightMouseButton)
 				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location, EBlock::Air,
-												   GetCurrentFloor(), TerrainMat);
+				                                       GetCurrentFloor(), TerrainMat);
 		}
 	}
 	return FEditorViewportClient::InputKey(EventArgs);

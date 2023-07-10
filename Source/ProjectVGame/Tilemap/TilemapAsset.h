@@ -21,12 +21,12 @@ enum class EBlock : uint8
 };
 
 /**
- * ETilemapDirection
+ * EBlockDirection
  *
- * 方向
+ * Block方向
  */
 UENUM(BlueprintType)
-enum class ETilemapDirection : uint8
+enum class EBlockDirection : uint8
 {
 	Forward = 0,
 	Right = 1,

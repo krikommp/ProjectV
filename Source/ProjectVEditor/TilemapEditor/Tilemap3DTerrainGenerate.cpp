@@ -75,8 +75,8 @@ void FTilemap3DTerrainGenerate::GenerateMesh(UTilemapAsset* TilemapAsset)
 				{
 					const auto Position = FVector(x, y, z);
 					for (const auto Direction : {
-						     ETilemapDirection::Forward, ETilemapDirection::Right, ETilemapDirection::Back,
-						     ETilemapDirection::Left, ETilemapDirection::Up, ETilemapDirection::Down
+						     EBlockDirection::Forward, EBlockDirection::Right, EBlockDirection::Back,
+						     EBlockDirection::Left, EBlockDirection::Up, EBlockDirection::Down
 					     })
 					{
 						if (Check(TilemapAsset, GetPositionInDirection(Direction, Position)))
@@ -116,7 +116,7 @@ bool FTilemap3DTerrainGenerate::Check(UTilemapAsset* TilemapAsset, const FVector
 	return TilemapAsset->Blocks[TilemapAsset->GetBlockIndex(Position.X, Position.Y, Position.Z)].Type == EBlock::Air;
 }
 
-void FTilemap3DTerrainGenerate::CreateFace(UTilemapAsset* TilemapAsset, const ETilemapDirection Direction,
+void FTilemap3DTerrainGenerate::CreateFace(UTilemapAsset* TilemapAsset, const EBlockDirection Direction,
                                            const FVector& Position)
 {
 	const auto Normal = GetNormal(Direction);
@@ -135,7 +135,7 @@ void FTilemap3DTerrainGenerate::CreateFace(UTilemapAsset* TilemapAsset, const ET
 	TilemapAsset->MeshData.VertexCount += 4;
 }
 
-TArray<FVector> FTilemap3DTerrainGenerate::GetFaceVertices(const ETilemapDirection Direction, const FVector& Position)
+TArray<FVector> FTilemap3DTerrainGenerate::GetFaceVertices(const EBlockDirection Direction, const FVector& Position)
 {
 	TArray<FVector> Vertices;
 
@@ -147,30 +147,30 @@ TArray<FVector> FTilemap3DTerrainGenerate::GetFaceVertices(const ETilemapDirecti
 	return Vertices;
 }
 
-FVector FTilemap3DTerrainGenerate::GetPositionInDirection(const ETilemapDirection Direction, const FVector& Position)
+FVector FTilemap3DTerrainGenerate::GetPositionInDirection(const EBlockDirection Direction, const FVector& Position)
 {
 	switch (Direction)
 	{
-	case ETilemapDirection::Forward: return Position + FVector::ForwardVector;
-	case ETilemapDirection::Back: return Position + FVector::BackwardVector;
-	case ETilemapDirection::Left: return Position + FVector::LeftVector;
-	case ETilemapDirection::Right: return Position + FVector::RightVector;
-	case ETilemapDirection::Up: return Position + FVector::UpVector;
-	case ETilemapDirection::Down: return Position + FVector::DownVector;
+	case EBlockDirection::Forward: return Position + FVector::ForwardVector;
+	case EBlockDirection::Back: return Position + FVector::BackwardVector;
+	case EBlockDirection::Left: return Position + FVector::LeftVector;
+	case EBlockDirection::Right: return Position + FVector::RightVector;
+	case EBlockDirection::Up: return Position + FVector::UpVector;
+	case EBlockDirection::Down: return Position + FVector::DownVector;
 	default: throw std::invalid_argument("Invalid direction");
 	}
 }
 
-FVector FTilemap3DTerrainGenerate::GetNormal(const ETilemapDirection Direction)
+FVector FTilemap3DTerrainGenerate::GetNormal(const EBlockDirection Direction)
 {
 	switch (Direction)
 	{
-	case ETilemapDirection::Forward: return FVector::ForwardVector;
-	case ETilemapDirection::Right: return FVector::RightVector;
-	case ETilemapDirection::Back: return FVector::BackwardVector;
-	case ETilemapDirection::Left: return FVector::LeftVector;
-	case ETilemapDirection::Up: return FVector::UpVector;
-	case ETilemapDirection::Down: return FVector::DownVector;
+	case EBlockDirection::Forward: return FVector::ForwardVector;
+	case EBlockDirection::Right: return FVector::RightVector;
+	case EBlockDirection::Back: return FVector::BackwardVector;
+	case EBlockDirection::Left: return FVector::LeftVector;
+	case EBlockDirection::Up: return FVector::UpVector;
+	case EBlockDirection::Down: return FVector::DownVector;
 	default: throw std::invalid_argument("Invalid direction");
 	}
 }

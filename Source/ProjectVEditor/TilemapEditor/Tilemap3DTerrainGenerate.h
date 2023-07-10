@@ -13,11 +13,11 @@ public:
 
 private:
 	static bool Check(UTilemapAsset* TilemapAsset, const FVector& Position);
-	static void CreateFace(UTilemapAsset* TilemapAsset, const ETilemapDirection Direction,
+	static void CreateFace(UTilemapAsset* TilemapAsset, const EBlockDirection Direction,
 	                       const FVector& Position);
-	static TArray<FVector> GetFaceVertices(const ETilemapDirection Direction, const FVector& Position);
-	static FVector GetPositionInDirection(const ETilemapDirection Direction, const FVector& Position);
-	static FVector GetNormal(const ETilemapDirection Direction);
+	static TArray<FVector> GetFaceVertices(const EBlockDirection Direction, const FVector& Position);
+	static FVector GetPositionInDirection(const EBlockDirection Direction, const FVector& Position);
+	static FVector GetNormal(const EBlockDirection Direction);
 	static void ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position, const EBlock Block,
 	                            const int32 Floor);
 	static int32 GetTextureIndex(const EBlock Block, const FVector& Normal);

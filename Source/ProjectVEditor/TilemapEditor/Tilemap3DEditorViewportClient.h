@@ -2,6 +2,7 @@
 #include "Tilemap/TilemapAsset.h"
 #include "Tilemap3DPropertiesTabBody.h"
 
+class UTileSet3DAsset;
 class UBoxComponent;
 class UStaticMeshComponent;
 class UProceduralMeshComponent;
@@ -36,11 +37,11 @@ protected:
 	TObjectPtr<UStaticMeshComponent> CollisionPlane;
 	TObjectPtr<UProceduralMeshComponent> TerrainMesh;
 	TObjectPtr<UMaterialInterface> TerrainMat;
+	TObjectPtr<UTileSet3DAsset> CurrentTileSet;
 	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
 
 	float HitResultTraceDistance;
 
 	void OnTilemapEditStatueChanged(bool Statue);
-
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
 };

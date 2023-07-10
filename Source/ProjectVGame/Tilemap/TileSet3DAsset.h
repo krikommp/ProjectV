@@ -13,6 +13,9 @@ struct FTileSet3DSubObject
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName ID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EBlock BlockType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -29,6 +32,7 @@ class PROJECTVGAME_API UTileSet3DAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UTexture2DArray> Textures;
 
@@ -36,5 +40,5 @@ class PROJECTVGAME_API UTileSet3DAsset : public UPrimaryDataAsset
 	TObjectPtr<UMaterialInterface> Material;
 
 	UPROPERTY(EditAnywhere)
-	TMap<FName, FTileSet3DSubObject> TileSets;
+	TArray<FTileSet3DSubObject> TileSets;
 };

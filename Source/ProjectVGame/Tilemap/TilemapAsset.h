@@ -41,6 +41,7 @@ struct FBlock
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FName BlockID = FName();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

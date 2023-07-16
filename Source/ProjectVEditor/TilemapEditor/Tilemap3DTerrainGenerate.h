@@ -1,30 +1,36 @@
 ﻿#pragma once
 #include "Tilemap/TilemapAsset.h"
+#include "Tilemap/TileSet3DAsset.h"
 class UProceduralMeshComponent;
+class FTilemap3DEditorViewportClient;
 
 class FTilemap3DTerrainGenerate
 {
 public:
-	static void Setup(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent, UMaterialInterface* Material);
+	static void Setup(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+	                  UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient);
 	static void ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
-	                        const FVector& Position, const EBlock Block, const int32 Floor,
-	                        UMaterialInterface* Material);
+	                        const FVector& Position, const FTileSet3DSubObject& Block, const int32 Floor,
+	                        UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient);
+	static void ClearVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+	                       UMaterialInterface* Material);
 	static int32 VectorToIndex(UTilemapAsset* TilemapAsset, const FVector& Location, int32 Floor);
 
 private:
 	static bool Check(UTilemapAsset* TilemapAsset, const FVector& Position);
 	static void CreateFace(UTilemapAsset* TilemapAsset, const EBlockDirection Direction,
-	                       const FVector& Position);
+	                       const FVector& Position, const FBlock& Block, FTilemap3DEditorViewportClient* ViewClient);
 	static TArray<FVector> GetFaceVertices(const EBlockDirection Direction, const FVector& Position);
 	static FVector GetPositionInDirection(const EBlockDirection Direction, const FVector& Position);
 	static FVector GetNormal(const EBlockDirection Direction);
-	static void ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position, const EBlock Block,
+	static void ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position, const FTileSet3DSubObject& Block,
 	                            const int32 Floor);
-	static int32 GetTextureIndex(const EBlock Block, const FVector& Normal);
+	static int32 GetTextureIndex(const FBlock& Block, const FVector& Normal,
+	                             FTilemap3DEditorViewportClient* ViewClient);
 
 
 	static void ClearMesh(UTilemapAsset* TilemapAsset);
-	static void GenerateMesh(UTilemapAsset* TilemapAsset);
+	static void GenerateMesh(UTilemapAsset* TilemapAsset, FTilemap3DEditorViewportClient* ViewClient);
 	static void ApplyMesh(const UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
 	                      UMaterialInterface* Material);
 

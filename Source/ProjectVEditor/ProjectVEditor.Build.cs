@@ -25,7 +25,6 @@ public class ProjectVEditor : ModuleRules
 				"Engine",
 				"EditorFramework",
 				"UnrealEd",
-				"ProjectVGame"
 			});
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -39,7 +38,8 @@ public class ProjectVEditor : ModuleRules
 				"KismetWidgets",
 				"Settings",
 				"ProceduralMeshComponent",
-				"AdvancedPreviewScene"
+				"AdvancedPreviewScene",
+				"ProjectVGame"
 			});
 		
 		DynamicallyLoadedModuleNames.AddRange(

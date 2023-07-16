@@ -2,3 +2,10 @@
 
 
 #include "TileSet3DAsset.h"
+
+FTileSet3DSubObject FTileSet3DSubObject::EmptyBlock;
+
+FTileSet3DSubObject::FTileSet3DSubObject()
+	: ID(FName()), BlockType(EBlock::Air)
+{
+}

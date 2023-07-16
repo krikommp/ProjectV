@@ -27,10 +27,14 @@ public:
 	              const FLinearColor& Color, float Thickness = 3.0f) const;
 	void Clear() const;
 
+	int32 GetBlockTextureIndex(const FName& ID, int32 Flag) const;
+
 protected:
 	TSharedPtr<STilemap3DPropertiesTabBody> DetailPtr;
 	UTilemapAsset* GetTilemapAsset() const { return DetailPtr->GetTilemapAsset(); }
 	int32 GetCurrentFloor() const { return DetailPtr->GetCurrentFloor(); }
+	const FTileSet3DSubObject& GetCurrentTileProperty() const { return DetailPtr->GetCurrentTileProperty(); }
+	UTileSet3DAsset* GetTileSet() const { return DetailPtr->GetTileSet(); }
 
 	TObjectPtr<ULineBatchComponent> LineBatcher;
 	TObjectPtr<UBoxComponent> Heightmap;
@@ -43,5 +47,6 @@ protected:
 	float HitResultTraceDistance;
 
 	void OnTilemapEditStatueChanged(bool Statue);
+	void OnTilemapClearVoxel();
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
 };

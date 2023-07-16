@@ -11,6 +11,7 @@
 
 FTilemap3DEditDelegates::FOnTilemapEditStatueChanged FTilemap3DEditDelegates::OnTilemapEditStatueChanged;
 FSimpleMulticastDelegate FTilemap3DEditDelegates::OnTilemapModelChanged;
+FSimpleMulticastDelegate FTilemap3DEditDelegates::OnTilemapClearVoxel;
 
 #define LOCTEXT_NAMESPACE "UTilemapEditorManager"
 

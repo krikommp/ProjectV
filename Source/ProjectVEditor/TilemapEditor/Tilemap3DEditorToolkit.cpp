@@ -1,5 +1,6 @@
 ﻿#include "Tilemap3DEditorToolkit.h"
 
+#include "Tilemap3DEditorSettings.h"
 #include "Tilemap3DPropertiesTabBody.h"
 #include "Tilemap/TilemapAsset.h"
 #include "Tilemap3DEditorViewport.h"
@@ -77,9 +78,10 @@ void FTilemap3DEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TS
 {
 	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->CloseOtherEditors(Asset, this);
 	TilemapBeingEdited = Asset;
-	
+
+	const UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
 	TSharedRef<FTilemap3DEditorToolkit> EditorToolkit = SharedThis(this);
-	DetailPtr = SNew(STilemap3DPropertiesTabBody, EditorToolkit);
+	DetailPtr = SNew(STilemap3DPropertiesTabBody, EditorToolkit, Settings->DefaultTileSet.LoadSynchronous());
 
 	ViewportPtr = SNew(STilemap3DEditorViewport)
 		.TilemapDetailPtr(this, &FTilemap3DEditorToolkit::GetDetailPtr);

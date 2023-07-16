@@ -8,9 +8,13 @@
 #include "TileSet3DAsset.generated.h"
 
 USTRUCT(BlueprintType)
-struct FTileSet3DSubObject
+struct PROJECTVGAME_API FTileSet3DSubObject
 {
 	GENERATED_BODY()
+
+	FTileSet3DSubObject();
+
+	static FTileSet3DSubObject EmptyBlock;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName ID;
@@ -19,7 +23,7 @@ struct FTileSet3DSubObject
 	EBlock BlockType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<TObjectPtr<UTexture>> BlockTextures; 
+	TArray<TObjectPtr<UTexture2D>> BlockTextures;
 };
 
 /**

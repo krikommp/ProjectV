@@ -60,7 +60,11 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Add(
 		OnTilemapEditStatueChangedDelegate);
 
-	FTilemap3DTerrainGenerate::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat);
+	const auto OnTilemapClearVoxelDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(
+		this, &FTilemap3DEditorViewportClient::OnTilemapClearVoxel);
+	FTilemap3DEditDelegates::OnTilemapClearVoxel.Add(OnTilemapClearVoxelDelegate);
+
+	FTilemap3DTerrainGenerate::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
 	Clear();
 }
 
@@ -68,6 +72,7 @@ FTilemap3DEditorViewportClient::~FTilemap3DEditorViewportClient()
 {
 	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.RemoveAll(this);
 	FTilemap3DEditDelegates::OnTilemapModelChanged.RemoveAll(this);
+	FTilemap3DEditDelegates::OnTilemapClearVoxel.RemoveAll(this);
 }
 
 void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
@@ -104,11 +109,15 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 		if (HitResult.bBlockingHit)
 		{
 			if (EventArgs.Key == EKeys::LeftMouseButton)
-				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location, EBlock::Cube,
-				                                       GetCurrentFloor(), TerrainMat);
+				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
+				                                       GetCurrentTileProperty(),
+				                                       GetCurrentFloor(), TerrainMat,
+				                                       this);
 			else if (EventArgs.Key == EKeys::RightMouseButton)
-				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location, EBlock::Air,
-				                                       GetCurrentFloor(), TerrainMat);
+				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
+				                                       FTileSet3DSubObject::EmptyBlock,
+				                                       GetCurrentFloor(), TerrainMat,
+				                                       this);
 		}
 	}
 	return FEditorViewportClient::InputKey(EventArgs);
@@ -148,6 +157,31 @@ void FTilemap3DEditorViewportClient::Clear() const
 		CollisionPlane->SetVisibility(false);
 		CollisionPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+}
+
+int32 FTilemap3DEditorViewportClient::GetBlockTextureIndex(const FName& ID, int32 Flag) const
+{
+	if (const auto& TileSet = GetTileSet())
+	{
+		for (FTileSet3DSubObject Tile : TileSet->TileSets)
+		{
+			if (Tile.ID == ID)
+			{
+				UTexture2D* Tex;
+				if (Tile.BlockTextures.Num() <= Flag)
+				{
+					Tex = Tile.BlockTextures[0];
+				}
+				else
+				{
+					Tex = Tile.BlockTextures[Flag];
+				}
+
+				return DetailPtr->GetTextureIndex(Tex);
+			}
+		}
+	}
+	return -1;
 }
 
 void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
@@ -203,6 +237,11 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 	{
 		Clear();
 	}
+}
+
+void FTilemap3DEditorViewportClient::OnTilemapClearVoxel()
+{
+	FTilemap3DTerrainGenerate::ClearVoxel(GetTilemapAsset(), TerrainMesh, TerrainMat);
 }
 
 void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const

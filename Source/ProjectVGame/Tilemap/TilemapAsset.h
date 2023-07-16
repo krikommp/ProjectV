@@ -41,6 +41,8 @@ struct FBlock
 {
 	GENERATED_BODY()
 
+	FName BlockID = FName();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	EBlock Type = EBlock::Air;
 

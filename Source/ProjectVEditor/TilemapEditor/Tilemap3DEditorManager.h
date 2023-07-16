@@ -13,6 +13,7 @@ struct PROJECTVEDITOR_API FTilemap3DEditDelegates
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnTilemapEditStatueChanged, bool);
 	static FOnTilemapEditStatueChanged OnTilemapEditStatueChanged;
 	static FSimpleMulticastDelegate OnTilemapModelChanged;
+	static FSimpleMulticastDelegate OnTilemapClearVoxel;
 };
 
 /**

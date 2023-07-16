@@ -48,6 +48,10 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 
 	// 获取默认数据
 	CurrentTileSet = Settings->DefaultTileSet.LoadSynchronous();
+	CachedTilemapSize.SetNumUninitialized(3);
+	CachedTilemapSize[0] = GetTilemapAsset()->LevelSizeX;
+	CachedTilemapSize[1] = GetTilemapAsset()->LevelSizeY;
+	CachedTilemapSize[2] = GetTilemapAsset()->Floors;
 
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
@@ -194,8 +198,28 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		if (GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->Floors !=
 			GetTilemapAsset()->Blocks.Num())
 		{
-			GetTilemapAsset()->Blocks.SetNum(
-				GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->Floors);
+			TArray<FBlock> NewBlocks;
+			NewBlocks.SetNum(GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->Floors);
+			for (int32 x = 0; x < GetTilemapAsset()->LevelSizeX; ++x)
+			{
+				for (int32 y = 0; y < GetTilemapAsset()->LevelSizeY; ++y)
+				{
+					for (int32 z = 0; z < GetTilemapAsset()->Floors; ++z)
+					{
+						if (x < CachedTilemapSize[0] && y < CachedTilemapSize[1] && z < CachedTilemapSize[2])
+						{
+							NewBlocks[x + y * GetTilemapAsset()->LevelSizeX + z * GetTilemapAsset()->LevelSizeX *
+								GetTilemapAsset()->LevelSizeY] = GetTilemapAsset()->Blocks[x + y * CachedTilemapSize[0]
+								+ z * CachedTilemapSize[0] * CachedTilemapSize[1]];
+						}
+					}
+				}
+			}
+			CachedTilemapSize[0] = GetTilemapAsset()->LevelSizeX;
+			CachedTilemapSize[1] = GetTilemapAsset()->LevelSizeY;
+			CachedTilemapSize[2] = GetTilemapAsset()->Floors;
+			GetTilemapAsset()->Blocks = NewBlocks;
+			FTilemap3DTerrainGenerate::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
 		}
 
 		// 绘制编辑区域

@@ -44,6 +44,8 @@ protected:
 	TObjectPtr<UTileSet3DAsset> CurrentTileSet;
 	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
 
+	TArray<int32> CachedTilemapSize;
+
 	float HitResultTraceDistance;
 
 	void OnTilemapEditStatueChanged(bool Statue);

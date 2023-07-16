@@ -25,6 +25,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::DrawEditStatusWidget()
 				this->EditStatusText->SetText(bEditProperty
 					                              ? LOCTEXT("Stop", "Stop Editing")
 					                              : LOCTEXT("Start", "Start Editing"));
+				CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors - 1, CurrentFloor.Get());
 				FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
 				return FReply::Handled();
 			})
@@ -139,7 +140,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 						SNew(SButton)
 						.OnClicked_Lambda([this]()
 						{
-							CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors,
+							CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors - 1,
 							                          CurrentFloor.Get() + 1);
 							FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
 							return FReply::Handled();

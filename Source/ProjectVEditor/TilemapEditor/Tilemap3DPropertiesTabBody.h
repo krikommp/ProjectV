@@ -30,6 +30,7 @@ private:
 
 	//~ Begin Widget
 	TSharedRef<SWidget> DrawEditStatusWidget();
+	TSharedRef<SWidget> DrawFloorLineWidget();
 	//~ Begin Widget 
 public:
 	void Construct(const FArguments& InArgs, TSharedPtr<FTilemap3DEditorToolkit> InTilemapEditor,

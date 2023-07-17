@@ -2,3 +2,13 @@
 
 
 #include "TilemapAsset.h"
+
+void FTilemap3DTerrainMeshData::Clear()
+{
+	Vertices.Empty();
+	Triangles.Empty();
+	Normals.Empty();
+	Colors.Empty();
+	UV0.Empty();
+	VertexCount = 0;
+}

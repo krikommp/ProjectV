@@ -5,102 +5,11 @@
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DEditorSettings.h"
 #include "Engine/Texture2DArray.h"
+#include "Widget/Tilemap3DEditStatusWidget.h"
+#include "Widget/Tilemap3DFloorStatusWidget.h"
 #include "Widget/TileSetGalleyWidget.h"
 
 #define LOCTEXT_NAMESPACE "STilemap3DPropertiesTabBody"
-
-TSharedRef<SWidget> STilemap3DPropertiesTabBody::DrawEditStatusWidget()
-{
-	return SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
-		  .FillWidth(1.0f)
-		  .HAlign(HAlign_Fill)
-		  .VAlign(VAlign_Fill)
-		  .Padding(2.0f)
-		[
-			SNew(SButton)
-			.OnClicked_Lambda([this]()
-			{
-				bEditProperty = !bEditProperty;
-				this->EditStatusText->SetText(bEditProperty
-					                              ? LOCTEXT("Stop", "Stop Editing")
-					                              : LOCTEXT("Start", "Start Editing"));
-				CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors - 1, CurrentFloor.Get());
-				FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
-				return FReply::Handled();
-			})
-			[
-				SAssignNew(EditStatusText, STextBlock)
-						.Justification(ETextJustify::Center)
-						.Text(bEditProperty
-							      ? LOCTEXT("Stop", "Stop Editing")
-							      : LOCTEXT("Start", "Start Editing"))
-			]
-		];
-}
-
-TSharedRef<SWidget> STilemap3DPropertiesTabBody::DrawFloorLineWidget()
-{
-	return SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
-		  .FillWidth(1.0f)
-		  .HAlign(HAlign_Fill)
-		  .VAlign(VAlign_Fill)
-		  .Padding(2.0f)
-		[
-			SNew(STextBlock)
-			.Text_Lambda([this]()
-			{
-				return FText::Format(LOCTEXT("TilemapFloorEntryLabel", "Floor: {0}"), CurrentFloor.Get());
-			})
-		]
-		+ SHorizontalBox::Slot()
-		  .FillWidth(1.0f)
-		  .HAlign(HAlign_Fill)
-		  .VAlign(VAlign_Fill)
-		  .Padding(2.0f)
-		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			  .FillWidth(1.0f)
-			  .HAlign(HAlign_Fill)
-			  .VAlign(VAlign_Fill)
-			[
-				SNew(SButton)
-				.OnClicked_Lambda([this]()
-				{
-					CurrentFloor = FMath::Max(CurrentFloor.Get() - 1, 0);
-					FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
-					return FReply::Handled();
-				})
-				[
-					SNew(STextBlock)
-							.Justification(ETextJustify::Center)
-							.Text(LOCTEXT("TilemapFloorUpArrow", "<"))
-				]
-			]
-			+ SHorizontalBox::Slot()
-			  .FillWidth(1.0f)
-			  .HAlign(HAlign_Fill)
-			  .VAlign(VAlign_Fill)
-			[
-				SNew(SButton)
-				.OnClicked_Lambda([this]()
-				{
-					CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors - 1,
-					                          CurrentFloor.Get() + 1);
-					FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
-					return FReply::Handled();
-				})
-				[
-					SNew(STextBlock)
-							.Justification(ETextJustify::Center)
-							.Text(LOCTEXT("TilemapFloorDownArrow", ">"))
-				]
-			]
-		];
-}
-
 void STilemap3DPropertiesTabBody::Construct(const FArguments& InArgs,
                                             TSharedPtr<FTilemap3DEditorToolkit> InTilemapEditor,
                                             TObjectPtr<UTileSet3DAsset> InTileSet)
@@ -143,7 +52,14 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 			SNew(SBorder)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			[
-				DrawEditStatusWidget()
+				SNew(STilemap3DEditStatusWidget, bEditProperty)
+				.OnEditStatusChanged_Lambda([this](bool Status)
+				{
+					bEditProperty = Status;
+					CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors - 1,
+					                          CurrentFloor);
+					FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
+				})
 			]
 		]
 		+ SVerticalBox::Slot()
@@ -156,7 +72,22 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
 			             })
 			[
-				DrawFloorLineWidget()
+				SNew(STilemap3DFloorStatusWidget)
+				.Floor_Lambda([this]()
+				{
+					return CurrentFloor;
+				})
+				.OnFloorIncrease_Lambda([this](const int32 Floor)
+				{
+					CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors - 1,
+											  CurrentFloor + 1);
+					FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
+				})
+				.OnFloorDecrease_Lambda([this](const int32 Floor)
+				{
+					CurrentFloor = FMath::Max(CurrentFloor - 1, 0);
+					FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
+				})
 			]
 		]
 		+ SVerticalBox::Slot()

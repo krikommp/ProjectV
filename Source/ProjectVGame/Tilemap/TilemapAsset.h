@@ -49,6 +49,9 @@ struct PROJECTVGAME_API FBlock
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bMarked = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FVector Location = FVector::Zero();
 };
 
 USTRUCT(BlueprintType)

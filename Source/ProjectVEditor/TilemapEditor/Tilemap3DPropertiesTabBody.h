@@ -25,13 +25,7 @@ private:
 	//~ Begin Slate UI Components
 
 	bool bEditProperty = false;
-
-	TAttribute<int32> CurrentFloor = 0;
-
-	//~ Begin Widget
-	TSharedRef<SWidget> DrawEditStatusWidget();
-	TSharedRef<SWidget> DrawFloorLineWidget();
-	//~ Begin Widget 
+	int32 CurrentFloor = 0;
 public:
 	void Construct(const FArguments& InArgs, TSharedPtr<FTilemap3DEditorToolkit> InTilemapEditor,
 	               TObjectPtr<UTileSet3DAsset> InTileSet);
@@ -42,7 +36,7 @@ public:
 	//~ Begin SSingleObjectDetailsPanel interface
 
 	UTilemapAsset* GetTilemapAsset() const { return TilemapEditorPtr.Pin()->TilemapBeingEdited; }
-	int32 GetCurrentFloor() const { return CurrentFloor.Get(); }
+	int32 GetCurrentFloor() const { return CurrentFloor; }
 	const FTileSet3DSubObject& GetCurrentTileProperty() const { return CurrentTile; }
 	UTileSet3DAsset* GetTileSet() const;
 	int32 GetTextureIndex(UTexture2D* InTexture) const;

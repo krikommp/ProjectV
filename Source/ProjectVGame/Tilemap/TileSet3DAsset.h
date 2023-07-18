@@ -45,4 +45,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FTileSet3DSubObject> TileSets;
+
+	UPROPERTY(EditAnywhere)
+	bool bDiagonalMovement = false;
 };

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TilemapPathFinding.h"
 
 #include "TilemapAsset.generated.h"
 
@@ -52,6 +53,15 @@ struct PROJECTVGAME_API FBlock
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FVector Location = FVector::Zero();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FTilemapPathFinding CanMoveTo;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<int32> EdgeArrayIndex;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<FTilemapMovementStep> EdgeArray;
 };
 
 USTRUCT(BlueprintType)

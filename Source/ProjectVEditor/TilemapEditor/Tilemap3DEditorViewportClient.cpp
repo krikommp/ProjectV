@@ -276,7 +276,7 @@ void FTilemap3DEditorViewportClient::OnTilemapClearVoxel()
 
 void FTilemap3DEditorViewportClient::OnTilemapGeneratePathFinding()
 {
-	FTilemap3DPathfindingGenerator::Setup(GetTilemapAsset());
+	FTilemap3DPathfindingGenerator::Setup(GetTilemapAsset(), CurrentTileSet);
 }
 
 void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const

@@ -6,11 +6,29 @@
 #include "UObject/Object.h"
 #include "TilemapPathFinding.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class PROJECTVGAME_API UTilemapPathFinding : public UObject
+USTRUCT(BlueprintType)
+struct PROJECTVGAME_API FTilemapPathFinding
 {
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 Index = INDEX_NONE;
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 Cost = INDEX_NONE;
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 Parent = INDEX_NONE;
+};
+
+USTRUCT(BlueprintType)
+struct PROJECTVGAME_API FTilemapMovementStep
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 Index = INDEX_NONE;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 Cost = INDEX_NONE;
 };

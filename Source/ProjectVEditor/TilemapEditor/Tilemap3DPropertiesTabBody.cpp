@@ -116,11 +116,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 		.AutoHeight()
 		[
 			SNew(SBorder)
-		.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
-		.Visibility_Lambda([this]()
-			             {
-				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
-			             })
+			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			[
 				SNew(SButton)
 				.OnClicked_Lambda([this]()

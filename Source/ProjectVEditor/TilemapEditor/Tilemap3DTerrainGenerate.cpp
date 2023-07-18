@@ -1,5 +1,6 @@
 ﻿#include "Tilemap3DTerrainGenerate.h"
 
+#include "GridTraceChannel.h"
 #include "ProceduralMeshComponent.h"
 #include "Tilemap3DEditorViewportClient.h"
 
@@ -121,6 +122,7 @@ void FTilemap3DTerrainGenerate::ApplyMesh(const UTilemapAsset* TilemapAsset, UPr
                                           UMaterialInterface* Material)
 {
 	MeshComponent->SetMaterial(0, Material);
+	MeshComponent->SetCollisionResponseToChannel(PathTrace, ECR_Block);
 	MeshComponent->CreateMeshSection(
 		0,
 		TilemapAsset->MeshData.Vertices,

@@ -6,6 +6,6 @@
 FTileSet3DSubObject FTileSet3DSubObject::EmptyBlock;
 
 FTileSet3DSubObject::FTileSet3DSubObject()
-	: ID(FName()), BlockType(EBlock::Air)
+	: ID(FName()), BlockType(EBlock::Air), Cost(MAX_int32)
 {
 }

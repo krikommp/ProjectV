@@ -1,10 +1,10 @@
 #include "Tilemap3DEditorViewportClient.h"
 
-#include "GridTraceChannel.h"
 #include "Components/BoxComponent.h"
 #include "Components/LineBatchComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProceduralMeshComponent.h"
+#include "ProjectVEditor.h"
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DSelected.h"
 #include "Generator/Tilemap3DPathfindingGenerator.h"
@@ -35,7 +35,7 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	PreviewScene->AddComponent(CollisionPlane, FTransform::Identity);
 	CollisionPlane->SetStaticMesh(Settings->CollisionMesh.LoadSynchronous());
 	CollisionPlane->SetMaterial(0, Settings->CollisionPlaneMat.LoadSynchronous());
-	CollisionPlane->SetCollisionResponseToChannel(PathTrace, ECR_Block);
+	CollisionPlane->SetCollisionResponseToChannel(TilemapEditTrace, ECR_Block);
 	CollisionPlane->SetVisibility(false);
 
 	// 创建地形组件
@@ -99,8 +99,31 @@ void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& C
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	if ((EventArgs.Key == EKeys::LeftMouseButton || EventArgs.Key == EKeys::RightMouseButton) && EventArgs.Event ==
-		IE_Pressed)
+	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
+	{
+		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
+
+		FHitResult HitResult;
+		const TArray<AActor*> IgnoreActor;
+		UKismetSystemLibrary::LineTraceSingle(
+			GetWorld(),
+			CursorLocation.GetOrigin(),
+			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
+			UEngineTypes::ConvertToTraceType(TilemapEditTrace),
+			false,
+			IgnoreActor,
+			EDrawDebugTrace::None,
+			HitResult,
+			false);
+		if (HitResult.bBlockingHit)
+		{
+			FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
+			                                        GetCurrentTileProperty(),
+			                                        GetCurrentFloor(), TerrainMat,
+			                                        this);
+		}
+	}
+	else if (EventArgs.Key == EKeys::RightMouseButton && EventArgs.Event == IE_Pressed)
 	{
 		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
 
@@ -118,16 +141,10 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			if (EventArgs.Key == EKeys::LeftMouseButton)
-				FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
-				                                       GetCurrentTileProperty(),
-				                                       GetCurrentFloor(), TerrainMat,
-				                                       this);
-			else if (EventArgs.Key == EKeys::RightMouseButton)
-				FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
-				                                       FTileSet3DSubObject::EmptyBlock,
-				                                       GetCurrentFloor(), TerrainMat,
-				                                       this);
+			FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
+			                                        FTileSet3DSubObject::EmptyBlock,
+			                                        GetCurrentFloor(), TerrainMat,
+			                                        this);
 		}
 	}
 	return FEditorViewportClient::InputKey(EventArgs);
@@ -231,7 +248,7 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		// 绘制编辑区域
 		DrawGrid(-1 * FVector(GetTilemapAsset()->GridSize / 2.0f, GetTilemapAsset()->GridSize / 2.0f, 0.0f),
 		         GetTilemapAsset()->LevelSizeX, GetTilemapAsset()->LevelSizeY,
-		         GetTilemapAsset()->GridSize, GetCurrentFloor() * GetTilemapAsset()->HeightSize,
+		         GetTilemapAsset()->GridSize, GetCurrentFloor() * GetTilemapAsset()->GridSize,
 		         FLinearColor::White);
 
 		// 绘制编辑范围
@@ -256,7 +273,7 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		FVector CollisionLocation;
 		GetEditRangeScaleAndLocation(CollisionLocation, CollisionScaleX,
 		                             CollisionScaleY);
-		CollisionLocation.Z += GetCurrentFloor() * GetTilemapAsset()->HeightSize;
+		CollisionLocation.Z += GetCurrentFloor() * GetTilemapAsset()->GridSize + 0.01f;
 		CollisionTransform.SetLocation(CollisionLocation + FVector::Zero());
 		CollisionTransform.SetScale3D(FVector(CollisionScaleX, CollisionScaleY, 1.0));
 		CollisionPlane->SetWorldTransform(CollisionTransform);
@@ -276,7 +293,7 @@ void FTilemap3DEditorViewportClient::OnTilemapClearVoxel()
 
 void FTilemap3DEditorViewportClient::OnTilemapGeneratePathFinding()
 {
-	FTilemap3DPathfindingGenerator::Setup(GetTilemapAsset(), CurrentTileSet);
+	FTilemap3DPathfindingGenerator::Setup(GetWorld(), GetTilemapAsset(), CurrentTileSet);
 }
 
 void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const

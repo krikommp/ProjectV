@@ -32,3 +32,21 @@ struct PROJECTVGAME_API FTilemapMovementStep
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 Cost = INDEX_NONE;
 };
+
+USTRUCT(BlueprintType)
+struct PROJECTVGAME_API FTilemapPathFindingBlock 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FVector Location = FVector::Zero();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FTilemapPathFinding CanMoveTo;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<int32> EdgeArrayIndex;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<FTilemapMovementStep> EdgeArray;
+};

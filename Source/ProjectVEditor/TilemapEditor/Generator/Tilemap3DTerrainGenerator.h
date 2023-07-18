@@ -14,8 +14,6 @@ public:
 	                        UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient);
 	static void ClearVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
 	                       UMaterialInterface* Material);
-	static int32 VectorToIndex(UTilemapAsset* TilemapAsset, const FVector& Location, int32 Floor);
-
 private:
 	static bool Check(UTilemapAsset* TilemapAsset, const FVector& Position);
 	static void CreateFace(UTilemapAsset* TilemapAsset, const EBlockDirection Direction,
@@ -36,14 +34,14 @@ private:
 
 private:
 	inline static const FVector BlockVertexData[8] = {
-		FVector(50, 50, 50),
-		FVector(50, -50, 50),
-		FVector(50, -50, -50),
-		FVector(50, 50, -50),
-		FVector(-50, -50, 50),
-		FVector(-50, 50, 50),
-		FVector(-50, 50, -50),
-		FVector(-50, -50, -50)
+		FVector(50, 50, 100),
+		FVector(50, -50, 100),
+		FVector(50, -50, 0),
+		FVector(50, 50, 0),
+		FVector(-50, -50, 100),
+		FVector(-50, 50, 100),
+		FVector(-50, 50, 0),
+		FVector(-50, -50, 0)
 	};
 
 	inline static const int BlockTriangleData[24] = {

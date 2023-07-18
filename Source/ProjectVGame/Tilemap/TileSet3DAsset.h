@@ -23,6 +23,9 @@ struct PROJECTVGAME_API FTileSet3DSubObject
 	EBlock BlockType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int32 Cost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<TObjectPtr<UTexture2D>> BlockTextures;
 };
 

@@ -1,28 +1,7 @@
 ﻿#include "Tilemap3DTerrainGenerator.h"
-
-#include "GridTraceChannel.h"
+#include "ProjectVEditor.h"
 #include "ProceduralMeshComponent.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
-
-int32 FTilemap3DTerrainGenerator::VectorToIndex(UTilemapAsset* TilemapAsset, const FVector& Location, int32 Floor)
-{
-	const float PivotX = (TilemapAsset->GridSize * 0.5) + Location.X;
-	const float PivotY = (TilemapAsset->GridSize * 0.5) + Location.Y;
-
-	const float ModX = FMath::Floor(FMath::Fmod(PivotX, TilemapAsset->GridSize));
-	const float ModY = FMath::Floor(FMath::Fmod(PivotY, TilemapAsset->GridSize));
-
-	const int AddX = ModX ? 1 : 0;
-	const int AddY = ModY ? 1 : 0;
-
-	const int X = FMath::Floor(((PivotX + AddX)) / TilemapAsset->GridSize);
-	const int Y = FMath::Floor(((PivotY + AddY)) / TilemapAsset->GridSize) *
-		TilemapAsset->LevelSizeX;
-
-	const int32 Result = X + Y;
-
-	return Result + TilemapAsset->LevelSizeX * TilemapAsset->LevelSizeY * Floor;
-}
 
 void FTilemap3DTerrainGenerator::Setup(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
                                       UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient)
@@ -57,6 +36,7 @@ void FTilemap3DTerrainGenerator::ClearVoxel(UTilemapAsset* TilemapAsset, UProced
 				TilemapAsset->Blocks[Index].bMarked = false;
 				TilemapAsset->Blocks[Index].Type = EBlock::Air;
 				TilemapAsset->Blocks[Index].BlockID = FName();
+				TilemapAsset->Blocks[Index].Cost = MAX_int32;
 			}
 		}
 	}
@@ -67,10 +47,11 @@ void FTilemap3DTerrainGenerator::ClearVoxel(UTilemapAsset* TilemapAsset, UProced
 void FTilemap3DTerrainGenerator::ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position,
                                                 const FTileSet3DSubObject& Block, const int32 Floor)
 {
-	const int32 Index = VectorToIndex(TilemapAsset, Position, Floor);
+	const int32 Index = TilemapAsset->VectorToIndex(Position, Floor);
 
 	TilemapAsset->Blocks[Index].Type = Block.BlockType;
 	TilemapAsset->Blocks[Index].BlockID = Block.ID;
+	TilemapAsset->Blocks[Index].Cost = Block.Cost;
 }
 
 int32 FTilemap3DTerrainGenerator::GetTextureIndex(const FBlock& Block, const FVector& Normal,

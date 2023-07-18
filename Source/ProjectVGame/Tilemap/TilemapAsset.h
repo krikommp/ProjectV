@@ -52,16 +52,7 @@ struct PROJECTVGAME_API FBlock
 	bool bMarked = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FVector Location = FVector::Zero();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FTilemapPathFinding CanMoveTo;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	TArray<int32> EdgeArrayIndex;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	TArray<FTilemapMovementStep> EdgeArray;
+	int32 Cost = 1;
 };
 
 USTRUCT(BlueprintType)
@@ -99,23 +90,40 @@ public:
 	UPROPERTY(EditAnywhere, Category="Level Values", meta=(DisplayName="LevelDepth"))
 	int32 LevelSizeY = 0;
 
+	UPROPERTY(VisibleAnywhere, Category="Path Finding")
+	int32 LevelSizeZ = 1;
+
 	UPROPERTY(EditAnywhere, Category="Grid Values")
 	int32 GridSize = 100;
 
-	UPROPERTY(EditAnywhere, Category="Grid Values")
-	int32 HeightSize = 100;
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	int32 HeightSlowIncrement = 100;
+	
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	int32 HeightBetweenLevel = 200;
 
 	UPROPERTY()
 	TArray<FBlock> Blocks;
 
 	UPROPERTY()
+	TArray<FTilemapPathFindingBlock> PathFindingBlocks;
+
+	UPROPERTY()
 	FTilemap3DTerrainMeshData MeshData;
 
-	int32 GetMaxLevelHeight() const { return Floors * HeightSize; }
+	int32 GetMaxLevelHeight() const { return (Floors + 1) * GridSize; }
 	int32 GetMinLevelHeight() const { return 0; }
+	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const;
 
-	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const
-	{
-		return Z * LevelSizeX * LevelSizeY + Y * LevelSizeX + X;
-	}
+	int32 VectorToIndex(const FVector& Location, int32 Floor) const;
+	int32 PathFindingBlockToBlock(int32 Index) const;
+
+	int32 GetEdgeCostFromZDifferent(int32 SelfIndex, int32 OtherIndex) const;
+
+	void AddEdgeBothWays(int32 Index, int32 EdgeIndex, int32 Cost);
+	void AddEdge(int32 Index, int32 EdgeIndex, int32 Cost);
+
+	void RemoveEdgeBothWays(int32 Index, int32 EdgeIndex);
+	void RemoveEdge(int32 Index, int32 EdgeIndex);
+	void RemoveInValidEdge(int32 Index);
 };

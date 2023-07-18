@@ -4,7 +4,7 @@
 class UProceduralMeshComponent;
 class FTilemap3DEditorViewportClient;
 
-class FTilemap3DTerrainGenerate
+class FTilemap3DTerrainGenerator
 {
 public:
 	static void Setup(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,

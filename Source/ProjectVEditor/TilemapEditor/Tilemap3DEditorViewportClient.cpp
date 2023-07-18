@@ -7,7 +7,8 @@
 #include "ProceduralMeshComponent.h"
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DSelected.h"
-#include "Tilemap3DTerrainGenerate.h"
+#include "Generator/Tilemap3DPathfindingGenerator.h"
+#include "Generator/Tilemap3DTerrainGenerator.h"
 #include "Tilemap/TileSet3DAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
@@ -68,7 +69,11 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 		this, &FTilemap3DEditorViewportClient::OnTilemapClearVoxel);
 	FTilemap3DEditDelegates::OnTilemapClearVoxel.Add(OnTilemapClearVoxelDelegate);
 
-	FTilemap3DTerrainGenerate::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
+	const auto OnTilemapGeneratePathFindingDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(
+		this, &FTilemap3DEditorViewportClient::OnTilemapGeneratePathFinding);
+	FTilemap3DEditDelegates::OnTilemapGeneratePathFinding.Add(OnTilemapGeneratePathFindingDelegate);
+
+	FTilemap3DTerrainGenerator::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
 	Clear();
 }
 
@@ -77,6 +82,7 @@ FTilemap3DEditorViewportClient::~FTilemap3DEditorViewportClient()
 	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.RemoveAll(this);
 	FTilemap3DEditDelegates::OnTilemapModelChanged.RemoveAll(this);
 	FTilemap3DEditDelegates::OnTilemapClearVoxel.RemoveAll(this);
+	FTilemap3DEditDelegates::OnTilemapGeneratePathFinding.RemoveAll(this);
 }
 
 void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
@@ -113,12 +119,12 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 		if (HitResult.bBlockingHit)
 		{
 			if (EventArgs.Key == EKeys::LeftMouseButton)
-				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
+				FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
 				                                       GetCurrentTileProperty(),
 				                                       GetCurrentFloor(), TerrainMat,
 				                                       this);
 			else if (EventArgs.Key == EKeys::RightMouseButton)
-				FTilemap3DTerrainGenerate::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
+				FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
 				                                       FTileSet3DSubObject::EmptyBlock,
 				                                       GetCurrentFloor(), TerrainMat,
 				                                       this);
@@ -219,7 +225,7 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 			CachedTilemapSize[1] = GetTilemapAsset()->LevelSizeY;
 			CachedTilemapSize[2] = GetTilemapAsset()->Floors;
 			GetTilemapAsset()->Blocks = NewBlocks;
-			FTilemap3DTerrainGenerate::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
+			FTilemap3DTerrainGenerator::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
 		}
 
 		// 绘制编辑区域
@@ -265,7 +271,12 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 
 void FTilemap3DEditorViewportClient::OnTilemapClearVoxel()
 {
-	FTilemap3DTerrainGenerate::ClearVoxel(GetTilemapAsset(), TerrainMesh, TerrainMat);
+	FTilemap3DTerrainGenerator::ClearVoxel(GetTilemapAsset(), TerrainMesh, TerrainMat);
+}
+
+void FTilemap3DEditorViewportClient::OnTilemapGeneratePathFinding()
+{
+	FTilemap3DPathfindingGenerator::Setup(GetTilemapAsset());
 }
 
 void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const

@@ -14,6 +14,7 @@ struct PROJECTVEDITOR_API FTilemap3DEditDelegates
 	static FOnTilemapEditStatueChanged OnTilemapEditStatueChanged;
 	static FSimpleMulticastDelegate OnTilemapModelChanged;
 	static FSimpleMulticastDelegate OnTilemapClearVoxel;
+	static FSimpleMulticastDelegate OnTilemapGeneratePathFinding;
 };
 
 /**

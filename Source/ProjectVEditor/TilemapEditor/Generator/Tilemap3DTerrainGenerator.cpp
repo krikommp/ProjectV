@@ -1,10 +1,10 @@
-﻿#include "Tilemap3DTerrainGenerate.h"
+﻿#include "Tilemap3DTerrainGenerator.h"
 
 #include "GridTraceChannel.h"
 #include "ProceduralMeshComponent.h"
-#include "Tilemap3DEditorViewportClient.h"
+#include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 
-int32 FTilemap3DTerrainGenerate::VectorToIndex(UTilemapAsset* TilemapAsset, const FVector& Location, int32 Floor)
+int32 FTilemap3DTerrainGenerator::VectorToIndex(UTilemapAsset* TilemapAsset, const FVector& Location, int32 Floor)
 {
 	const float PivotX = (TilemapAsset->GridSize * 0.5) + Location.X;
 	const float PivotY = (TilemapAsset->GridSize * 0.5) + Location.Y;
@@ -24,7 +24,7 @@ int32 FTilemap3DTerrainGenerate::VectorToIndex(UTilemapAsset* TilemapAsset, cons
 	return Result + TilemapAsset->LevelSizeX * TilemapAsset->LevelSizeY * Floor;
 }
 
-void FTilemap3DTerrainGenerate::Setup(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+void FTilemap3DTerrainGenerator::Setup(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
                                       UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient)
 {
 	ClearMesh(TilemapAsset);
@@ -32,7 +32,7 @@ void FTilemap3DTerrainGenerate::Setup(UTilemapAsset* TilemapAsset, UProceduralMe
 	ApplyMesh(TilemapAsset, MeshComponent, Material);
 }
 
-void FTilemap3DTerrainGenerate::ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+void FTilemap3DTerrainGenerator::ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
                                             const FVector& Position,
                                             const FTileSet3DSubObject& Block, const int32 Floor,
                                             UMaterialInterface* Material,
@@ -44,7 +44,7 @@ void FTilemap3DTerrainGenerate::ModifyVoxel(UTilemapAsset* TilemapAsset, UProced
 	ApplyMesh(TilemapAsset, MeshComponent, Material);
 }
 
-void FTilemap3DTerrainGenerate::ClearVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+void FTilemap3DTerrainGenerator::ClearVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
                                            UMaterialInterface* Material)
 {
 	for (int32 x = 0; x < TilemapAsset->LevelSizeX; ++x)
@@ -64,7 +64,7 @@ void FTilemap3DTerrainGenerate::ClearVoxel(UTilemapAsset* TilemapAsset, UProcedu
 	ApplyMesh(TilemapAsset, MeshComponent, Material);
 }
 
-void FTilemap3DTerrainGenerate::ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position,
+void FTilemap3DTerrainGenerator::ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position,
                                                 const FTileSet3DSubObject& Block, const int32 Floor)
 {
 	const int32 Index = VectorToIndex(TilemapAsset, Position, Floor);
@@ -73,7 +73,7 @@ void FTilemap3DTerrainGenerate::ModifyVoxelData(UTilemapAsset* TilemapAsset, con
 	TilemapAsset->Blocks[Index].BlockID = Block.ID;
 }
 
-int32 FTilemap3DTerrainGenerate::GetTextureIndex(const FBlock& Block, const FVector& Normal,
+int32 FTilemap3DTerrainGenerator::GetTextureIndex(const FBlock& Block, const FVector& Normal,
                                                  FTilemap3DEditorViewportClient* ViewClient)
 {
 	if (Normal == FVector::UpVector)
@@ -83,12 +83,12 @@ int32 FTilemap3DTerrainGenerate::GetTextureIndex(const FBlock& Block, const FVec
 	return ViewClient->GetBlockTextureIndex(Block.BlockID, 1);
 }
 
-void FTilemap3DTerrainGenerate::ClearMesh(UTilemapAsset* TilemapAsset)
+void FTilemap3DTerrainGenerator::ClearMesh(UTilemapAsset* TilemapAsset)
 {
 	TilemapAsset->MeshData.Clear();
 }
 
-void FTilemap3DTerrainGenerate::GenerateMesh(UTilemapAsset* TilemapAsset, FTilemap3DEditorViewportClient* ViewClient)
+void FTilemap3DTerrainGenerator::GenerateMesh(UTilemapAsset* TilemapAsset, FTilemap3DEditorViewportClient* ViewClient)
 {
 	for (int32 x = 0; x < TilemapAsset->LevelSizeX; ++x)
 	{
@@ -118,7 +118,7 @@ void FTilemap3DTerrainGenerate::GenerateMesh(UTilemapAsset* TilemapAsset, FTilem
 	}
 }
 
-void FTilemap3DTerrainGenerate::ApplyMesh(const UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+void FTilemap3DTerrainGenerator::ApplyMesh(const UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
                                           UMaterialInterface* Material)
 {
 	MeshComponent->SetMaterial(0, Material);
@@ -135,7 +135,7 @@ void FTilemap3DTerrainGenerate::ApplyMesh(const UTilemapAsset* TilemapAsset, UPr
 	);
 }
 
-bool FTilemap3DTerrainGenerate::Check(UTilemapAsset* TilemapAsset, const FVector& Position)
+bool FTilemap3DTerrainGenerator::Check(UTilemapAsset* TilemapAsset, const FVector& Position)
 {
 	if (Position.X >= TilemapAsset->LevelSizeX || Position.Y >= TilemapAsset->LevelSizeY || Position.X < 0 || Position.Y
 		< 0 || Position.Z < 0)
@@ -144,7 +144,7 @@ bool FTilemap3DTerrainGenerate::Check(UTilemapAsset* TilemapAsset, const FVector
 	return TilemapAsset->Blocks[TilemapAsset->GetBlockIndex(Position.X, Position.Y, Position.Z)].Type == EBlock::Air;
 }
 
-void FTilemap3DTerrainGenerate::CreateFace(UTilemapAsset* TilemapAsset, const EBlockDirection Direction,
+void FTilemap3DTerrainGenerator::CreateFace(UTilemapAsset* TilemapAsset, const EBlockDirection Direction,
                                            const FVector& Position, const FBlock& Block,
                                            FTilemap3DEditorViewportClient* ViewClient)
 {
@@ -164,7 +164,7 @@ void FTilemap3DTerrainGenerate::CreateFace(UTilemapAsset* TilemapAsset, const EB
 	TilemapAsset->MeshData.VertexCount += 4;
 }
 
-TArray<FVector> FTilemap3DTerrainGenerate::GetFaceVertices(const EBlockDirection Direction, const FVector& Position)
+TArray<FVector> FTilemap3DTerrainGenerator::GetFaceVertices(const EBlockDirection Direction, const FVector& Position)
 {
 	TArray<FVector> Vertices;
 
@@ -176,7 +176,7 @@ TArray<FVector> FTilemap3DTerrainGenerate::GetFaceVertices(const EBlockDirection
 	return Vertices;
 }
 
-FVector FTilemap3DTerrainGenerate::GetPositionInDirection(const EBlockDirection Direction, const FVector& Position)
+FVector FTilemap3DTerrainGenerator::GetPositionInDirection(const EBlockDirection Direction, const FVector& Position)
 {
 	switch (Direction)
 	{
@@ -190,7 +190,7 @@ FVector FTilemap3DTerrainGenerate::GetPositionInDirection(const EBlockDirection 
 	}
 }
 
-FVector FTilemap3DTerrainGenerate::GetNormal(const EBlockDirection Direction)
+FVector FTilemap3DTerrainGenerator::GetNormal(const EBlockDirection Direction)
 {
 	switch (Direction)
 	{

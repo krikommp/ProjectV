@@ -10,6 +10,7 @@
 #include "Widget/TileSetGalleyWidget.h"
 
 #define LOCTEXT_NAMESPACE "STilemap3DPropertiesTabBody"
+
 void STilemap3DPropertiesTabBody::Construct(const FArguments& InArgs,
                                             TSharedPtr<FTilemap3DEditorToolkit> InTilemapEditor,
                                             TObjectPtr<UTileSet3DAsset> InTileSet)
@@ -74,20 +75,23 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 			[
 				SNew(STilemap3DFloorStatusWidget)
 				.Floor_Lambda([this]()
-				{
-					return CurrentFloor;
-				})
+				                                 {
+					                                 return CurrentFloor;
+				                                 })
 				.OnFloorIncrease_Lambda([this](const int32 Floor)
-				{
-					CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors - 1,
-											  CurrentFloor + 1);
-					FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
-				})
+				                                 {
+					                                 CurrentFloor = FMath::Min(
+						                                 TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors - 1,
+						                                 CurrentFloor + 1);
+					                                 FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(
+						                                 bEditProperty);
+				                                 })
 				.OnFloorDecrease_Lambda([this](const int32 Floor)
-				{
-					CurrentFloor = FMath::Max(CurrentFloor - 1, 0);
-					FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
-				})
+				                                 {
+					                                 CurrentFloor = FMath::Max(CurrentFloor - 1, 0);
+					                                 FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(
+						                                 bEditProperty);
+				                                 })
 			]
 		]
 		+ SVerticalBox::Slot()
@@ -106,6 +110,29 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 							                          return Item.ID == ID;
 						                          });
 				                          })
+			]
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SBorder)
+		.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+		.Visibility_Lambda([this]()
+			             {
+				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
+			             })
+			[
+				SNew(SButton)
+				.OnClicked_Lambda([this]()
+				{
+					FTilemap3DEditDelegates::OnTilemapGeneratePathFinding.Broadcast();
+					return FReply::Handled();
+				})
+				[
+					SNew(STextBlock)
+					.Justification(ETextJustify::Center)
+					.Text(LOCTEXT("TilemapPathFindingGenerate", "Generate path finding data."))
+				]
 			]
 		]
 		+ SVerticalBox::Slot()

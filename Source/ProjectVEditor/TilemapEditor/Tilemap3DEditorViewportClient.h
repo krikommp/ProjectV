@@ -50,5 +50,6 @@ protected:
 
 	void OnTilemapEditStatueChanged(bool Statue);
 	void OnTilemapClearVoxel();
+	void OnTilemapGeneratePathFinding();
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
 };

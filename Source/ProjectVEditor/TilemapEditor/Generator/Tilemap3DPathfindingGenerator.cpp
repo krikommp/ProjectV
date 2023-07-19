@@ -18,6 +18,7 @@ void FTilemap3DPathfindingGenerator::Setup(const UObject* WorldContextObject, UT
 		ComputeTilemapSurfaceHeight(WorldContextObject, InTilemapAsset, Index);
 	}
 	CreateMultiLevelGrids(InTilemapAsset, InTileSetAsset->bDiagonalMovement);
+	CreateWallsOnGridEdges(InTilemapAsset);
 }
 
 FVector FTilemap3DPathfindingGenerator::IndexToVector(const UTilemapAsset* InTilemapAsset, int32 Index)
@@ -266,4 +267,27 @@ TArray<int32> FTilemap3DPathfindingGenerator::GetAdjacentIndexes(const UTilemapA
 void FTilemap3DPathfindingGenerator::CreateWallsOnGridEdges(UTilemapAsset* InTilemapAsset)
 {
 	const int32 Count = InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY * InTilemapAsset->LevelSizeZ;
+	for (int32 Index = 0; Index < Count; ++Index)
+	{
+		// 首先遍历所有的寻路节点，判断其下面的实体block是否为有效的
+		const int32 BlockIndex = InTilemapAsset->PathFindingBlockToBlock(Index);
+		if (InTilemapAsset->Blocks.IsValidIndex(BlockIndex))
+		{
+			const FBlock Block = InTilemapAsset->Blocks[BlockIndex];
+			if (Block.Type == EBlock::Air)
+			{
+				FTilemapPathFindingBlock& PathFindingBlock = InTilemapAsset->PathFindingBlocks[Index];
+				const int32 EdgeLength = PathFindingBlock.EdgeArrayIndex.Num();
+				for (int32 i = EdgeLength - 1; i >= 0; --i)
+				{
+					const int32 EdgeIndex = PathFindingBlock.EdgeArrayIndex[i];
+					if (EdgeIndex > -1 && EdgeIndex < InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY *
+						InTilemapAsset->LevelSizeZ)
+					{
+						InTilemapAsset->RemoveEdgeBothWays(Index, EdgeIndex);
+					}
+				}
+			}
+		}
+	}
 }

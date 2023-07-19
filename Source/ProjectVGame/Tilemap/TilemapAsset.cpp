@@ -101,6 +101,35 @@ void UTilemapAsset::RemoveEdgeBothWays(int32 Index, int32 EdgeIndex)
 	RemoveEdge(EdgeIndex, Index);
 }
 
+void UTilemapAsset::RemoveCornerEdgeBothWays(int32 Index, int32 EdgeIndex)
+{
+	const int32 Row1 = Index / LevelSizeX;
+	const int32 Row2 = EdgeIndex / LevelSizeX;
+
+	const int32 Col1 = Index % LevelSizeX;
+	const int32 Col2 = Index % LevelSizeX;
+
+	if (Row1 > Row2)
+	{
+		if (Col1 - Col2 > 0)
+		{
+			RemoveEdgeBothWays(Index - 1, Index - LevelSizeX);
+		}else if (Col1 - Col2 < 0)
+		{
+			RemoveEdgeBothWays(Index + 1, Index - LevelSizeX);
+		}
+	}else if (Row1 < Row2)
+	{
+		if (Col1 - Col2 > 0)
+		{
+			RemoveEdgeBothWays(Index + LevelSizeX, Index - 1);
+		}else if (Col1 - Col2 < 0)
+		{
+			RemoveEdgeBothWays(Index + LevelSizeX, Index + 1);
+		}
+	}
+}
+
 void UTilemapAsset::RemoveEdge(int32 Index, int32 EdgeIndex)
 {
 	ensureAlwaysMsgf(PathFindingBlocks.IsValidIndex(Index),
@@ -139,5 +168,15 @@ void UTilemapAsset::RemoveInValidEdge(int32 Index)
 				RemoveEdge(Index, EdgeIndex);
 			}
 		}
+	}
+}
+
+void UTilemapAsset::SetEdgeCost(int32 Index, int32 EdgeIndex, int32 Cost)
+{
+	FTilemapPathFindingBlock& PathFindingBlock = PathFindingBlocks[Index];
+ 	const int32 Flag = PathFindingBlock.EdgeArrayIndex.Find(EdgeIndex);
+	if (Flag != INDEX_NONE)
+	{
+		PathFindingBlock.EdgeArray[Flag].Cost = Cost;
 	}
 }

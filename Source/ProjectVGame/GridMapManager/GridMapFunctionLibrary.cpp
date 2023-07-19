@@ -655,7 +655,7 @@ void UGridMapFunctionLibrary::AutoCalcEdgeBaseOnHeight(AGridMapManager* GridMapM
 			const float ParentZ = TilePos.Z;
 			const FVector EdgeTilePos = GridMapManager->VectorFieldArray[IndexCost.Index];
 			const float Height = FMath::Abs(ParentZ - EdgeTilePos.Z);
-			int32 NewCost = -1;
+			int32 NewCost;
 			if (Height < GridMapManager->HeightSlowIncrement)
 			{
 				// 不需要花费额外的行动力了就可以到达的Edge,这里就不需要再做其他的处理了

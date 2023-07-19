@@ -19,6 +19,8 @@ void FTilemap3DPathfindingGenerator::Setup(const UObject* WorldContextObject, UT
 	}
 	CreateMultiLevelGrids(InTilemapAsset, InTileSetAsset->bDiagonalMovement);
 	CreateWallsOnGridEdges(InTilemapAsset);
+	CalculateCostByHeight(InTilemapAsset);
+	// todo..
 }
 
 FVector FTilemap3DPathfindingGenerator::IndexToVector(const UTilemapAsset* InTilemapAsset, int32 Index)
@@ -267,16 +269,66 @@ TArray<int32> FTilemap3DPathfindingGenerator::GetAdjacentIndexes(const UTilemapA
 void FTilemap3DPathfindingGenerator::CreateWallsOnGridEdges(UTilemapAsset* InTilemapAsset)
 {
 	const int32 Count = InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY * InTilemapAsset->LevelSizeZ;
+	// 移除地图边缘的Block中无效的边缘索引
 	for (int32 Index = 0; Index < Count; ++Index)
 	{
-		// 首先遍历所有的寻路节点，判断其下面的实体block是否为有效的
+		FTilemapPathFindingBlock& PathFindingBlock = InTilemapAsset->PathFindingBlocks[Index];
+		// 两侧
+		if (Index % InTilemapAsset->LevelSizeX == 0)
+		{
+			InTilemapAsset->RemoveInValidEdge(Index);
+		}
+		// 两侧
+		if ((Index + 1) % InTilemapAsset->LevelSizeX == 0)
+		{
+			InTilemapAsset->RemoveInValidEdge(Index);
+		}
+		// 上下
+		if (Index % (InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY) < InTilemapAsset->LevelSizeX)
+		{
+			const int32 Squared = InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY;
+			const int32 Z = Index / Squared;
+			// 下面一层的最大索引
+			const int32 TopIndex = Z * Squared;
+			for (int32 i = PathFindingBlock.EdgeArrayIndex.Num() - 1; i >= 0; --i)
+			{
+				const int32 EdgeIndex = PathFindingBlock.EdgeArrayIndex[i];
+				// 这里计算的是下一层最上面的 Edge, 如果是，那么也是不可以到达的
+				if (EdgeIndex < TopIndex && EdgeIndex > TopIndex - InTilemapAsset->LevelSizeX)
+				{
+					InTilemapAsset->RemoveEdge(Index, EdgeIndex);
+				}
+			}
+			InTilemapAsset->RemoveInValidEdge(Index);
+		}
+		// 上下
+		if (Index % (InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY) >= (InTilemapAsset->LevelSizeX *
+			InTilemapAsset->LevelSizeY) - InTilemapAsset->LevelSizeX)
+		{
+			const int32 Squared = InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY;
+			const int32 Z = Index / Squared;
+			// 上一层的第一个
+			const int32 Left = (Z + 1) * Squared - 1;
+			// 上一层的第一排最后一个
+			const int32 Right = Left + InTilemapAsset->LevelSizeX;
+			for (int32 i = PathFindingBlock.EdgeArrayIndex.Num() - 1; i >= 0; --i)
+			{
+				const int32 EdgeIndex = PathFindingBlock.EdgeArrayIndex[i];
+				// 如果这个 Index 的边缘属于上一层的（一般都是上一层第一排的），那么都是无法到达的
+				if (EdgeIndex > Left && EdgeIndex < Right)
+				{
+					InTilemapAsset->RemoveEdge(Index, EdgeIndex);
+				}
+			}
+			InTilemapAsset->RemoveInValidEdge(Index);
+		}
+		// 移除空气方块
 		const int32 BlockIndex = InTilemapAsset->PathFindingBlockToBlock(Index);
 		if (InTilemapAsset->Blocks.IsValidIndex(BlockIndex))
 		{
 			const FBlock Block = InTilemapAsset->Blocks[BlockIndex];
 			if (Block.Type == EBlock::Air)
 			{
-				FTilemapPathFindingBlock& PathFindingBlock = InTilemapAsset->PathFindingBlocks[Index];
 				const int32 EdgeLength = PathFindingBlock.EdgeArrayIndex.Num();
 				for (int32 i = EdgeLength - 1; i >= 0; --i)
 				{
@@ -287,6 +339,63 @@ void FTilemap3DPathfindingGenerator::CreateWallsOnGridEdges(UTilemapAsset* InTil
 						InTilemapAsset->RemoveEdgeBothWays(Index, EdgeIndex);
 					}
 				}
+			}
+		}
+		// 移除边缘索引中负数或者超过地图大小的索引
+		for (int32 i = PathFindingBlock.EdgeArrayIndex.Num() - 1; i >= 0; --i)
+		{
+			const int32 EdgeIndex = PathFindingBlock.EdgeArrayIndex[i];
+			if (EdgeIndex < 0)
+			{
+				InTilemapAsset->RemoveEdge(Index, EdgeIndex);
+			}
+			if (EdgeIndex > InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY * InTilemapAsset->LevelSizeZ)
+			{
+				InTilemapAsset->RemoveEdge(Index, EdgeIndex);
+			}
+		}
+	}
+}
+
+void FTilemap3DPathfindingGenerator::CalculateCostByHeight(UTilemapAsset* InTilemapAsset)
+{
+	const int32 Count = InTilemapAsset->PathFindingBlocks.Num();
+	for (int32 Index = 0; Index < Count; ++Index)
+	{
+		FTilemapPathFindingBlock PathFindingBlock = InTilemapAsset->PathFindingBlocks[Index];
+		for (int32 i = PathFindingBlock.EdgeArray.Num() - 1; i <= 0; --i)
+		{
+			const auto Edge = PathFindingBlock.EdgeArray[i];
+			const auto EdgeBlock = InTilemapAsset->PathFindingBlocks[Edge.Index];
+			const float Height = FMath::Abs(EdgeBlock.Location.Z - PathFindingBlock.Location.Z);
+			int32 AdjustCost;
+			if (Height < InTilemapAsset->HeightSlowIncrement)
+			{
+				AdjustCost = 1;
+			}
+			else
+			{
+				if (Height < InTilemapAsset->HeightBetweenLevel)
+				{
+					AdjustCost = FMath::Floor(Height / InTilemapAsset->HeightSlowIncrement) + 1;
+				}
+				else
+				{
+					AdjustCost = 0;
+				}
+			}
+			switch (AdjustCost)
+			{
+			case 0:
+				InTilemapAsset->RemoveCornerEdgeBothWays(Edge.Index, Index);
+				InTilemapAsset->RemoveEdgeBothWays(Edge.Index, Index);
+				break;
+			case 1:
+				break;
+			default:
+				InTilemapAsset->SetEdgeCost(Index, Edge.Index, AdjustCost);
+				InTilemapAsset->SetEdgeCost(Edge.Index, Index, AdjustCost);
+				break;
 			}
 		}
 	}

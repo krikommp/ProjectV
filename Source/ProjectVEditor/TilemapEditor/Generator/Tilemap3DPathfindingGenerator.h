@@ -18,4 +18,6 @@ private:
 	static TArray<int32> GetAdjacentIndexes(const UTilemapAsset* InTilemapAsset, int32 Index, bool bDiagonalMovement);
 
 	static void CreateWallsOnGridEdges(UTilemapAsset* InTilemapAsset);
+
+	static void CalculateCostByHeight(UTilemapAsset* InTilemapAsset);
 };

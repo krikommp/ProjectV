@@ -124,6 +124,9 @@ public:
 	void AddEdge(int32 Index, int32 EdgeIndex, int32 Cost);
 
 	void RemoveEdgeBothWays(int32 Index, int32 EdgeIndex);
+	void RemoveCornerEdgeBothWays(int32 Index, int32 EdgeIndex);
 	void RemoveEdge(int32 Index, int32 EdgeIndex);
 	void RemoveInValidEdge(int32 Index);
+
+	void SetEdgeCost(int32 Index, int32 EdgeIndex, int32 Cost);
 };

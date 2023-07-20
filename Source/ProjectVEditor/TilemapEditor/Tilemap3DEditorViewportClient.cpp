@@ -7,8 +7,10 @@
 #include "ProjectVEditor.h"
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DSelected.h"
+#include "Components/TextRenderComponent.h"
 #include "Generator/Tilemap3DPathfindingGenerator.h"
 #include "Generator/Tilemap3DTerrainGenerator.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Tilemap/TileSet3DAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
@@ -294,6 +296,74 @@ void FTilemap3DEditorViewportClient::OnTilemapClearVoxel()
 void FTilemap3DEditorViewportClient::OnTilemapGeneratePathFinding()
 {
 	FTilemap3DPathfindingGenerator::Setup(GetWorld(), GetTilemapAsset(), CurrentTileSet);
+
+	DisplayPathFinding();
+}
+
+void FTilemap3DEditorViewportClient::DisplayPathFinding()
+{
+	{
+		for (UTextRenderComponent* TextRenderComp : PathFindingIndexTextArray)
+		{
+			TextRenderComp->DestroyComponent();
+			PreviewScene->RemoveComponent(TextRenderComp);
+		}
+		PathFindingIndexTextArray.Empty();
+
+		const UTilemapAsset* TilemapAsset = GetTilemapAsset();
+		for (int32 Index = 0; Index < TilemapAsset->PathFindingBlocks.Num(); ++Index)
+		{
+			const FTilemapPathFindingBlock& PathFindingBlock = TilemapAsset->PathFindingBlocks[Index];
+			if (UKismetMathLibrary::NotEqual_VectorVector(PathFindingBlock.Location, FVector::Zero()), 1.0f)
+			{
+				FTransform Transform;
+				Transform.SetLocation({
+					PathFindingBlock.Location.X - 10.0f, PathFindingBlock.Location.Y + 10.0f, PathFindingBlock.Location.Z + 10.0f
+				});
+				Transform.SetRotation(FQuat({90.0f, 0.0f, 270.0f}));
+				Transform.SetScale3D(FVector::One());
+				UTextRenderComponent* TextRender = NewObject<UTextRenderComponent>();
+				PreviewScene->AddComponent(TextRender, Transform);
+				TextRender->SetText(FText::AsNumber(Index));
+				PathFindingIndexTextArray.Add(TextRender);
+			}
+		}
+	}
+
+	{
+		for (UTextRenderComponent* TextRenderComp : PathFindingEdgeCostTextArray)
+		{
+			TextRenderComp->DestroyComponent();
+			PreviewScene->RemoveComponent(TextRenderComp);
+		}
+		PathFindingEdgeCostTextArray.Empty();
+
+		const UTilemapAsset* TilemapAsset = GetTilemapAsset();
+		for (int32 Index = 0; Index < TilemapAsset->PathFindingBlocks.Num(); ++Index)
+		{
+			const FTilemapPathFindingBlock& PathFindingBlock = TilemapAsset->PathFindingBlocks[Index];
+			if (UKismetMathLibrary::NotEqual_VectorVector(PathFindingBlock.Location, FVector::Zero()), 1.0f)
+			{
+				for (const auto& Edge : PathFindingBlock.EdgeArray)
+				{
+					const FVector& EdgeLocation = TilemapAsset->PathFindingBlocks[Edge.Index].Location;
+					FTransform Transform;
+					Transform.SetLocation({
+						(EdgeLocation.X + PathFindingBlock.Location.X + PathFindingBlock.Location.X) / 3.0f,
+						(EdgeLocation.Y + PathFindingBlock.Location.Y + PathFindingBlock.Location.Y) / 3.0f, PathFindingBlock.Location.Z + 10.0f
+					});
+					Transform.SetScale3D(FVector::One());
+					Transform.SetRotation(FQuat({
+						90.0f, UKismetMathLibrary::FindLookAtRotation(PathFindingBlock.Location, EdgeLocation).Yaw, 0.0f
+					}));
+					UTextRenderComponent* TextRender = NewObject<UTextRenderComponent>();
+					PreviewScene->AddComponent(TextRender, Transform);
+					TextRender->SetText(FText::AsNumber(Edge.Cost));
+					PathFindingEdgeCostTextArray.Add(TextRender);
+				}
+			}
+		}
+	}
 }
 
 void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const

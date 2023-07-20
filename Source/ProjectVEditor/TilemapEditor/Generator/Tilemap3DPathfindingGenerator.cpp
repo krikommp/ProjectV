@@ -363,7 +363,7 @@ void FTilemap3DPathfindingGenerator::CalculateCostByHeight(UTilemapAsset* InTile
 	for (int32 Index = 0; Index < Count; ++Index)
 	{
 		FTilemapPathFindingBlock PathFindingBlock = InTilemapAsset->PathFindingBlocks[Index];
-		for (int32 i = PathFindingBlock.EdgeArray.Num() - 1; i <= 0; --i)
+		for (int32 i = PathFindingBlock.EdgeArray.Num() - 1; i >= 0; --i)
 		{
 			const auto Edge = PathFindingBlock.EdgeArray[i];
 			const auto EdgeBlock = InTilemapAsset->PathFindingBlocks[Edge.Index];

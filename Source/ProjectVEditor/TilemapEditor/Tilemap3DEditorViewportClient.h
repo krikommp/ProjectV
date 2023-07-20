@@ -9,6 +9,7 @@ class UProceduralMeshComponent;
 class UInstancedStaticMeshComponent;
 class STilemap3DPropertiesTabBody;
 class ATilemap3DSelected;
+class UTextRenderComponent;
 
 class FTilemap3DEditorViewportClient : public FEditorViewportClient
 {
@@ -43,6 +44,8 @@ protected:
 	TObjectPtr<UMaterialInterface> TerrainMat;
 	TObjectPtr<UTileSet3DAsset> CurrentTileSet;
 	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
+	TArray<TObjectPtr<UTextRenderComponent>> PathFindingIndexTextArray;
+	TArray<TObjectPtr<UTextRenderComponent>> PathFindingEdgeCostTextArray;
 
 	TArray<int32> CachedTilemapSize;
 
@@ -51,5 +54,6 @@ protected:
 	void OnTilemapEditStatueChanged(bool Statue);
 	void OnTilemapClearVoxel();
 	void OnTilemapGeneratePathFinding();
+	void DisplayPathFinding();
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
 };

@@ -8,13 +8,13 @@
 #include "TileSet3DAsset.generated.h"
 
 USTRUCT(BlueprintType)
-struct PROJECTVGAME_API FTileSet3DSubObject
+struct PROJECTVGAME_API FTileSet3DCube
 {
 	GENERATED_BODY()
 
-	FTileSet3DSubObject();
+	FTileSet3DCube();
 
-	static FTileSet3DSubObject EmptyBlock;
+	static FTileSet3DCube EmptyBlock;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName ID;
@@ -27,6 +27,21 @@ struct PROJECTVGAME_API FTileSet3DSubObject
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<TObjectPtr<UTexture2D>> BlockTextures;
+};
+
+USTRUCT(BlueprintType)
+struct PROJECTVGAME_API FTileSet3DMesh
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName ID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FTransform Transform;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UStaticMesh> Mesh;
 };
 
 /**
@@ -47,7 +62,10 @@ public:
 	TObjectPtr<UMaterialInterface> Material;
 
 	UPROPERTY(EditAnywhere)
-	TArray<FTileSet3DSubObject> TileSets;
+	TArray<FTileSet3DCube> TileCubeSets;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FTileSet3DMesh> TileMeshSets;
 
 	UPROPERTY(EditAnywhere)
 	bool bDiagonalMovement = false;

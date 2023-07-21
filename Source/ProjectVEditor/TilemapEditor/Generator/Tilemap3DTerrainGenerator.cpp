@@ -13,7 +13,7 @@ void FTilemap3DTerrainGenerator::Setup(UTilemapAsset* TilemapAsset, UProceduralM
 
 void FTilemap3DTerrainGenerator::ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
                                             const FVector& Position,
-                                            const FTileSet3DSubObject& Block, const int32 Floor,
+                                            const FTileSet3DCube& Block, const int32 Floor,
                                             UMaterialInterface* Material,
                                             FTilemap3DEditorViewportClient* ViewClient)
 {
@@ -45,7 +45,7 @@ void FTilemap3DTerrainGenerator::ClearVoxel(UTilemapAsset* TilemapAsset, UProced
 }
 
 void FTilemap3DTerrainGenerator::ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position,
-                                                const FTileSet3DSubObject& Block, const int32 Floor)
+                                                const FTileSet3DCube& Block, const int32 Floor)
 {
 	const int32 Index = TilemapAsset->VectorToIndex(Position, Floor);
 

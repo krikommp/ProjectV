@@ -22,7 +22,7 @@ void STilemap3DPropertiesTabBody::Construct(const FArguments& InArgs,
 	CurrentFloor = 0;
 
 	const UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
-	CurrentTile = Settings->DefaultTileSet.LoadSynchronous()->TileSets[0];
+	CurrentTile = Settings->DefaultTileSet.LoadSynchronous()->TileCubeSets[0];
 
 	SSingleObjectDetailsPanel::Construct(
 		SSingleObjectDetailsPanel::FArguments().HostCommandList(InTilemapEditor->GetToolkitCommands()).
@@ -124,8 +124,8 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 				.TileSet(TileSet)
 				.OnClicked_Lambda([this](const FName& ID)
 				                          {
-					                          CurrentTile = *TileSet->TileSets.FindByPredicate(
-						                          [=](const FTileSet3DSubObject& Item)
+					                          CurrentTile = *TileSet->TileCubeSets.FindByPredicate(
+						                          [=](const FTileSet3DCube& Item)
 						                          {
 							                          return Item.ID == ID;
 						                          });

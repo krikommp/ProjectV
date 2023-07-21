@@ -8,8 +8,16 @@
 enum ETilemap3DEditMode : uint8
 {
 	EEM_View = 0,
-	EEM_Append = 1,
-	EEM_Remove = 2,
+
+	EEM_Cube,
+	EEM_Cube_Append = EEM_Cube,
+	EEM_Cube_Remove,
+
+	EEM_Mesh,
+	EEM_Mesh_Append = EEM_Mesh,
+	EEM_Mesh_Remove = EEM_Mesh + 1,
+	
+	UNKNOWN
 };
 
 /**
@@ -30,6 +38,6 @@ public:
 	void Construct(const FArguments& InArgs, ETilemap3DEditMode InEditMode);
 
 private:
-	ETilemap3DEditMode EditMode = ETilemap3DEditMode::EEM_Append;
+	ETilemap3DEditMode EditMode = ETilemap3DEditMode::EEM_Cube_Append;
 	FOnEditModeChanged OnEditModeChanged;
 };

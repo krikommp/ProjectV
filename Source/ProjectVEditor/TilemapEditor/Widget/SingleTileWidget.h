@@ -7,7 +7,7 @@
 #include "Tilemap/TileSet3DAsset.h"
 #include "Widgets/SCompoundWidget.h"
 
-struct FTileSet3DSubObject;
+struct FTileSet3DCube;
 /**
  * 
  */
@@ -18,7 +18,7 @@ public:
 		{
 		}
 
-		SLATE_ATTRIBUTE(FTileSet3DSubObject, TileSetSubObject)
+		SLATE_ATTRIBUTE(FTileSet3DCube, TileSetSubObject)
 		SLATE_EVENT(FOnTileSetClicked, OnTileSetClicked)
 	SLATE_END_ARGS()
 
@@ -26,7 +26,7 @@ public:
 	void Construct(const FArguments& InArgs);
 
 private:
-	FTileSet3DSubObject TileSetSubObject;
+	FTileSet3DCube TileSetSubObject;
 	FOnTileSetClicked OnTileSetClicked;
 	TSharedPtr<FSlateBrush> PreviewBrush;
 };

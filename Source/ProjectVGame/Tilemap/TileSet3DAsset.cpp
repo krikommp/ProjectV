@@ -3,9 +3,9 @@
 
 #include "TileSet3DAsset.h"
 
-FTileSet3DSubObject FTileSet3DSubObject::EmptyBlock;
+FTileSet3DCube FTileSet3DCube::EmptyBlock;
 
-FTileSet3DSubObject::FTileSet3DSubObject()
+FTileSet3DCube::FTileSet3DCube()
 	: ID(FName()), BlockType(EBlock::Air), Cost(MAX_int32)
 {
 }

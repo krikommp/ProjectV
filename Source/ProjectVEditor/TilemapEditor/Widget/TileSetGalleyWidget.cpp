@@ -16,7 +16,7 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 	SAssignNew(TileSetBox, SHorizontalBox);
 
 	// get the first texture in texture array
-	for (FTileSet3DSubObject Tile : TileSet->TileSets)
+	for (const FTileSet3DCube& Tile : TileSet->TileCubeSets)
 	{
 		TileSetBox->AddSlot()
 		          .AutoWidth()
@@ -30,6 +30,12 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 				OnClicked_Lambda.ExecuteIfBound(ID);
 			})
 		];
+	}
+
+	// get static mesh's thumbnail
+	for (const FTileSet3DMesh& Tile : TileSet->TileMeshSets)
+	{
+		
 	}
 
 	ChildSlot

@@ -2,6 +2,7 @@
 #include "Tilemap/TilemapAsset.h"
 #include "Tilemap3DPropertiesTabBody.h"
 
+class FTilemap3DBaseMode;
 class UTileSet3DAsset;
 class UBoxComponent;
 class UStaticMeshComponent;
@@ -29,14 +30,15 @@ public:
 	void Clear() const;
 
 	int32 GetBlockTextureIndex(const FName& ID, int32 Flag) const;
-
-protected:
 	TSharedPtr<STilemap3DPropertiesTabBody> DetailPtr;
 	UTilemapAsset* GetTilemapAsset() const { return DetailPtr->GetTilemapAsset(); }
 	int32 GetCurrentFloor() const { return DetailPtr->GetCurrentFloor(); }
 	ETilemap3DEditMode GetEditMode() const { return DetailPtr->GetEditMode(); }
-	const FTileSet3DSubObject& GetCurrentTileProperty() const { return DetailPtr->GetCurrentTileProperty(); }
+	const FTileSet3DCube& GetCurrentTileProperty() const { return DetailPtr->GetCurrentTileProperty(); }
 	UTileSet3DAsset* GetTileSet() const { return DetailPtr->GetTileSet(); }
+	UProceduralMeshComponent* GetTerrainMesh() const { return TerrainMesh; }
+	UMaterialInterface* GetTerrainMat() const { return TerrainMat; }
+protected:
 
 	TObjectPtr<ULineBatchComponent> LineBatcher;
 	TObjectPtr<UBoxComponent> Heightmap;
@@ -47,6 +49,8 @@ protected:
 	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
 	TArray<TObjectPtr<UTextRenderComponent>> PathFindingIndexTextArray;
 	TArray<TObjectPtr<UTextRenderComponent>> PathFindingEdgeCostTextArray;
+
+	TArray<TSharedPtr<FTilemap3DBaseMode>> EditModes;
 
 	TArray<int32> CachedTilemapSize;
 

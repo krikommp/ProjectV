@@ -11,6 +11,8 @@
 #include "Generator/Tilemap3DPathfindingGenerator.h"
 #include "Generator/Tilemap3DTerrainGenerator.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Mode/Tilemap3DAddCubeMode.h"
+#include "Mode/Tilemap3DRemoveCubeMode.h"
 #include "Tilemap/TileSet3DAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
@@ -56,6 +58,13 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	CachedTilemapSize[1] = GetTilemapAsset()->LevelSizeY;
 	CachedTilemapSize[2] = GetTilemapAsset()->Floors;
 
+	// Modes
+	EditModes.Append({
+		MakeShareable(new FTilemap3DAddCubeMode),
+		MakeShareable(new FTilemap3DRemoveCubeMode),
+	});
+	
+
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
 
@@ -76,6 +85,7 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	FTilemap3DEditDelegates::OnTilemapGeneratePathFinding.Add(OnTilemapGeneratePathFindingDelegate);
 
 	FTilemap3DTerrainGenerator::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
+
 	Clear();
 }
 
@@ -101,53 +111,58 @@ void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& C
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	if (GetEditMode() == EEM_Append && EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
+	// if (GetEditMode() == EEM_Cube_Append && EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
+	// {
+	// 	FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
+	//
+	// 	FHitResult HitResult;
+	// 	const TArray<AActor*> IgnoreActor;
+	// 	UKismetSystemLibrary::LineTraceSingle(
+	// 		GetWorld(),
+	// 		CursorLocation.GetOrigin(),
+	// 		CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
+	// 		UEngineTypes::ConvertToTraceType(TilemapEditTrace),
+	// 		false,
+	// 		IgnoreActor,
+	// 		EDrawDebugTrace::None,
+	// 		HitResult,
+	// 		false);
+	// 	if (HitResult.bBlockingHit)
+	// 	{
+	// 		FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
+	// 		                                        GetCurrentTileProperty(),
+	// 		                                        GetCurrentFloor(), TerrainMat,
+	// 		                                        this);
+	// 	}
+	// }
+	// else if (GetEditMode() == EEM_Cube_Remove && EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event ==
+	// 	IE_Pressed)
+	// {
+	// 	FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
+	//
+	// 	FHitResult HitResult;
+	// 	const TArray<AActor*> IgnoreActor;
+	// 	UKismetSystemLibrary::LineTraceSingle(
+	// 		GetWorld(),
+	// 		CursorLocation.GetOrigin(),
+	// 		CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
+	// 		UEngineTypes::ConvertToTraceType(PathTrace),
+	// 		false,
+	// 		IgnoreActor,
+	// 		EDrawDebugTrace::None,
+	// 		HitResult,
+	// 		false);
+	// 	if (HitResult.bBlockingHit)
+	// 	{
+	// 		FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
+	// 		                                        FTileSet3DCube::EmptyBlock,
+	// 		                                        GetCurrentFloor(), TerrainMat,
+	// 		                                        this);
+	// 	}
+	// }
+	for (const auto& Mode : EditModes)
 	{
-		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
-
-		FHitResult HitResult;
-		const TArray<AActor*> IgnoreActor;
-		UKismetSystemLibrary::LineTraceSingle(
-			GetWorld(),
-			CursorLocation.GetOrigin(),
-			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
-			UEngineTypes::ConvertToTraceType(TilemapEditTrace),
-			false,
-			IgnoreActor,
-			EDrawDebugTrace::None,
-			HitResult,
-			false);
-		if (HitResult.bBlockingHit)
-		{
-			FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
-			                                        GetCurrentTileProperty(),
-			                                        GetCurrentFloor(), TerrainMat,
-			                                        this);
-		}
-	}
-	else if (GetEditMode() == EEM_Remove && EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
-	{
-		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
-
-		FHitResult HitResult;
-		const TArray<AActor*> IgnoreActor;
-		UKismetSystemLibrary::LineTraceSingle(
-			GetWorld(),
-			CursorLocation.GetOrigin(),
-			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
-			UEngineTypes::ConvertToTraceType(PathTrace),
-			false,
-			IgnoreActor,
-			EDrawDebugTrace::None,
-			HitResult,
-			false);
-		if (HitResult.bBlockingHit)
-		{
-			FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
-			                                        FTileSet3DSubObject::EmptyBlock,
-			                                        GetCurrentFloor(), TerrainMat,
-			                                        this);
-		}
+		Mode->InputKey(this, EventArgs);
 	}
 	return FEditorViewportClient::InputKey(EventArgs);
 }
@@ -192,7 +207,7 @@ int32 FTilemap3DEditorViewportClient::GetBlockTextureIndex(const FName& ID, int3
 {
 	if (const auto& TileSet = GetTileSet())
 	{
-		for (FTileSet3DSubObject Tile : TileSet->TileSets)
+		for (FTileSet3DCube Tile : TileSet->TileCubeSets)
 		{
 			if (Tile.ID == ID)
 			{
@@ -318,7 +333,8 @@ void FTilemap3DEditorViewportClient::DisplayPathFinding()
 			{
 				FTransform Transform;
 				Transform.SetLocation({
-					PathFindingBlock.Location.X - 10.0f, PathFindingBlock.Location.Y + 10.0f, PathFindingBlock.Location.Z + 10.0f
+					PathFindingBlock.Location.X - 10.0f, PathFindingBlock.Location.Y + 10.0f,
+					PathFindingBlock.Location.Z + 10.0f
 				});
 				Transform.SetRotation(FQuat({90.0f, 0.0f, 270.0f}));
 				Transform.SetScale3D(FVector::One());
@@ -350,7 +366,8 @@ void FTilemap3DEditorViewportClient::DisplayPathFinding()
 					FTransform Transform;
 					Transform.SetLocation({
 						(EdgeLocation.X + PathFindingBlock.Location.X + PathFindingBlock.Location.X) / 3.0f,
-						(EdgeLocation.Y + PathFindingBlock.Location.Y + PathFindingBlock.Location.Y) / 3.0f, PathFindingBlock.Location.Z + 10.0f
+						(EdgeLocation.Y + PathFindingBlock.Location.Y + PathFindingBlock.Location.Y) / 3.0f,
+						PathFindingBlock.Location.Z + 10.0f
 					});
 					Transform.SetScale3D(FVector::One());
 					Transform.SetRotation(FQuat({

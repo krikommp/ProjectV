@@ -7,8 +7,9 @@
 
 enum ETilemap3DEditMode : uint8
 {
-	EEM_Append = 0,
-	EEM_Remove = 1,
+	EEM_View = 0,
+	EEM_Append = 1,
+	EEM_Remove = 2,
 };
 
 /**
@@ -26,7 +27,7 @@ public:
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs);
+	void Construct(const FArguments& InArgs, ETilemap3DEditMode InEditMode);
 
 private:
 	ETilemap3DEditMode EditMode = ETilemap3DEditMode::EEM_Append;

@@ -34,6 +34,7 @@ protected:
 	TSharedPtr<STilemap3DPropertiesTabBody> DetailPtr;
 	UTilemapAsset* GetTilemapAsset() const { return DetailPtr->GetTilemapAsset(); }
 	int32 GetCurrentFloor() const { return DetailPtr->GetCurrentFloor(); }
+	ETilemap3DEditMode GetEditMode() const { return DetailPtr->GetEditMode(); }
 	const FTileSet3DSubObject& GetCurrentTileProperty() const { return DetailPtr->GetCurrentTileProperty(); }
 	UTileSet3DAsset* GetTileSet() const { return DetailPtr->GetTileSet(); }
 

@@ -5,7 +5,6 @@
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DEditorSettings.h"
 #include "Engine/Texture2DArray.h"
-#include "Styling/SlateStyleMacros.h"
 #include "Widget/Tilemap3DEditModeWidget.h"
 #include "Widget/Tilemap3DEditStatusWidget.h"
 #include "Widget/Tilemap3DFloorStatusWidget.h"
@@ -53,19 +52,6 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 		.AutoHeight()
 		[
 			SNew(SBorder)
-		.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
-		.Visibility_Lambda([this]()
-			             {
-				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
-			             })
-			[
-				SNew(STilemap3DEditModeWidget)
-			]
-		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		[
-			SNew(SBorder)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			[
 				SNew(STilemap3DEditStatusWidget, bEditProperty)
@@ -74,7 +60,26 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 					bEditProperty = Status;
 					CurrentFloor = FMath::Min(TilemapEditorPtr.Pin()->TilemapBeingEdited->Floors - 1,
 					                          CurrentFloor);
+					if (!bEditProperty) CurrentEditMode = EEM_View;
 					FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Broadcast(bEditProperty);
+				})
+			]
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SBorder)
+		.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+		.Visibility_Lambda([this]()
+			             {
+				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
+			             })
+			[
+				SNew(STilemap3DEditModeWidget, CurrentEditMode)
+				.OnEditModeChanged_Lambda([this](const ETilemap3DEditMode InEditMode)
+				{
+					CurrentEditMode = InEditMode;
+					//todo..
 				})
 			]
 		]

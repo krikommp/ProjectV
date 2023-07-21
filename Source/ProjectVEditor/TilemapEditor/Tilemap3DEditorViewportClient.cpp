@@ -101,7 +101,7 @@ void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& C
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
+	if (GetEditMode() == EEM_Append && EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
 		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
 
@@ -125,7 +125,7 @@ bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArg
 			                                        this);
 		}
 	}
-	else if (EventArgs.Key == EKeys::RightMouseButton && EventArgs.Event == IE_Pressed)
+	else if (GetEditMode() == EEM_Remove && EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
 		FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
 

@@ -2,6 +2,7 @@
 #include "SSingleObjectDetailsPanel.h"
 #include "Tilemap3DEditorToolkit.h"
 #include "Tilemap/TileSet3DAsset.h"
+#include "Widget/Tilemap3DEditModeWidget.h"
 
 class UTilemapAsset;
 class FTilemap3DEditorToolkit;
@@ -19,6 +20,7 @@ private:
 	TWeakPtr<FTilemap3DEditorToolkit> TilemapEditorPtr;
 	TWeakObjectPtr<UTileSet3DAsset> TileSet;
 	FTileSet3DSubObject CurrentTile;
+	ETilemap3DEditMode CurrentEditMode = EEM_View;
 
 	//~ Begin Slate UI Components
 	TSharedPtr<STextBlock> EditStatusText;
@@ -40,4 +42,5 @@ public:
 	const FTileSet3DSubObject& GetCurrentTileProperty() const { return CurrentTile; }
 	UTileSet3DAsset* GetTileSet() const;
 	int32 GetTextureIndex(UTexture2D* InTexture) const;
+	ETilemap3DEditMode GetEditMode() const { return CurrentEditMode; }
 };

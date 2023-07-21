@@ -111,55 +111,6 @@ void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& C
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	// if (GetEditMode() == EEM_Cube_Append && EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
-	// {
-	// 	FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
-	//
-	// 	FHitResult HitResult;
-	// 	const TArray<AActor*> IgnoreActor;
-	// 	UKismetSystemLibrary::LineTraceSingle(
-	// 		GetWorld(),
-	// 		CursorLocation.GetOrigin(),
-	// 		CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
-	// 		UEngineTypes::ConvertToTraceType(TilemapEditTrace),
-	// 		false,
-	// 		IgnoreActor,
-	// 		EDrawDebugTrace::None,
-	// 		HitResult,
-	// 		false);
-	// 	if (HitResult.bBlockingHit)
-	// 	{
-	// 		FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
-	// 		                                        GetCurrentTileProperty(),
-	// 		                                        GetCurrentFloor(), TerrainMat,
-	// 		                                        this);
-	// 	}
-	// }
-	// else if (GetEditMode() == EEM_Cube_Remove && EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event ==
-	// 	IE_Pressed)
-	// {
-	// 	FViewportCursorLocation CursorLocation = GetCursorWorldLocationFromMousePos();
-	//
-	// 	FHitResult HitResult;
-	// 	const TArray<AActor*> IgnoreActor;
-	// 	UKismetSystemLibrary::LineTraceSingle(
-	// 		GetWorld(),
-	// 		CursorLocation.GetOrigin(),
-	// 		CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
-	// 		UEngineTypes::ConvertToTraceType(PathTrace),
-	// 		false,
-	// 		IgnoreActor,
-	// 		EDrawDebugTrace::None,
-	// 		HitResult,
-	// 		false);
-	// 	if (HitResult.bBlockingHit)
-	// 	{
-	// 		FTilemap3DTerrainGenerator::ModifyVoxel(GetTilemapAsset(), TerrainMesh, HitResult.Location,
-	// 		                                        FTileSet3DCube::EmptyBlock,
-	// 		                                        GetCurrentFloor(), TerrainMat,
-	// 		                                        this);
-	// 	}
-	// }
 	for (const auto& Mode : EditModes)
 	{
 		Mode->InputKey(this, EventArgs);

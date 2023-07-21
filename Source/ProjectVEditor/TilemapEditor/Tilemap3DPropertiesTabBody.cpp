@@ -5,6 +5,8 @@
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DEditorSettings.h"
 #include "Engine/Texture2DArray.h"
+#include "Styling/SlateStyleMacros.h"
+#include "Widget/Tilemap3DEditModeWidget.h"
 #include "Widget/Tilemap3DEditStatusWidget.h"
 #include "Widget/Tilemap3DFloorStatusWidget.h"
 #include "Widget/TileSetGalleyWidget.h"
@@ -46,6 +48,19 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 		.AutoHeight()
 		[
 			PropertyEditorWidget
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SBorder)
+		.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+		.Visibility_Lambda([this]()
+			             {
+				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
+			             })
+			[
+				SNew(STilemap3DEditModeWidget)
+			]
 		]
 		+ SVerticalBox::Slot()
 		.AutoHeight()

@@ -20,7 +20,7 @@ void FTilemap3DPathfindingGenerator::Setup(const UObject* WorldContextObject, UT
 	CreateMultiLevelGrids(InTilemapAsset, InTileSetAsset->bDiagonalMovement);
 	CreateWallsOnGridEdges(InTilemapAsset);
 	CalculateCostByHeight(InTilemapAsset);
-	// todo..
+	TraceForWalls(WorldContextObject, InTilemapAsset);
 }
 
 FVector FTilemap3DPathfindingGenerator::IndexToVector(const UTilemapAsset* InTilemapAsset, int32 Index)
@@ -397,6 +397,41 @@ void FTilemap3DPathfindingGenerator::CalculateCostByHeight(UTilemapAsset* InTile
 				InTilemapAsset->SetEdgeCost(Edge.Index, Index, AdjustCost);
 				break;
 			}
+		}
+	}
+}
+
+void FTilemap3DPathfindingGenerator::TraceForWalls(const UObject* WorldContextObject, UTilemapAsset* InTilemapAsset)
+{
+	const int32 Count = InTilemapAsset->PathFindingBlocks.Num();
+	for (int32 Index = 0; Index < Count; ++Index)
+	{
+		TArray<int32> NeedRemoveEdgeIndexArray;
+		const FTilemapPathFindingBlock& PathFindingBlock = InTilemapAsset->PathFindingBlocks[Index];
+		for (const auto& Edge : PathFindingBlock.EdgeArray)
+		{
+			const auto& EdgeBlock = InTilemapAsset->PathFindingBlocks[Edge.Index];
+			TArray<AActor*> IgnoreActors;
+			FHitResult Hit;
+			UKismetSystemLibrary::LineTraceSingle(
+				WorldContextObject,
+				PathFindingBlock.Location + (FVector::UpVector * InTilemapAsset->TraceForWallsHeight),
+				EdgeBlock.Location + (FVector::UpVector * InTilemapAsset->TraceForWallsHeight),
+				UEngineTypes::ConvertToTraceType(WallTrace),
+				false,
+				IgnoreActors,
+				EDrawDebugTrace::None,
+				Hit,
+				true
+			);
+			if (Hit.IsValidBlockingHit())
+			{
+				NeedRemoveEdgeIndexArray.Add(Edge.Index);
+			}
+		}
+		for (const int32& EdgeIndex : NeedRemoveEdgeIndexArray)
+		{
+			InTilemapAsset->RemoveEdgeBothWays(Index, EdgeIndex);
 		}
 	}
 }

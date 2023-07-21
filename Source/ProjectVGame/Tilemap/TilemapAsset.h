@@ -102,6 +102,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="Path Finding")
 	int32 HeightBetweenLevel = 200;
 
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	int32 TraceForWallsHeight = 100;
+
 	UPROPERTY()
 	TArray<FBlock> Blocks;
 

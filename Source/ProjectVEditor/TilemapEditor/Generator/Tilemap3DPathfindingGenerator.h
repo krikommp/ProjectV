@@ -20,4 +20,6 @@ private:
 	static void CreateWallsOnGridEdges(UTilemapAsset* InTilemapAsset);
 
 	static void CalculateCostByHeight(UTilemapAsset* InTilemapAsset);
+
+	static void TraceForWalls(const UObject* WorldContextObject, UTilemapAsset* InTilemapAsset);
 };

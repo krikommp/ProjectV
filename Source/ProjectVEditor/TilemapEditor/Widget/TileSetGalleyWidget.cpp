@@ -3,8 +3,13 @@
 
 #include "TileSetGalleyWidget.h"
 
+#include "IImageWrapper.h"
+#include "IImageWrapperModule.h"
+#include "ImageUtils.h"
+#include "ObjectTools.h"
 #include "SingleTileWidget.h"
 #include "SlateOptMacros.h"
+#include "SSingleTileMeshWidget.h"
 #include "Tilemap/TileSet3DAsset.h"
 #define LOCTEXT_NAMESPACE "STileSetGalleyWidget"
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
@@ -35,7 +40,13 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 	// get static mesh's thumbnail
 	for (const FTileSet3DMesh& Tile : TileSet->TileMeshSets)
 	{
-		
+		//UStaticMesh* Mesh = Tile.Mesh;
+		TileSetBox->AddSlot()
+				  .AutoWidth()
+				  .Padding(10.0f)
+		[
+			SNew(SSingleTileMeshWidget, Tile)
+		];
 	}
 
 	ChildSlot

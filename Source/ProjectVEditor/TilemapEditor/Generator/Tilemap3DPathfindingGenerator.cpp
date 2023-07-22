@@ -349,7 +349,7 @@ void FTilemap3DPathfindingGenerator::CreateWallsOnGridEdges(UTilemapAsset* InTil
 			{
 				InTilemapAsset->RemoveEdge(Index, EdgeIndex);
 			}
-			if (EdgeIndex > InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY * InTilemapAsset->LevelSizeZ)
+			if (EdgeIndex >= InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY * InTilemapAsset->LevelSizeZ)
 			{
 				InTilemapAsset->RemoveEdge(Index, EdgeIndex);
 			}

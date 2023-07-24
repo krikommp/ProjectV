@@ -67,7 +67,7 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			.Visibility_Lambda([this]()
              {
-	             return EditMode.Get() == EEM_Cube ? EVisibility::Visible : EVisibility::Collapsed;
+	             return EditMode.Get() >= EEM_Cube && EditMode.Get() < EEM_Mesh ? EVisibility::Visible : EVisibility::Collapsed;
              })
 			[
 				TileCubeBox.ToSharedRef()
@@ -80,7 +80,7 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			.Visibility_Lambda([this]()
 			 {
-				 return EditMode.Get() == EEM_Mesh ? EVisibility::Visible : EVisibility::Collapsed;
+				 return EditMode.Get() >= EEM_Mesh ? EVisibility::Visible : EVisibility::Collapsed;
 			 })
 			[
 				TileMeshBox.ToSharedRef()

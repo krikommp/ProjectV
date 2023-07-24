@@ -38,6 +38,12 @@ int32 UTilemapAsset::VectorToIndex(const FVector& Location, int32 Floor) const
 	return Result + LevelSizeX * LevelSizeY * Floor;
 }
 
+int32 UTilemapAsset::VectorToIndex(const FVector& Location) const
+{
+	const int32 Floor = FMath::Floor(Location.Z / GridSize);
+	return VectorToIndex(Location, Floor);
+}
+
 int32 UTilemapAsset::PathFindingBlockToBlock(int32 Index) const
 {
 	ensureAlwaysMsgf(PathFindingBlocks.IsValidIndex(Index),
@@ -47,9 +53,27 @@ int32 UTilemapAsset::PathFindingBlockToBlock(int32 Index) const
 	const FTilemapPathFindingBlock PathFindingBlock = PathFindingBlocks[Index];
 	const FVector TileLocation = PathFindingBlock.Location;
 
-	const int32 Floor = FMath::Floor(TileLocation.Z / GridSize);
+	//const int32 Floor = FMath::Floor(TileLocation.Z / GridSize);
 
-	return VectorToIndex(TileLocation, Floor);
+	//return VectorToIndex(TileLocation, Floor);
+	return VectorToIndex(TileLocation);
+}
+
+FVector UTilemapAsset::IndexToVector(int32 Index) const
+{
+	const int32 ResidueX = Index % LevelSizeX;
+	const float X = GridSize * ResidueX;
+
+	const int32 ResidueYZ = Index / LevelSizeX;
+	const int32 SquaredXY = LevelSizeX * LevelSizeY;
+	const int32 ResidueZ = Index / SquaredXY;
+	const int32 ResidueXZ = LevelSizeX * ResidueZ;
+	const int32 ResidueY = ResidueYZ - ResidueXZ;
+	const float Y = ResidueY * GridSize;
+
+	const float Z = ResidueZ * GridSize;
+
+	return FVector(X, Y, Z);
 }
 
 int32 UTilemapAsset::GetEdgeCostFromZDifferent(int32 SelfIndex, int32 OtherIndex) const

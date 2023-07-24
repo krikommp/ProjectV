@@ -1,17 +1,16 @@
-﻿#include "Tilemap3DAddCubeMode.h"
+﻿#include "Tilemap3DAddMeshMode.h"
 
 #include "ProjectVEditor.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
-#include "TilemapEditor/Generator/Tilemap3DTerrainGenerator.h"
 
-FTilemap3DAddCubeMode::FTilemap3DAddCubeMode()
+FTilemap3DAddMeshMode::FTilemap3DAddMeshMode()
 	: HitResultTraceDistance(10000.0f)
 {
-	EditMode = EEM_Cube_Append;
+	EditMode = EEM_Mesh_Append;
 }
 
-void FTilemap3DAddCubeMode::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
+void FTilemap3DAddMeshMode::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
                                      const FInputKeyEventArgs& EventArgs)
 {
 	CHECK_EDITMODE(ViewportClient)
@@ -25,19 +24,20 @@ void FTilemap3DAddCubeMode::InputKey(FTilemap3DEditorViewportClient* ViewportCli
 			ViewportClient->GetWorld(),
 			CursorLocation.GetOrigin(),
 			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
-			UEngineTypes::ConvertToTraceType(TilemapEditTrace),
+			UEngineTypes::ConvertToTraceType(PathTrace),
 			false,
 			IgnoreActor,
-			EDrawDebugTrace::None,
+			EDrawDebugTrace::Persistent,
 			HitResult,
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			FTilemap3DTerrainGenerator::ModifyVoxel(ViewportClient->GetTilemapAsset(), ViewportClient->GetTerrainMesh(),
-			                                        HitResult.Location,
-			                                        ViewportClient->GetTileCube(),
-			                                        ViewportClient->GetCurrentFloor(), ViewportClient->GetTerrainMat(),
-			                                        ViewportClient);
+			const int32 Index = ViewportClient->GetTilemapAsset()->VectorToIndex(HitResult.Location, 0);
+			FTransform Transform = FTransform::Identity;
+			FVector Location = ViewportClient->GetTilemapAsset()->IndexToVector(Index);
+			Location.Z = HitResult.Location.Z;
+			Transform.SetLocation(Location);
+			ViewportClient->AddMesh(ViewportClient->GetTileMesh().ID, ViewportClient->GetTileMesh().Mesh, Transform, Index);
 		}
 	}
 }

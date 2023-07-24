@@ -57,6 +57,9 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 			.Value(BaseEditMode.Get())
 			.OnValueChanged_Lambda([this](int32 InValue){
 				BaseEditMode = static_cast<ETilemap3DEditMode>(InValue);
+				EditMode = BaseEditMode.Get() == EEM_View ? EEM_View : BaseEditMode.Get() + 1;
+				// ReSharper disable once CppExpressionWithoutSideEffects
+				OnEditModeChanged.ExecuteIfBound(EditMode.Get());
 			})
 			.Value_Lambda([this] { return static_cast<int32>(BaseEditMode.Get()); })
 			+ SSegmentedControl<int32>::Slot(ETilemap3DEditMode::EEM_View)

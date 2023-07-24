@@ -119,7 +119,10 @@ public:
 	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const;
 
 	int32 VectorToIndex(const FVector& Location, int32 Floor) const;
+	int32 VectorToIndex(const FVector& Location) const;
 	int32 PathFindingBlockToBlock(int32 Index) const;
+
+	FVector IndexToVector(int32 Index) const;
 
 	int32 GetEdgeCostFromZDifferent(int32 SelfIndex, int32 OtherIndex) const;
 

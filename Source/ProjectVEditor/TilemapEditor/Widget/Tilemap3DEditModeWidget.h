@@ -15,7 +15,7 @@ class PROJECTVEDITOR_API STilemap3DEditModeWidget : public SCompoundWidget
 public:
 	DECLARE_DELEGATE_OneParam(FOnEditModeChanged, const ETilemap3DEditMode)
 	SLATE_BEGIN_ARGS(STilemap3DEditModeWidget)
-		: _EditMode(EEM_Cube_Append), _BaseEditMode(EEM_Cube)
+		: _EditMode(EEM_View), _BaseEditMode(EEM_View)
 		{
 		}
 

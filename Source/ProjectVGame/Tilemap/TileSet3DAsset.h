@@ -38,9 +38,6 @@ struct PROJECTVGAME_API FTileSet3DMesh
 	FName ID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FTransform Transform;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMesh> Mesh;
 };
 

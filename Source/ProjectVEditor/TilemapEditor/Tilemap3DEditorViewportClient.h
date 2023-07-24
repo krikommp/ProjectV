@@ -29,12 +29,15 @@ public:
 	              const FLinearColor& Color, float Thickness = 3.0f) const;
 	void Clear() const;
 
+	void AddMesh(const FName& ID, UStaticMesh* Mesh, const FTransform& Transform, int32 Index);
+
 	int32 GetBlockTextureIndex(const FName& ID, int32 Flag) const;
 	TSharedPtr<STilemap3DPropertiesTabBody> DetailPtr;
 	UTilemapAsset* GetTilemapAsset() const { return DetailPtr->GetTilemapAsset(); }
 	int32 GetCurrentFloor() const { return DetailPtr->GetCurrentFloor(); }
 	ETilemap3DEditMode GetEditMode() const { return DetailPtr->GetEditMode(); }
-	const FTileSet3DCube& GetCurrentTileProperty() const { return DetailPtr->GetCurrentTileProperty(); }
+	const FTileSet3DMesh& GetTileMesh() const { return DetailPtr->GetTileMesh(); }
+	const FTileSet3DCube& GetTileCube() const { return DetailPtr->GetTileCube(); }
 	UTileSet3DAsset* GetTileSet() const { return DetailPtr->GetTileSet(); }
 	UProceduralMeshComponent* GetTerrainMesh() const { return TerrainMesh; }
 	UMaterialInterface* GetTerrainMat() const { return TerrainMat; }
@@ -49,6 +52,7 @@ protected:
 	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
 	TArray<TObjectPtr<UTextRenderComponent>> PathFindingIndexTextArray;
 	TArray<TObjectPtr<UTextRenderComponent>> PathFindingEdgeCostTextArray;
+	TMap<FName, TObjectPtr<UInstancedStaticMeshComponent>> MeshSet;
 
 	TArray<TSharedPtr<FTilemap3DBaseMode>> EditModes;
 

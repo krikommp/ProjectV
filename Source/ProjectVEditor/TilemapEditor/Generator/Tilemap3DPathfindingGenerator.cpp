@@ -13,7 +13,7 @@ void FTilemap3DPathfindingGenerator::Setup(const UObject* WorldContextObject, UT
 	InTilemapAsset->PathFindingBlocks.SetNum(Count);
 	for (int32 Index = 0; Index < Count; ++Index)
 	{
-		InTilemapAsset->PathFindingBlocks[Index].Location = IndexToVector(InTilemapAsset, Index);
+		InTilemapAsset->PathFindingBlocks[Index].Location = InTilemapAsset->IndexToVector(Index);
 		PopulateEdgeTileAndCost(InTilemapAsset, Index, InTileSetAsset->bDiagonalMovement);
 		ComputeTilemapSurfaceHeight(WorldContextObject, InTilemapAsset, Index);
 	}
@@ -21,23 +21,6 @@ void FTilemap3DPathfindingGenerator::Setup(const UObject* WorldContextObject, UT
 	CreateWallsOnGridEdges(InTilemapAsset);
 	CalculateCostByHeight(InTilemapAsset);
 	TraceForWalls(WorldContextObject, InTilemapAsset);
-}
-
-FVector FTilemap3DPathfindingGenerator::IndexToVector(const UTilemapAsset* InTilemapAsset, int32 Index)
-{
-	const int32 ResidueX = Index % InTilemapAsset->LevelSizeX;
-	const float X = InTilemapAsset->GridSize * ResidueX;
-
-	const int32 ResidueYZ = Index / InTilemapAsset->LevelSizeX;
-	const int32 SquaredXY = InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY;
-	const int32 ResidueZ = Index / SquaredXY;
-	const int32 ResidueXZ = InTilemapAsset->LevelSizeX * ResidueZ;
-	const int32 ResidueY = ResidueYZ - ResidueXZ;
-	const float Y = ResidueY * InTilemapAsset->GridSize;
-
-	const float Z = ResidueZ * InTilemapAsset->GridSize;
-
-	return FVector(X, Y, Z);
 }
 
 void FTilemap3DPathfindingGenerator::PopulateEdgeTileAndCost(UTilemapAsset* InTilemapAsset, int32 Index,

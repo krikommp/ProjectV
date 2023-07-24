@@ -22,7 +22,7 @@ void STilemap3DPropertiesTabBody::Construct(const FArguments& InArgs,
 	CurrentFloor = 0;
 
 	const UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
-	CurrentTile = Settings->DefaultTileSet.LoadSynchronous()->TileCubeSets[0];
+	CurrentTileCube = Settings->DefaultTileSet.LoadSynchronous()->TileCubeSets[0];
 
 	SSingleObjectDetailsPanel::Construct(
 		SSingleObjectDetailsPanel::FArguments().HostCommandList(InTilemapEditor->GetToolkitCommands()).
@@ -122,14 +122,26 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			[
 				SNew(STileSetGalleyWidget)
-				.TileSet(TileSet)
+				.TileSet_Lambda([this]() { return TileSet; })
+				.EditMode_Lambda([this]() { return CurrentEditMode; })
 				.OnClicked_Lambda([this](const FName& ID)
 				                          {
-					                          CurrentTile = *TileSet->TileCubeSets.FindByPredicate(
-						                          [=](const FTileSet3DCube& Item)
+					                          if (const auto* TileCube = TileSet->TileCubeSets.FindByPredicate(
+						                          [=](const auto& Item)
 						                          {
 							                          return Item.ID == ID;
-						                          });
+						                          }))
+					                          {
+						                          CurrentTileCube = *TileCube;
+					                          }
+					                          else if (const auto* TileMesh = TileSet->TileMeshSets.FindByPredicate(
+						                          [=](const auto& Item)
+						                          {
+							                          return Item.ID == ID;
+						                          }))
+					                          {
+						                          CurrentTileMesh = *TileMesh;
+					                          }
 				                          })
 			]
 		]

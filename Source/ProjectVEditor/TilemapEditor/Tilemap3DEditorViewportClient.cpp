@@ -7,11 +7,13 @@
 #include "ProjectVEditor.h"
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DSelected.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Generator/Tilemap3DPathfindingGenerator.h"
 #include "Generator/Tilemap3DTerrainGenerator.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Mode/Tilemap3DAddCubeMode.h"
+#include "Mode/Tilemap3DAddMeshMode.h"
 #include "Mode/Tilemap3DRemoveCubeMode.h"
 #include "Tilemap/TileSet3DAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
@@ -62,6 +64,7 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	EditModes.Append({
 		MakeShareable(new FTilemap3DAddCubeMode),
 		MakeShareable(new FTilemap3DRemoveCubeMode),
+		MakeShareable(new FTilemap3DAddMeshMode),
 	});
 	
 
@@ -151,6 +154,21 @@ void FTilemap3DEditorViewportClient::Clear() const
 	{
 		CollisionPlane->SetVisibility(false);
 		CollisionPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+void FTilemap3DEditorViewportClient::AddMesh(const FName& ID, UStaticMesh* Mesh, const FTransform& Transform, int32 Index)
+{
+	UInstancedStaticMeshComponent* MeshComponent;
+	if (MeshSet.Contains(ID))
+	{
+		MeshComponent = MeshSet[ID];
+	}else
+	{
+		MeshComponent = NewObject<UInstancedStaticMeshComponent>();
+		MeshComponent->SetStaticMesh(Mesh);
+		PreviewScene->AddComponent(MeshComponent, FTransform::Identity);
+		MeshSet.Add(ID, MeshComponent);
 	}
 }
 

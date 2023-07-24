@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectVEditor.h"
+#include "TilemapEditor/Tilemap3DEditorManager.h"
 #include "Widgets/SCompoundWidget.h"
 
 class UTileSet3DAsset;
@@ -14,11 +14,12 @@ class PROJECTVEDITOR_API STileSetGalleyWidget : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(STileSetGalleyWidget)
-			: _TileSet(nullptr)
+			: _TileSet(nullptr), _EditMode(EEM_Cube)
 		{
 		}
 
 		SLATE_ATTRIBUTE(TWeakObjectPtr<UTileSet3DAsset>, TileSet)
+		SLATE_ATTRIBUTE(ETilemap3DEditMode, EditMode)
 		SLATE_EVENT(FOnTileSetClicked, OnClicked)
 	SLATE_END_ARGS()
 
@@ -26,6 +27,8 @@ public:
 	void Construct(const FArguments& InArgs);
 private:
 	FOnTileSetClicked OnClicked_Lambda;
-	TSharedPtr<SHorizontalBox> TileSetBox;
+	TSharedPtr<SHorizontalBox> TileCubeBox;
+	TSharedPtr<SHorizontalBox> TileMeshBox;
 	TWeakObjectPtr<UTileSet3DAsset> TileSet;
+	TAttribute<ETilemap3DEditMode> EditMode;	
 };

@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectVEditor.h"
 #include "Tilemap/TileSet3DAsset.h"
+#include "TilemapEditor/Tilemap3DEditorManager.h"
 #include "Widgets/SCompoundWidget.h"
 
 struct FTileSet3DCube;

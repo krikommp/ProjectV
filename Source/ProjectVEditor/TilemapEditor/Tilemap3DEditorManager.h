@@ -17,6 +17,23 @@ struct PROJECTVEDITOR_API FTilemap3DEditDelegates
 	static FSimpleMulticastDelegate OnTilemapGeneratePathFinding;
 };
 
+DECLARE_DELEGATE_OneParam(FOnTileSetClicked, const FName&);
+
+enum ETilemap3DEditMode : uint8
+{
+	EEM_View = 0,
+
+	EEM_Cube,
+	EEM_Cube_Append = EEM_Cube,
+	EEM_Cube_Remove,
+
+	EEM_Mesh,
+	EEM_Mesh_Append = EEM_Mesh,
+	EEM_Mesh_Remove = EEM_Mesh + 1,
+	
+	UNKNOWN
+};
+
 /**
  * UTilemapEditorManager
  *

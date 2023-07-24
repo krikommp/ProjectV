@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SSingleTileMeshWidget.h"
+#include "SingleTileMeshWidget.h"
 
 #include "IImageWrapperModule.h"
 #include "ImageUtils.h"

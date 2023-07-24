@@ -72,7 +72,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 		.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 		.Visibility_Lambda([this]()
 			             {
-				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
+				             return bEditProperty ? EVisibility::Visible : EVisibility::Collapsed;
 			             })
 			[
 				SNew(STilemap3DEditModeWidget, CurrentEditMode)
@@ -90,7 +90,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			.Visibility_Lambda([this]()
 			             {
-				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
+				             return bEditProperty ? EVisibility::Visible : EVisibility::Collapsed;
 			             })
 			[
 				SNew(STilemap3DFloorStatusWidget)
@@ -158,7 +158,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			.Visibility_Lambda([this]()
 			             {
-				             return bEditProperty ? EVisibility::Visible : EVisibility::Hidden;
+				             return bEditProperty ? EVisibility::Visible : EVisibility::Collapsed;
 			             })
 			[
 				SNew(SButton)

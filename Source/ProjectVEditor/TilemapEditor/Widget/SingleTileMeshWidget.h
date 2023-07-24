@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectVEditor.h"
+#include "TilemapEditor/Tilemap3DEditorManager.h"
 #include "Tilemap/TileSet3DAsset.h"
 #include "Widgets/SCompoundWidget.h"
 

@@ -11,6 +11,7 @@
 #include "Components/TextRenderComponent.h"
 #include "Generator/Tilemap3DPathfindingGenerator.h"
 #include "Generator/Tilemap3DTerrainGenerator.h"
+#include "Generator/Tilemap3DTileMeshGenerator.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Mode/Tilemap3DAddCubeMode.h"
 #include "Mode/Tilemap3DAddMeshMode.h"
@@ -88,6 +89,7 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	FTilemap3DEditDelegates::OnTilemapGeneratePathFinding.Add(OnTilemapGeneratePathFindingDelegate);
 
 	FTilemap3DTerrainGenerator::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
+	FTilemap3DTileMeshGenerator::Setup(GetTilemapAsset(), MeshSet, PreviewScene, GetTileSet());
 
 	Clear();
 }

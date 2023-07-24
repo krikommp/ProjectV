@@ -39,6 +39,9 @@ struct PROJECTVGAME_API FTileSet3DMesh
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMesh> Mesh;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UMaterialInterface> Material;
 };
 
 /**

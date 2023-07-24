@@ -53,6 +53,15 @@ struct PROJECTVGAME_API FBlock
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int32 Cost = 1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FName MeshIndex = FName();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FTransform MeshTransform = FTransform::Identity;
+
+	UPROPERTY(Transient)
+	int32 MeshInstancedIndex = INDEX_NONE;
 };
 
 USTRUCT(BlueprintType)

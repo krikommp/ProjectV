@@ -35,6 +35,8 @@ enum ETilemap3DEditMode : uint8
 	UNKNOWN
 };
 
+using FTileMeshMap = TMap<FName, TObjectPtr<UInstancedStaticMeshComponent>>;
+
 /**
  * UTilemapEditorManager
  *

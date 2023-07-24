@@ -70,7 +70,7 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 			.Text(LOCTEXT("Cube", "Edit Cube"))
 			+ SSegmentedControl<int32>::Slot(ETilemap3DEditMode::EEM_Mesh)
 			.Icon(FAppStyle::Get().GetBrush("ModelingToolsManagerCommands.BeginAddBoxPrimitiveTool"))
-			.Text(LOCTEXT("Cube", "Edit Cube"))
+			.Text(LOCTEXT("Mesh", "Edit Mesh"))
 		]
 		+ SVerticalBox::Slot()
 		.AutoHeight()

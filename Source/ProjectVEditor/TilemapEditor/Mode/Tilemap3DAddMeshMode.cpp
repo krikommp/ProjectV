@@ -3,6 +3,7 @@
 #include "ProjectVEditor.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
+#include "TilemapEditor/Generator/Tilemap3DTileMeshGenerator.h"
 
 FTilemap3DAddMeshMode::FTilemap3DAddMeshMode()
 	: HitResultTraceDistance(10000.0f)
@@ -27,17 +28,38 @@ void FTilemap3DAddMeshMode::InputKey(FTilemap3DEditorViewportClient* ViewportCli
 			UEngineTypes::ConvertToTraceType(PathTrace),
 			false,
 			IgnoreActor,
-			EDrawDebugTrace::Persistent,
+			EDrawDebugTrace::None,
 			HitResult,
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			const int32 Index = ViewportClient->GetTilemapAsset()->VectorToIndex(HitResult.Location, 0);
+			FVector HitLocation = HitResult.Location;
+			HitLocation.Z -= ViewportClient->GetTilemapAsset()->GridSize * 0.5f;
+			const int32 Index = ViewportClient->GetTilemapAsset()->VectorToIndex(HitLocation);
+			
+			if (ViewportClient->GetTilemapAsset()->Blocks[Index].MeshIndex != FName())
+				return;
+			
 			FTransform Transform = FTransform::Identity;
 			FVector Location = ViewportClient->GetTilemapAsset()->IndexToVector(Index);
-			Location.Z = HitResult.Location.Z;
+			Location.Z = Index / (ViewportClient->GetTilemapAsset()->LevelSizeX * ViewportClient->GetTilemapAsset()->
+				LevelSizeY) * ViewportClient->GetTilemapAsset()->GridSize + ViewportClient->GetTilemapAsset()->GridSize;
 			Transform.SetLocation(Location);
-			ViewportClient->AddMesh(ViewportClient->GetTileMesh().ID, ViewportClient->GetTileMesh().Mesh, Transform, Index);
+
+			FBlock& Block = ViewportClient->GetTilemapAsset()->Blocks[Index];
+			Block.MeshIndex = ViewportClient->GetTileMesh().ID;
+			Block.MeshTransform = Transform;
+			
+			Block.MeshInstancedIndex = FTilemap3DTileMeshGenerator::AddTileMesh({
+				ViewportClient->GetTilemapAsset(),
+				ViewportClient->GetPreviewScene(),
+				ViewportClient->GetTileMeshMap(),
+				Block.MeshIndex,
+				ViewportClient->GetTileMesh().Mesh,
+				Transform,
+				Index,
+				ViewportClient->GetTileMesh().Material
+			});
 		}
 	}
 }

@@ -35,6 +35,7 @@ public:
 	TSharedPtr<STilemap3DPropertiesTabBody> DetailPtr;
 	UTilemapAsset* GetTilemapAsset() const { return DetailPtr->GetTilemapAsset(); }
 	int32 GetCurrentFloor() const { return DetailPtr->GetCurrentFloor(); }
+	FTileMeshMap& GetTileMeshMap() { return MeshSet; }
 	ETilemap3DEditMode GetEditMode() const { return DetailPtr->GetEditMode(); }
 	const FTileSet3DMesh& GetTileMesh() const { return DetailPtr->GetTileMesh(); }
 	const FTileSet3DCube& GetTileCube() const { return DetailPtr->GetTileCube(); }
@@ -52,7 +53,7 @@ protected:
 	TObjectPtr<ATilemap3DSelected> TilemapSelectedPreview;
 	TArray<TObjectPtr<UTextRenderComponent>> PathFindingIndexTextArray;
 	TArray<TObjectPtr<UTextRenderComponent>> PathFindingEdgeCostTextArray;
-	TMap<FName, TObjectPtr<UInstancedStaticMeshComponent>> MeshSet;
+	FTileMeshMap MeshSet;
 
 	TArray<TSharedPtr<FTilemap3DBaseMode>> EditModes;
 

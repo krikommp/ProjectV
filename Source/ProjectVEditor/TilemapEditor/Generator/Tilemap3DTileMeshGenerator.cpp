@@ -1,5 +1,6 @@
 ﻿#include "Tilemap3DTileMeshGenerator.h"
 
+#include "GridTraceChannel.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Tilemap/TilemapAsset.h"
 
@@ -46,6 +47,7 @@ int32 FTilemap3DTileMeshGenerator::AddTileMesh(const FAddTileMeshParams& Params)
 		MeshComponent = NewObject<UInstancedStaticMeshComponent>();
 		MeshComponent->SetStaticMesh(Params.InMesh);
 		MeshComponent->SetMaterial(0, Params.InMaterial);
+		MeshComponent->SetCollisionResponseToChannel(WallTrace, ECR_Block);
 		Params.InPreviewScene->AddComponent(MeshComponent, FTransform::Identity);
 		Params.InTileMeshMap.Add(Params.ID, MeshComponent);
 	}

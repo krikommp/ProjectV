@@ -16,6 +16,7 @@
 #include "Mode/Tilemap3DAddCubeMode.h"
 #include "Mode/Tilemap3DAddMeshMode.h"
 #include "Mode/Tilemap3DRemoveCubeMode.h"
+#include "Mode/Tilemap3DSelectMeshMode.h"
 #include "Tilemap/TileSet3DAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
@@ -66,6 +67,7 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 		MakeShareable(new FTilemap3DAddCubeMode),
 		MakeShareable(new FTilemap3DRemoveCubeMode),
 		MakeShareable(new FTilemap3DAddMeshMode),
+		MakeShareable(new FTilemap3DSelectMeshMode)
 	});
 	
 

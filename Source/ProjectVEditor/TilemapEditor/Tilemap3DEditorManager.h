@@ -24,12 +24,13 @@ enum ETilemap3DEditMode : uint8
 	EEM_View = 0,
 
 	EEM_Cube,
-	EEM_Cube_Append = EEM_Cube,
+	EEM_Cube_Append,
 	EEM_Cube_Remove,
 
 	EEM_Mesh,
-	EEM_Mesh_Append = EEM_Mesh,
-	EEM_Mesh_Remove = EEM_Mesh + 1,
+	EEM_Mesh_Select,
+	EEM_Mesh_Append,
+	EEM_Mesh_Remove,
 	
 	UNKNOWN
 };

@@ -75,10 +75,11 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 				             return bEditProperty ? EVisibility::Visible : EVisibility::Collapsed;
 			             })
 			[
-				SNew(STilemap3DEditModeWidget, CurrentEditMode)
+				SNew(STilemap3DEditModeWidget)
 				.OnEditModeChanged_Lambda([this](const ETilemap3DEditMode InEditMode)
 				{
 					CurrentEditMode = InEditMode;
+					UE_LOG(LogTemp, Error, TEXT("Edit Mode = %d"), (int32)CurrentEditMode);
 					//todo..
 				})
 			]

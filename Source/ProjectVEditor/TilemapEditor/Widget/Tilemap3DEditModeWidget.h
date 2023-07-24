@@ -15,20 +15,21 @@ class PROJECTVEDITOR_API STilemap3DEditModeWidget : public SCompoundWidget
 public:
 	DECLARE_DELEGATE_OneParam(FOnEditModeChanged, const ETilemap3DEditMode)
 	SLATE_BEGIN_ARGS(STilemap3DEditModeWidget)
-			: _BaseEditMode(EEM_Cube)
+		: _EditMode(EEM_Cube_Append), _BaseEditMode(EEM_Cube)
 		{
 		}
 
+		SLATE_ATTRIBUTE(ETilemap3DEditMode, EditMode)
 		SLATE_ATTRIBUTE(ETilemap3DEditMode, BaseEditMode)
 		SLATE_EVENT(FOnEditModeChanged, OnEditModeChanged)
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs, ETilemap3DEditMode InEditMode);
+	void Construct(const FArguments& InArgs);
 
 private:
-	ETilemap3DEditMode EditMode = EEM_Cube_Append;
-	TAttribute<ETilemap3DEditMode> BaseEditMode = EEM_Cube;
+	TAttribute<ETilemap3DEditMode> EditMode;
+	TAttribute<ETilemap3DEditMode> BaseEditMode;
 	FOnEditModeChanged OnEditModeChanged;
 
 	TSharedPtr<SSegmentedControl<int32>> CubePanelControl;

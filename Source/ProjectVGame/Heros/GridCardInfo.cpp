@@ -7,6 +7,12 @@
 #include "GridLogChannel.h"
 #include "AbilitySystem/GridAbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/GridGameplayAbility_Card.h"
+#include "AbilitySystem/AbilityEffects/GridAbilityTargetType.h"
+#include "ChessPieces/GridChessPiece.h"
+#include "Components/DecalComponent.h"
+#include "GameFramework/GameStateBase.h"
+#include "GridMapManager/GridMapFunctionLibrary.h"
+#include "GridMapManager/GridMapStateComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/GridLocalPlayer.h"
 
@@ -195,4 +201,58 @@ FText UGridCardInfo::GetCardDescription()
 	}
 
 	return FText::GetEmpty();
+}
+
+int32 UGridCardInfo::GetCardAbilityTargetRange() const
+{
+	check(AbilitySystemComponent);
+
+	if (const FGameplayAbilitySpec* AbilitySpec = AbilitySystemComponent->FindAbilitySpecFromHandle(GrantedHandle))
+	{
+		if (const UGridGameplayAbility_Card* CardAbility = Cast<UGridGameplayAbility_Card>(AbilitySpec->Ability))
+		{
+			return CardAbility->GetCardAbilityTargetRange(CardAbility->GetAbilityLevel());
+		}
+	}
+	
+	return 0;
+}
+
+void UGridCardInfo::DisplayCardTargetRange(int32 CurrentTileIndex, UMaterialInterface* DecalMaterial)
+{
+	check(AbilitySystemComponent);
+
+	if (const FGameplayAbilitySpec* AbilitySpec = AbilitySystemComponent->FindAbilitySpecFromHandle(GrantedHandle))
+	{
+		if (const UGridGameplayAbility_Card* CardAbility = Cast<UGridGameplayAbility_Card>(AbilitySpec->Ability))
+		{
+			if (CardAbility->GetCardAbilityType() == ECardAbilityType::NoTarget)
+			{
+				return;
+			}
+		}
+	}
+
+	if (AGridMapManager* GridMapManager = OwningHero->GetWorld()->GetGameState()->FindComponentByClass<UGridMapStateComponent>()->GetGridMapManager())
+	{
+		HideCardTargetRange();
+
+		TArray<int32> Indexes = UGridMapFunctionLibrary::GetTileIndexesInRange(GridMapManager, CurrentTileIndex, GetCardAbilityTargetRange());
+		for (const auto& Index : Indexes)
+		{
+			if (auto Decal = UGridMapFunctionLibrary::DisplayDecal(GridMapManager, Index, DecalMaterial, false, false))
+			{
+				TargetRangeDecals.Add(Decal);
+			}
+		}
+	}
+}
+
+void UGridCardInfo::HideCardTargetRange()
+{
+	for (UDecalComponent* DecalComponent : TargetRangeDecals)
+	{
+		DecalComponent->DestroyComponent();
+	}
+	TargetRangeDecals.Empty();
 }

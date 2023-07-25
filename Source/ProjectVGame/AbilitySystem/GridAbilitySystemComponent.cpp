@@ -37,30 +37,32 @@ void UGridAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AAc
 	check(ActorInfo);
 	check(InOwnerActor);
 
-	const bool bHasNewPawnAvatar = Cast<APawn>(InAvatarActor) && (InAvatarActor != ActorInfo->AvatarActor);
-	
 	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
-
-	if(bHasNewPawnAvatar)
+	
+	if (UGridGlobalAbilitySystem* GlobalAbilitySystem = UWorld::GetSubsystem<UGridGlobalAbilitySystem>(GetWorld()))
 	{
-		if (UGridGlobalAbilitySystem* GlobalAbilitySystem = UWorld::GetSubsystem<UGridGlobalAbilitySystem>(GetWorld()))
-		{
-			GlobalAbilitySystem->RegisterASC(this);
-		}
-
+		GlobalAbilitySystem->RegisterASC(this);
+	}
+	if (!OnGameplayEffectAppliedDelegateToSelf.IsBoundToObject(this))
+	{
 		OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &ThisClass::NotifyGameplayEffectActivate);
+	}
+	if (!OnAnyGameplayEffectRemovedDelegate().IsBoundToObject(this))
+	{
 		OnAnyGameplayEffectRemovedDelegate().AddUObject(this, &ThisClass::NotifyGameplayEffectRemoved);
 	}
+	
 }
 
 FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpecToSelf(
 	const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey)
 {
 	const auto MyHandle = Super::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
+
 	if (const UGridGameplayEffect* GridGameplayEffect = Cast<UGridGameplayEffect>(GameplayEffect.Def))
 	{
 		// 判断目标身上是否有需要的GameplayTag, 如果有则应用GameplayEffect
-		for (const FConditionalGameplayEffect& ConditionalGameplayEffect : GridGameplayEffect->ConditionalGameplayEffectsToTarget)
+		for (const FConditionalGameplayEffect& ConditionalGameplayEffect : GridGameplayEffect->GridConditionalGameplayEffectsToTarget)
 		{
 			if (GridGameplayEffect->StaticClass() == ConditionalGameplayEffect.EffectClass)
 			{
@@ -92,6 +94,8 @@ FActiveGameplayEffectHandle UGridAbilitySystemComponent::ApplyGameplayEffectSpec
 					for (const AGridMapNode* ApplyToGridMapNode : NearbyNodes)
 					{
 						ApplyToGridMapNode->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*ConductionSpecHandle.Data.Get(), PredictionKey);
+						// 为了让效果生效, 需要手动Attach
+						ApplyToGridMapNode->AttachActiveGameplayEffect();
 					}
 				}
 			}
@@ -162,6 +166,15 @@ void UGridAbilitySystemComponent::NotifyGameplayEffectRemoved(const FActiveGamep
 		if (const UGridAbilityBuffUIData* UIData = Cast<UGridAbilityBuffUIData>(UAbilitySystemBlueprintLibrary::GetGameplayEffectUIData(Effect->GetClass(), UGridAbilityBuffUIData::StaticClass())))
 		{
 			OnAbilityBuffRemoved.Broadcast(UIData);
+		}
+	}
+	if (const UGridGameplayEffect_GridMapNode* GridMapEffect = Cast<UGridGameplayEffect_GridMapNode>(InActiveEffect.Spec.Def))
+	{
+		// 遍历Conduction Gameplay Effects
+		// 执行移除方法
+		for (const auto& ConductionGameplayEffect : GridMapEffect->ConductionGameplayEffects)
+		{
+			
 		}
 	}
 }

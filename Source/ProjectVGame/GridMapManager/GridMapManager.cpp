@@ -744,8 +744,8 @@ void AGridMapManager::InitializeDecalAndPathComponent()
 {
 	// 首先需要计算贴花的大小
 	DecalSizeSquare.X = (TileBoundsX + TileBoundsY) * 0.5f;
-	DecalSizeSquare.Y = TileBoundsX * 0.4375f;
-	DecalSizeSquare.Z = TileBoundsY * 0.4375f;
+	DecalSizeSquare.Y = TileBoundsX * 0.5f;
+	DecalSizeSquare.Z = TileBoundsY * 0.5f;
 
 	// 设置贴花材质，并计算其大小
 	HoverMarkerDecal = UGridMapFunctionLibrary::CreateGridMapDecalComponent(HoverMarkerDecalMaterial, DecalSizeSquare,

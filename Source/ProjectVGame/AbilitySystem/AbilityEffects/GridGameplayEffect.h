@@ -19,5 +19,5 @@ public:
 
 	// 根据目标身上的Tag来决定是否应用下面的GE
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = GridGameplayEffect)
-	TArray<FConditionalGameplayEffect> ConditionalGameplayEffectsToTarget;
+	TArray<FConditionalGameplayEffect> GridConditionalGameplayEffectsToTarget;
 };

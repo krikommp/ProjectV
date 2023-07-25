@@ -15,6 +15,7 @@ class UGridLocalPlayer;
 class UGridGameplayAbility_Card;
 class UGridAbilitySystemComponent;
 class AGridChessPiece;
+class UDecalComponent;
 
 /**
  * UGridCardInfo
@@ -57,8 +58,34 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Grid|Card")
 	void SendCardInputEvent(const FGridAbilityInputEvent& InputEvent);
 
+	/**
+	 * @brief 获取卡牌描述（序列化）
+	 * @return 卡牌描述 
+	 */
 	UFUNCTION(BlueprintPure, Category="Grid|Card")
 	FText GetCardDescription();
+
+	/**
+	 * @brief 获取卡牌范围
+	 * @return 范围
+	 */
+	UFUNCTION(BlueprintPure, Category="Grid|Card")
+	int32 GetCardAbilityTargetRange() const;
+
+	/**
+	 * @brief 显示卡牌搜索范围
+	 * @param CurrentTileIndex 搜索位置索引
+	 * @param DecalMaterial 显示材质
+	 */
+	UFUNCTION(BlueprintCallable, Category="Grid|Card")
+	void DisplayCardTargetRange(int32 CurrentTileIndex, UMaterialInterface* DecalMaterial);
+
+	/**
+	 * @brief 隐藏卡牌搜索范围
+	 */
+	UFUNCTION(BlueprintCallable, Category="Grid|Card")
+	void HideCardTargetRange();
+
 public:
 	// 卡牌ID，用以区分相同类型的卡牌
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Grid|CardInfo")
@@ -86,6 +113,9 @@ public:
 private:
 	UPROPERTY(Transient)
 	UGridLocalPlayer* OwningPlayer = nullptr;
+
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UDecalComponent>> TargetRangeDecals;
 
 	FGameplayAbilitySpecHandle GrantedHandle;
 };

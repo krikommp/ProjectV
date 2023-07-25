@@ -55,6 +55,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Grid|Card Ability")
 	int32 GetCardAbilityRange(int32 InCardAbilityLevel) const { return FMath::Floor(CardAbilityRange.GetValueAtLevel(InCardAbilityLevel)); }
 
+	UFUNCTION(BlueprintCallable, Category="Grid|Card Ability")
+	int32 GetCardAbilityTargetRange(int32 InCardAbilityLevel) const { return FMath::Floor(CardAbilityTargetRange.GetValueAtLevel(InCardAbilityLevel)); }
+
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category="Grid|Card Ability")
 	FText GetCardAbilityCostForDisplay(int32 InCardAbilityLevel);
 
@@ -79,6 +82,10 @@ protected:
 	// 卡牌影响范围
 	UPROPERTY(EditDefaultsOnly, Category="Grid|Card Config")
 	FScalableFloat CardAbilityRange;
+
+	// 卡牌查找目标范围
+	UPROPERTY(EditDefaultsOnly, Category="Grid|Card Config")
+	FScalableFloat CardAbilityTargetRange;
 
 	// 卡牌冷却
 	UPROPERTY(EditDefaultsOnly, Category="Grid|Card Config")

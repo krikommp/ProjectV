@@ -43,6 +43,12 @@ public:
 	void AttachActiveGameplayEffect(const AGridChessPiece* InChessPiece) const;
 
 	/**
+	 * @brief 为棋子对象添加附加效果
+	 */
+	void AttachActiveGameplayEffect() const;
+	
+
+	/**
 	 * @brief 查找相邻符合要求的节点
 	 * @param OutNearbyTiles 
 	 * @param RequireTags 

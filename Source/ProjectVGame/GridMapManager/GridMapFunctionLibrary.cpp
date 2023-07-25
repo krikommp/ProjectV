@@ -257,7 +257,7 @@ void UGridMapFunctionLibrary::DisplayInsightRangeEdgeMarkers(AGridMapManager* Gr
 }
 
 UDecalComponent* UGridMapFunctionLibrary::DisplayDecal(AGridMapManager* GridMapManager, int32 Index,
-	UMaterialInterface* DecalMaterial, bool bOverrider)
+	UMaterialInterface* DecalMaterial, bool bOverrider, bool bAdd)
 {
 	check(GridMapManager->VectorFieldArray.IsValidIndex(Index));
 	const FVector TileLocation = GridMapManager->VectorFieldArray[Index] + GridMapManager->GetActorLocation();
@@ -277,8 +277,40 @@ UDecalComponent* UGridMapFunctionLibrary::DisplayDecal(AGridMapManager* GridMapM
 	}
 	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(
 		GridMapManager->GetWorld(), DecalMaterial, GridMapManager->DecalSizeSquare, TileLocation, {90.0f, 0.0f, 0.0f});
-	// GridMapManager->CurrentDecalsArray.Add(DecalComponent);
+	if (bAdd)
+		GridMapManager->CurrentDecalsArray.Add(DecalComponent);
 	return DecalComponent;
+}
+
+TArray<int32> UGridMapFunctionLibrary::GetTileIndexesInRange(const AGridMapManager* GridMapManager, int32 Index,
+	int32 Range)
+{
+	if (Range == 0)
+	{
+		return { Index };
+	}
+	
+	TArray<TPair<int32, int32>> TmpTileIndexAndRange;
+	const int32 TotalRange = (Range + Range + 1);
+	for (int32 x = 0; x < TotalRange; ++x)
+	{
+		for (int32 y = 0; y < TotalRange; ++y)
+		{
+			TmpTileIndexAndRange.Add({ x - Range, y - Range });
+		}
+	}
+
+	TArray<int32> Result;
+	for (const auto& Vec : TmpTileIndexAndRange)
+	{
+		const int32 TmpIndex = Index + Vec.Key + Vec.Value * GridMapManager->GridSizeX;
+		if (GridMapManager->VectorFieldArray.IsValidIndex(TmpIndex))
+		{
+			Result.Add(TmpIndex);
+		}
+	}
+
+	return Result;
 }
 
 void UGridMapFunctionLibrary::RemoveTileEdge(int32 TileIndex, int32 Edge, AGridMapManager* GridMapManager)
@@ -623,7 +655,7 @@ void UGridMapFunctionLibrary::AutoCalcEdgeBaseOnHeight(AGridMapManager* GridMapM
 			const float ParentZ = TilePos.Z;
 			const FVector EdgeTilePos = GridMapManager->VectorFieldArray[IndexCost.Index];
 			const float Height = FMath::Abs(ParentZ - EdgeTilePos.Z);
-			int32 NewCost = -1;
+			int32 NewCost;
 			if (Height < GridMapManager->HeightSlowIncrement)
 			{
 				// 不需要花费额外的行动力了就可以到达的Edge,这里就不需要再做其他的处理了
@@ -1108,7 +1140,7 @@ void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
                                               const TArray<FStructPathFinding>& InCanMoveToArray,
                                               UMaterialInterface* DecalMat, int32 Index)
 {
-	const FVector StraightEdgeDecalSize = {90.0, 90.0, 90.0};
+	const FVector StraightEdgeDecalSize = {100.0, 100.0, 100.0};
 	SpawnEdgeDecalBetweenIndexes(GridMapManager, StartIndex, InCanMoveToArray, Index, Index + 1, StraightEdgeDecalSize,
 	                             270.0,
 	                             DecalMat);
@@ -1125,7 +1157,7 @@ void UGridMapFunctionLibrary::SpawnEdgeMeshes(AGridMapManager* GridMapManager,
                                               const TArray<int32>& InRangeArray, UMaterialInterface* DecalMat,
                                               int32 Index)
 {
-	const FVector StraightEdgeDecalSize = {90.0, 90.0, 90.0};
+	const FVector StraightEdgeDecalSize = {100.0, 100.0, 100.0};
 	SpawnEdgeDecalBetweenIndexes(GridMapManager, InRangeArray, Index, Index + 1,
 	                             StraightEdgeDecalSize, 270.0,
 	                             DecalMat);

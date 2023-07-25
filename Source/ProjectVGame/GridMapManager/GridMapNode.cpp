@@ -59,7 +59,7 @@ void AGridMapNode::AttachActiveGameplayEffect(const AGridChessPiece* InChessPiec
 
 	// 定义我们要查询的标签
 	FGameplayTagContainer RequireTags;
-	RequireTags.AddTagFast(FGameplayTag::RequestGameplayTag(FName("Ability.Element.Attach"), true));
+	RequireTags.AddTagFast(FGameplayTag::RequestGameplayTag(FName("Ability.Element"), true));
 
 	// 创建查询
 	const FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(RequireTags);
@@ -82,6 +82,17 @@ void AGridMapNode::AttachActiveGameplayEffect(const AGridChessPiece* InChessPiec
 					InChessPiece->GetAbilitySystemComponent()->ApplyGameplayEffectToSelf(AttachGameplayEffect,ActiveGE->Spec.GetLevel(), InChessPiece->GetAbilitySystemComponent()->MakeEffectContext());
 				}
 			}
+		}
+	}
+}
+
+void AGridMapNode::AttachActiveGameplayEffect() const
+{
+	if (AGridMapManager* GridMapManager = GetWorld()->GetGameState()->FindComponentByClass<UGridMapStateComponent>()->GetGridMapManager())
+	{
+		if (const AGridChessPiece* ChessPiece = GridMapManager->PawnArray[GetTileIndex()])
+		{
+			AttachActiveGameplayEffect(ChessPiece);
 		}
 	}
 }
@@ -111,17 +122,6 @@ void AGridMapNode::FindAllNearbyTiles(TArray<const AGridMapNode*>& OutNearbyTile
 					}
 				}
 			}
-			// for (FStructIntArray EdgeIndexArray : GridMapManager->EdgeArrayInteger[TileIndex])
-			// {
-			// 	// for (const int32 EdgeIndex : EdgeIndexArray.Index)
-			// 	// {
-			// 	// 	if (GridMapManager->GridMapNodeArray.IsValidIndex(EdgeIndex))
-			// 	// 	{
-			// 	// 		const auto NearbyTile = GridMapManager->GridMapNodeArray[EdgeIndex];
-			// 	// 		NearbyTile->FindAllNearbyTiles(OutNearbyTiles, RequireTags);
-			// 	// 	}
-			// 	// }
-			// }
 		}
 	}
 }

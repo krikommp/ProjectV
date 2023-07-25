@@ -81,7 +81,7 @@ void FTilemap3DEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TS
 
 	const UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
 	TSharedRef<FTilemap3DEditorToolkit> EditorToolkit = SharedThis(this);
-	DetailPtr = SNew(STilemap3DPropertiesTabBody, EditorToolkit, Settings->DefaultTileSet.LoadSynchronous());
+	DetailPtr = SNew(STilemap3DPropertiesTabBody, EditorToolkit, TilemapBeingEdited->TileSet == nullptr ? Settings->DefaultTileSet.LoadSynchronous() : TilemapBeingEdited->TileSet);
 
 	ViewportPtr = SNew(STilemap3DEditorViewport)
 		.TilemapDetailPtr(this, &FTilemap3DEditorToolkit::GetDetailPtr);

@@ -69,11 +69,17 @@ struct PROJECTVGAME_API FTilemap3DTerrainMeshData
 {
 	GENERATED_BODY();
 
+	UPROPERTY()
 	TArray<FVector> Vertices;
+	UPROPERTY()
 	TArray<int32> Triangles;
+	UPROPERTY()
 	TArray<FVector> Normals;
+	UPROPERTY()
 	TArray<FColor> Colors;
+	UPROPERTY()
 	TArray<FVector2D> UV0;
+	UPROPERTY()
 	int32 VertexCount = 0;
 
 	void Clear();
@@ -113,6 +119,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Path Finding")
 	int32 TraceForWallsHeight = 100;
+
+	UPROPERTY(EditAnywhere, Category="Tile Values")
+	TObjectPtr<class UTileSet3DAsset> TileSet;
 
 	UPROPERTY()
 	TArray<FBlock> Blocks;

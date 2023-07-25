@@ -72,7 +72,8 @@ public class ProjectVGame : ModuleRules
 				"ClientPilot",
 				"AudioModulation",
 				"EngineSettings",
-				"SMSystem"
+				"SMSystem",
+				"ProceduralMeshComponent"
 			});
 
 		DynamicallyLoadedModuleNames.AddRange(

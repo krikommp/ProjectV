@@ -4,6 +4,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 #include "TilemapEditor/Generator/Tilemap3DTerrainGenerator.h"
+#include "TilemapEditor/Generator/Tilemap3DTileMeshGenerator.h"
 
 FTilemap3DAddCubeMode::FTilemap3DAddCubeMode()
 	: HitResultTraceDistance(10000.0f)
@@ -36,6 +37,11 @@ void FTilemap3DAddCubeMode::InputKey(FTilemap3DEditorViewportClient* ViewportCli
 			false);
 		if (HitResult.bBlockingHit)
 		{
+			if (ViewportClient->GetCurrentFloor() != 0)
+			{
+				const int32 Index = ViewportClient->GetTilemapAsset()->VectorToIndex(HitResult.Location, ViewportClient->GetCurrentFloor() - 1);
+				FTilemap3DTileMeshGenerator::RemoveTileMesh(ViewportClient->GetTilemapAsset(), ViewportClient->GetTileMeshMap(), Index);
+			}
 			FTilemap3DTerrainGenerator::ModifyVoxel(ViewportClient->GetTilemapAsset(), ViewportClient->GetTerrainMesh(),
 			                                        HitResult.Location,
 			                                        ViewportClient->GetTileCube(),

@@ -23,8 +23,21 @@ void FTilemap3DTerrainGenerator::ModifyVoxel(UTilemapAsset* TilemapAsset, UProce
 	ApplyMesh(TilemapAsset, MeshComponent, Material);
 }
 
+void FTilemap3DTerrainGenerator::ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+	const FTileSet3DCube& BlockProperty, FBlock& Block, UMaterialInterface* Material,
+	FTilemap3DEditorViewportClient* ViewClient)
+{
+	Block.Type = BlockProperty.BlockType;
+	Block.BlockID = BlockProperty.ID;
+	Block.Cost = Block.Cost;
+
+	ClearMesh(TilemapAsset);
+	GenerateMesh(TilemapAsset, ViewClient);
+	ApplyMesh(TilemapAsset, MeshComponent, Material);
+}
+
 void FTilemap3DTerrainGenerator::ClearVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
-                                           UMaterialInterface* Material)
+                                            UMaterialInterface* Material)
 {
 	for (int32 x = 0; x < TilemapAsset->LevelSizeX; ++x)
 	{

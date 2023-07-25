@@ -34,6 +34,7 @@ struct PROJECTVEDITOR_API FTilemap3DEditDelegates
 	static FSimpleMulticastDelegate OnTilemapClearVoxel;
 	static FSimpleMulticastDelegate OnTilemapGeneratePathFinding;
 	static FOnTilemapEditModeChanged OnTilemapEditModeChanged;
+	static FSimpleMulticastDelegate OnTilemapFillFloor;
 };
 
 DECLARE_DELEGATE_OneParam(FOnTileSetClicked, const FName&);

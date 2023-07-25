@@ -12,6 +12,9 @@ public:
 	static void ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
 	                        const FVector& Position, const FTileSet3DCube& Block, const int32 Floor,
 	                        UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient);
+	static void ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
+							const FTileSet3DCube& BlockProperty, FBlock& Block,
+							UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient);
 	static void ClearVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
 	                       UMaterialInterface* Material);
 private:

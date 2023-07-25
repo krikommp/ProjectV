@@ -387,12 +387,17 @@ void FTilemap3DEditorViewportClient::OnTilemapEditModeChanged(const ETilemap3DEd
 
 void FTilemap3DEditorViewportClient::OnTilemapFillFloor()
 {
-	const auto* TilemapAsset = GetTilemapAsset();
+	auto* TilemapAsset = GetTilemapAsset();
 	for (int x = 0; x < TilemapAsset->LevelSizeX; ++x)
 	{
 		for (int y = 0; y < TilemapAsset->LevelSizeY; ++y)
 		{
-			
+			const int32 Index = x + y * TilemapAsset->LevelSizeX + GetCurrentFloor() * TilemapAsset->LevelSizeX * TilemapAsset->LevelSizeY;
+			if (TilemapAsset->Blocks.IsValidIndex(Index))
+			{
+				FBlock& Block = TilemapAsset->Blocks[Index];
+				FTilemap3DTerrainGenerator::ModifyVoxel(TilemapAsset, TerrainMesh, GetTileCube(), Block, GetTerrainMat(), this);
+			}
 		}
 	}
 }

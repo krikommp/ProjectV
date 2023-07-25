@@ -34,7 +34,7 @@ void FTilemap3DSelectMeshMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 			UEngineTypes::ConvertToTraceType(WallTrace),
 			false,
 			IgnoreActor,
-			EDrawDebugTrace::Persistent,
+			EDrawDebugTrace::None,
 			HitResult,
 			false);
 		if (HitResult.bBlockingHit)

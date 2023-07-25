@@ -24,6 +24,6 @@ public:
 	void ClearState();
 
 private:
-	TMap<ETilemap3DEditMode, TSharedPtr<FTilemap3DBaseMode>> EditeModeStates;
+	TMap<const ETilemap3DEditMode, TSharedPtr<FTilemap3DBaseMode>> EditeModeStates;
 	TWeakPtr<FTilemap3DBaseMode> CurrentState = nullptr;
 };

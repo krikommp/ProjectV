@@ -55,9 +55,15 @@ int32 FTilemap3DTileMeshGenerator::AddTileMesh(const FAddTileMeshParams& Params)
 }
 
 void FTilemap3DTileMeshGenerator::RemoveTileMesh(UTilemapAsset* InTilemapAsset, const FTileMeshMap& InTileMeshMap,
-	const int32 Index)
+                                                 const int32 Index)
 {
 	FBlock& Block = InTilemapAsset->Blocks[Index];
+	RemoveTileMesh(InTilemapAsset, InTileMeshMap, Block);
+}
+
+void FTilemap3DTileMeshGenerator::RemoveTileMesh(UTilemapAsset* InTilemapAsset, const FTileMeshMap& InTileMeshMap,
+                                                 FBlock& Block)
+{
 	int32 OldInstanceIndex = INDEX_NONE;
 	if (Block.MeshIndex != FName() && Block.MeshInstancedIndex != INDEX_NONE)
 	{

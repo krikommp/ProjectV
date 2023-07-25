@@ -13,4 +13,7 @@ public:
 	//~ Begin FTilemap3DBaseMode interface
 private:
 	float HitResultTraceDistance;
+	int32 InstancedIndex;
+	int32 BlockIndex;
+	TObjectPtr<UInstancedStaticMeshComponent> MeshComponent;
 };

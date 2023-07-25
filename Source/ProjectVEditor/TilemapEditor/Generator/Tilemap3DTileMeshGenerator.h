@@ -23,4 +23,5 @@ public:
 
 	static int32 AddTileMesh(const FAddTileMeshParams& Params);
 	static void RemoveTileMesh(UTilemapAsset* InTilemapAsset, const FTileMeshMap& InTileMeshMap, const int32 Index);
+	static void RemoveTileMesh(UTilemapAsset* InTilemapAsset, const FTileMeshMap& InTileMeshMap, FBlock& Block);
 };

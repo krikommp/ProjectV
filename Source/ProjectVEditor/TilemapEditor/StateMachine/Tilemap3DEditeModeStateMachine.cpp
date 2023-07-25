@@ -36,7 +36,7 @@ void FTilemap3DEditeModeStateMachine::ClearState()
 	{
 		CurrentState.Pin()->ExitMode();
 	}
-	for (auto [Mode, State] :  EditeModeStates)
+	for (const auto [Mode, State] :  EditeModeStates)
 	{
 		State->ClearMode();
 	}

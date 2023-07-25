@@ -1,9 +1,11 @@
 ﻿#include "Tilemap3DRemoveCubeMode.h"
 
 #include "ProjectVEditor.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 #include "TilemapEditor/Generator/Tilemap3DTerrainGenerator.h"
+#include "TilemapEditor/Generator/Tilemap3DTileMeshGenerator.h"
 
 FTilemap3DRemoveCubeMode::FTilemap3DRemoveCubeMode()
 	: FTilemap3DBaseMode(), HitResultTraceDistance(10000.0f)
@@ -41,6 +43,8 @@ void FTilemap3DRemoveCubeMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 													FTileSet3DCube::EmptyBlock,
 													ViewportClient->GetCurrentFloor(), ViewportClient->GetTerrainMat(),
 													ViewportClient);
+			const int32 Index = ViewportClient->GetTilemapAsset()->VectorToIndex(HitResult.Location, ViewportClient->GetCurrentFloor());
+			FTilemap3DTileMeshGenerator::RemoveTileMesh(ViewportClient->GetTilemapAsset(), ViewportClient->GetTileMeshMap(), Index);
 		}
 	}
 }

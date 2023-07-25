@@ -53,3 +53,17 @@ int32 FTilemap3DTileMeshGenerator::AddTileMesh(const FAddTileMeshParams& Params)
 	}
 	return MeshComponent->AddInstance(Params.Transform);
 }
+
+void FTilemap3DTileMeshGenerator::RemoveTileMesh(UTilemapAsset* InTilemapAsset, const FTileMeshMap& InTileMeshMap,
+	const int32 Index)
+{
+	FBlock& Block = InTilemapAsset->Blocks[Index];
+	if (Block.MeshIndex != FName() && Block.MeshInstancedIndex != INDEX_NONE)
+	{
+		UInstancedStaticMeshComponent* MeshComponent = InTileMeshMap[Block.MeshIndex];
+		MeshComponent->RemoveInstance(Block.MeshInstancedIndex);
+		Block.MeshIndex = FName();
+		Block.MeshTransform = FTransform::Identity;
+		Block.MeshInstancedIndex = INDEX_NONE;
+	}
+}

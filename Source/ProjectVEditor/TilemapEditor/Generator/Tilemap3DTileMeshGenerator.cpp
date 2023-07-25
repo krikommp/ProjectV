@@ -58,12 +58,21 @@ void FTilemap3DTileMeshGenerator::RemoveTileMesh(UTilemapAsset* InTilemapAsset, 
 	const int32 Index)
 {
 	FBlock& Block = InTilemapAsset->Blocks[Index];
+	int32 OldInstanceIndex = INDEX_NONE;
 	if (Block.MeshIndex != FName() && Block.MeshInstancedIndex != INDEX_NONE)
 	{
 		UInstancedStaticMeshComponent* MeshComponent = InTileMeshMap[Block.MeshIndex];
 		MeshComponent->RemoveInstance(Block.MeshInstancedIndex);
+		OldInstanceIndex = Block.MeshInstancedIndex;
 		Block.MeshIndex = FName();
 		Block.MeshTransform = FTransform::Identity;
 		Block.MeshInstancedIndex = INDEX_NONE;
+	}
+	for (FBlock& OtherBlock : InTilemapAsset->Blocks)
+	{
+		if (OtherBlock.MeshInstancedIndex != INDEX_NONE && OtherBlock.MeshInstancedIndex > OldInstanceIndex)
+		{
+			OtherBlock.MeshInstancedIndex -= 1;
+		}
 	}
 }

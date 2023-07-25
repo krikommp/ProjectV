@@ -67,4 +67,5 @@ protected:
 	void DisplayPathFinding();
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
 	void OnTilemapEditModeChanged(const ETilemap3DEditMode OldEditMode, const ETilemap3DEditMode NewEditMode);
+	void OnTilemapFillFloor();
 };

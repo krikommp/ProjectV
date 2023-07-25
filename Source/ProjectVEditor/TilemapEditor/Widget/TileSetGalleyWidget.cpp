@@ -19,6 +19,7 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 	OnClicked_Lambda = InArgs._OnClicked;
 	TileSet = InArgs._TileSet.Get();
 	EditMode = InArgs._EditMode;
+	OnFillFloorClicked = InArgs._OnFillFloorChlicked;
 	
 	SAssignNew(TileCubeBox, SHorizontalBox);
 	SAssignNew(TileMeshBox, SHorizontalBox);
@@ -71,6 +72,30 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
              })
 			[
 				TileCubeBox.ToSharedRef()
+			]
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SBorder)
+			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+			.Visibility_Lambda([this]()
+			 {
+				 return EditMode.Get() >= EEM_Cube && EditMode.Get() < EEM_Mesh ? EVisibility::Visible : EVisibility::Collapsed;
+			 })
+			[
+				SNew(SButton)
+				.OnClicked_Lambda([this]()
+				{
+					// ReSharper disable once CppExpressionWithoutSideEffects
+					OnFillFloorClicked.Execute();
+					return FReply::Handled();
+				})
+				[
+					SNew(STextBlock)
+					.Justification(ETextJustify::Center)
+					.Text(LOCTEXT("STileSetGalleyWidget", "Fill all this floor."))
+				]
 			]
 		]
 		+ SVerticalBox::Slot()

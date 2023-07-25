@@ -124,6 +124,11 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 				SNew(STileSetGalleyWidget)
 				.TileSet_Lambda([this]() { return TileSet; })
 				.EditMode_Lambda([this]() { return CurrentEditMode; })
+				.OnFillFloorChlicked_Lambda([this]()
+				{
+					FTilemap3DEditDelegates::OnTilemapFillFloor.Broadcast();
+					return FReply::Handled();
+				})
 				.OnClicked_Lambda([this](const FName& ID)
 				                          {
 					                          if (const auto* TileCube = TileSet->TileCubeSets.FindByPredicate(

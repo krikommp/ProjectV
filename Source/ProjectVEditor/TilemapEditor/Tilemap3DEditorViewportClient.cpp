@@ -64,13 +64,6 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	CachedTilemapSize[1] = GetTilemapAsset()->LevelSizeY;
 	CachedTilemapSize[2] = GetTilemapAsset()->Floors;
 
-	// Modes
-	// EditModes.Append({
-	// 	MakeShareable(new FTilemap3DAddCubeMode),
-	// 	MakeShareable(new FTilemap3DRemoveCubeMode),
-	// 	MakeShareable(new FTilemap3DAddMeshMode),
-	// 	MakeShareable(new FTilemap3DSelectMeshMode)
-	// });
 	EditMode = TAttribute<ETilemap3DEditMode>::CreateLambda([this](){ return DetailPtr->GetEditMode(); });
 	const auto OnTilemapEditModeChangedDelegate = FTilemap3DEditDelegates::FOnTilemapEditModeChanged::FDelegate::CreateRaw(
 	this, &FTilemap3DEditorViewportClient::OnTilemapEditModeChanged);
@@ -81,6 +74,9 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	StateMachine->RegisterEditMode<FTilemap3DAddMeshMode>(ETilemap3DEditMode::EEM_Mesh_Append);
 	StateMachine->RegisterEditMode<FTilemap3DSelectMeshMode>(ETilemap3DEditMode::EEM_Mesh_Select);
 	StateMachine->RegisterEditMode<FTilemap3DRemoveMeshMode>(ETilemap3DEditMode::EEM_Mesh_Remove);
+
+	const auto OnTilemapFillFloorDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FTilemap3DEditorViewportClient::OnTilemapFillFloor);
+	FTilemap3DEditDelegates::OnTilemapFillFloor.Add(OnTilemapFillFloorDelegate);
 	
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
@@ -113,6 +109,8 @@ FTilemap3DEditorViewportClient::~FTilemap3DEditorViewportClient()
 	FTilemap3DEditDelegates::OnTilemapModelChanged.RemoveAll(this);
 	FTilemap3DEditDelegates::OnTilemapClearVoxel.RemoveAll(this);
 	FTilemap3DEditDelegates::OnTilemapGeneratePathFinding.RemoveAll(this);
+	FTilemap3DEditDelegates::OnTilemapEditModeChanged.RemoveAll(this);
+	FTilemap3DEditDelegates::OnTilemapFillFloor.RemoveAll(this);
 }
 
 void FTilemap3DEditorViewportClient::Tick(float DeltaSeconds)
@@ -384,6 +382,17 @@ void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Locat
 void FTilemap3DEditorViewportClient::OnTilemapEditModeChanged(const ETilemap3DEditMode OldEditMode,
 	const ETilemap3DEditMode NewEditMode)
 {
-	UE_LOG(LogTemp, Error, TEXT("edit mode changed."));
 	StateMachine->ChangeState(NewEditMode);
+}
+
+void FTilemap3DEditorViewportClient::OnTilemapFillFloor()
+{
+	const auto* TilemapAsset = GetTilemapAsset();
+	for (int x = 0; x < TilemapAsset->LevelSizeX; ++x)
+	{
+		for (int y = 0; y < TilemapAsset->LevelSizeY; ++y)
+		{
+			
+		}
+	}
 }

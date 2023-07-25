@@ -11,10 +11,13 @@ FTilemap3DRemoveCubeMode::FTilemap3DRemoveCubeMode()
 	EditMode = EEM_Cube_Remove;
 }
 
+void FTilemap3DRemoveCubeMode::EnterMode()
+{
+}
+
 void FTilemap3DRemoveCubeMode::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
                                         const FInputKeyEventArgs& EventArgs)
 {
-	CHECK_EDITMODE(ViewportClient)
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
 		FViewportCursorLocation CursorLocation = ViewportClient->GetCursorWorldLocationFromMousePos();
@@ -40,4 +43,8 @@ void FTilemap3DRemoveCubeMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 													ViewportClient);
 		}
 	}
+}
+
+void FTilemap3DRemoveCubeMode::ExitMode()
+{
 }

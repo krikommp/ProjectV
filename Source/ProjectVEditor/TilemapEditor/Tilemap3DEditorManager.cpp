@@ -10,6 +10,7 @@
 #include "AssetTypeActions_Tilemap3DAsset.h"
 
 FTilemap3DEditDelegates::FOnTilemapEditStatueChanged FTilemap3DEditDelegates::OnTilemapEditStatueChanged;
+FTilemap3DEditDelegates::FOnTilemapEditModeChanged FTilemap3DEditDelegates::OnTilemapEditModeChanged;
 FSimpleMulticastDelegate FTilemap3DEditDelegates::OnTilemapModelChanged;
 FSimpleMulticastDelegate FTilemap3DEditDelegates::OnTilemapClearVoxel;
 FSimpleMulticastDelegate FTilemap3DEditDelegates::OnTilemapGeneratePathFinding;

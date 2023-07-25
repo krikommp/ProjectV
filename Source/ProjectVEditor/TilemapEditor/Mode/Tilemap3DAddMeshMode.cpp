@@ -11,10 +11,13 @@ FTilemap3DAddMeshMode::FTilemap3DAddMeshMode()
 	EditMode = EEM_Mesh_Append;
 }
 
+void FTilemap3DAddMeshMode::EnterMode()
+{
+}
+
 void FTilemap3DAddMeshMode::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
                                      const FInputKeyEventArgs& EventArgs)
 {
-	CHECK_EDITMODE(ViewportClient)
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
 		FViewportCursorLocation CursorLocation = ViewportClient->GetCursorWorldLocationFromMousePos();
@@ -62,4 +65,8 @@ void FTilemap3DAddMeshMode::InputKey(FTilemap3DEditorViewportClient* ViewportCli
 			});
 		}
 	}
+}
+
+void FTilemap3DAddMeshMode::ExitMode()
+{
 }

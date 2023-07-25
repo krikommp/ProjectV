@@ -11,10 +11,13 @@ FTilemap3DAddCubeMode::FTilemap3DAddCubeMode()
 	EditMode = EEM_Cube_Append;
 }
 
+void FTilemap3DAddCubeMode::EnterMode()
+{
+}
+
 void FTilemap3DAddCubeMode::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
                                      const FInputKeyEventArgs& EventArgs)
 {
-	CHECK_EDITMODE(ViewportClient)
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
 		FViewportCursorLocation CursorLocation = ViewportClient->GetCursorWorldLocationFromMousePos();
@@ -40,4 +43,8 @@ void FTilemap3DAddCubeMode::InputKey(FTilemap3DEditorViewportClient* ViewportCli
 			                                        ViewportClient);
 		}
 	}
+}
+
+void FTilemap3DAddCubeMode::ExitMode()
+{
 }

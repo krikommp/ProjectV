@@ -1,12 +1,11 @@
 ﻿#pragma once
 #include "Tilemap3DBaseMode.h"
 
-
-class FTilemap3DAddCubeMode final : public FTilemap3DBaseMode
+class FTilemap3DRemoveMeshMode final : public FTilemap3DBaseMode
 {
 public:
-	FTilemap3DAddCubeMode();
-	
+	FTilemap3DRemoveMeshMode();
+
 	//~ Begin FTilemap3DBaseMode interface
 	virtual void EnterMode() override;
 	virtual void InputKey(FTilemap3DEditorViewportClient* ViewportClient, const FInputKeyEventArgs& EventArgs) override;

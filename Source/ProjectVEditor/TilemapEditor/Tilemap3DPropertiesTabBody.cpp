@@ -78,8 +78,8 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 				SNew(STilemap3DEditModeWidget)
 				.OnEditModeChanged_Lambda([this](const ETilemap3DEditMode InEditMode)
 				{
+					FTilemap3DEditDelegates::OnTilemapEditModeChanged.Broadcast(CurrentEditMode, InEditMode);
 					CurrentEditMode = InEditMode;
-					UE_LOG(LogTemp, Error, TEXT("Edit Mode = %d"), (int32)CurrentEditMode);
 					//todo..
 				})
 			]

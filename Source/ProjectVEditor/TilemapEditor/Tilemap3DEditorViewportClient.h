@@ -2,6 +2,7 @@
 #include "Tilemap/TilemapAsset.h"
 #include "Tilemap3DPropertiesTabBody.h"
 
+class FTilemap3DEditeModeStateMachine;
 class FTilemap3DBaseMode;
 class UTileSet3DAsset;
 class UBoxComponent;
@@ -36,12 +37,13 @@ public:
 	UTilemapAsset* GetTilemapAsset() const { return DetailPtr->GetTilemapAsset(); }
 	int32 GetCurrentFloor() const { return DetailPtr->GetCurrentFloor(); }
 	FTileMeshMap& GetTileMeshMap() { return MeshSet; }
-	ETilemap3DEditMode GetEditMode() const { return DetailPtr->GetEditMode(); }
 	const FTileSet3DMesh& GetTileMesh() const { return DetailPtr->GetTileMesh(); }
 	const FTileSet3DCube& GetTileCube() const { return DetailPtr->GetTileCube(); }
 	UTileSet3DAsset* GetTileSet() const { return DetailPtr->GetTileSet(); }
 	UProceduralMeshComponent* GetTerrainMesh() const { return TerrainMesh; }
 	UMaterialInterface* GetTerrainMat() const { return TerrainMat; }
+
+	TAttribute<ETilemap3DEditMode> EditMode;
 protected:
 
 	TObjectPtr<ULineBatchComponent> LineBatcher;
@@ -54,16 +56,15 @@ protected:
 	TArray<TObjectPtr<UTextRenderComponent>> PathFindingIndexTextArray;
 	TArray<TObjectPtr<UTextRenderComponent>> PathFindingEdgeCostTextArray;
 	FTileMeshMap MeshSet;
-
 	TArray<TSharedPtr<FTilemap3DBaseMode>> EditModes;
-
 	TArray<int32> CachedTilemapSize;
-
 	float HitResultTraceDistance;
+	TUniquePtr<FTilemap3DEditeModeStateMachine> StateMachine;
 
 	void OnTilemapEditStatueChanged(bool Statue);
 	void OnTilemapClearVoxel();
 	void OnTilemapGeneratePathFinding();
 	void DisplayPathFinding();
 	void GetEditRangeScaleAndLocation(FVector& Location, float& ScaleX, float& ScaleY) const;
+	void OnTilemapEditModeChanged(const ETilemap3DEditMode OldEditMode, const ETilemap3DEditMode NewEditMode);
 };

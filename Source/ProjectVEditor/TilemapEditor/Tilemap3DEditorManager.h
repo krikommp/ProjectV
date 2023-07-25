@@ -7,18 +7,6 @@
 #include "Tilemap3DEditorManager.generated.h"
 
 class FAssetTypeActions_Tilemap3DAsset;
-
-struct PROJECTVEDITOR_API FTilemap3DEditDelegates
-{
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnTilemapEditStatueChanged, bool);
-	static FOnTilemapEditStatueChanged OnTilemapEditStatueChanged;
-	static FSimpleMulticastDelegate OnTilemapModelChanged;
-	static FSimpleMulticastDelegate OnTilemapClearVoxel;
-	static FSimpleMulticastDelegate OnTilemapGeneratePathFinding;
-};
-
-DECLARE_DELEGATE_OneParam(FOnTileSetClicked, const FName&);
-
 enum ETilemap3DEditMode : uint8
 {
 	EEM_View = 0,
@@ -36,6 +24,19 @@ enum ETilemap3DEditMode : uint8
 };
 
 using FTileMeshMap = TMap<FName, TObjectPtr<UInstancedStaticMeshComponent>>;
+
+struct PROJECTVEDITOR_API FTilemap3DEditDelegates
+{
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnTilemapEditStatueChanged, bool);
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTilemapEditModeChanged, const ETilemap3DEditMode /*= OldEditMode*/, const ETilemap3DEditMode /*= NewEditMode*/);
+	static FOnTilemapEditStatueChanged OnTilemapEditStatueChanged;
+	static FSimpleMulticastDelegate OnTilemapModelChanged;
+	static FSimpleMulticastDelegate OnTilemapClearVoxel;
+	static FSimpleMulticastDelegate OnTilemapGeneratePathFinding;
+	static FOnTilemapEditModeChanged OnTilemapEditModeChanged;
+};
+
+DECLARE_DELEGATE_OneParam(FOnTileSetClicked, const FName&);
 
 /**
  * UTilemapEditorManager

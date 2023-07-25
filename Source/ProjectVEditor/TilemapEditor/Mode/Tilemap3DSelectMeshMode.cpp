@@ -11,8 +11,12 @@ FTilemap3DSelectMeshMode::FTilemap3DSelectMeshMode()
 	EditMode = EEM_Mesh_Select;
 }
 
+void FTilemap3DSelectMeshMode::EnterMode()
+{
+}
+
 void FTilemap3DSelectMeshMode::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
-	const FInputKeyEventArgs& EventArgs)
+                                        const FInputKeyEventArgs& EventArgs)
 {
 	CHECK_EDITMODE(ViewportClient)
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
@@ -55,4 +59,8 @@ void FTilemap3DSelectMeshMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 			}
 		}
 	}
+}
+
+void FTilemap3DSelectMeshMode::ExitMode()
+{
 }

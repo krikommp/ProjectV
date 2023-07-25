@@ -16,7 +16,9 @@
 #include "Mode/Tilemap3DAddCubeMode.h"
 #include "Mode/Tilemap3DAddMeshMode.h"
 #include "Mode/Tilemap3DRemoveCubeMode.h"
+#include "Mode/Tilemap3DRemoveMeshMode.h"
 #include "Mode/Tilemap3DSelectMeshMode.h"
+#include "StateMachine/Tilemap3DEditeModeStateMachine.h"
 #include "Tilemap/TileSet3DAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
 
@@ -63,14 +65,23 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	CachedTilemapSize[2] = GetTilemapAsset()->Floors;
 
 	// Modes
-	EditModes.Append({
-		MakeShareable(new FTilemap3DAddCubeMode),
-		MakeShareable(new FTilemap3DRemoveCubeMode),
-		MakeShareable(new FTilemap3DAddMeshMode),
-		MakeShareable(new FTilemap3DSelectMeshMode)
-	});
+	// EditModes.Append({
+	// 	MakeShareable(new FTilemap3DAddCubeMode),
+	// 	MakeShareable(new FTilemap3DRemoveCubeMode),
+	// 	MakeShareable(new FTilemap3DAddMeshMode),
+	// 	MakeShareable(new FTilemap3DSelectMeshMode)
+	// });
+	EditMode = TAttribute<ETilemap3DEditMode>::CreateLambda([this](){ return DetailPtr->GetEditMode(); });
+	const auto OnTilemapEditModeChangedDelegate = FTilemap3DEditDelegates::FOnTilemapEditModeChanged::FDelegate::CreateRaw(
+	this, &FTilemap3DEditorViewportClient::OnTilemapEditModeChanged);
+	FTilemap3DEditDelegates::OnTilemapEditModeChanged.Add(OnTilemapEditModeChangedDelegate);
+	StateMachine = MakeUnique<FTilemap3DEditeModeStateMachine>();
+	StateMachine->RegisterEditMode<FTilemap3DAddCubeMode>(ETilemap3DEditMode::EEM_Cube_Append);
+	StateMachine->RegisterEditMode<FTilemap3DRemoveCubeMode>(ETilemap3DEditMode::EEM_Cube_Remove);
+	StateMachine->RegisterEditMode<FTilemap3DAddMeshMode>(ETilemap3DEditMode::EEM_Mesh_Append);
+	StateMachine->RegisterEditMode<FTilemap3DSelectMeshMode>(ETilemap3DEditMode::EEM_Mesh_Select);
+	StateMachine->RegisterEditMode<FTilemap3DRemoveMeshMode>(ETilemap3DEditMode::EEM_Mesh_Remove);
 	
-
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
 
@@ -118,10 +129,11 @@ void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& C
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	for (const auto& Mode : EditModes)
-	{
-		Mode->InputKey(this, EventArgs);
-	}
+	// for (const auto& Mode : EditModes)
+	// {
+	// 	Mode->InputKey(this, EventArgs);
+	// }
+	StateMachine->InputKey(this, EventArgs);
 	return FEditorViewportClient::InputKey(EventArgs);
 }
 
@@ -367,4 +379,11 @@ void FTilemap3DEditorViewportClient::GetEditRangeScaleAndLocation(FVector& Locat
 		GridSize / 2.0f;
 
 	Location = FVector(X, Y, 0.f);
+}
+
+void FTilemap3DEditorViewportClient::OnTilemapEditModeChanged(const ETilemap3DEditMode OldEditMode,
+	const ETilemap3DEditMode NewEditMode)
+{
+	UE_LOG(LogTemp, Error, TEXT("edit mode changed."));
+	StateMachine->ChangeState(NewEditMode);
 }

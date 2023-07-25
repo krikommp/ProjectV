@@ -10,14 +10,17 @@ public:
 	FTilemap3DBaseMode();
 	bool CheckEditMode(const ETilemap3DEditMode InEditMode) const { return EditMode == InEditMode; }
 
+	virtual void EnterMode() PURE_VIRTUAL(,)
 	virtual void InputKey(FTilemap3DEditorViewportClient* ViewportClient, const FInputKeyEventArgs& EventArgs) PURE_VIRTUAL(,)
-
+	virtual void ExitMode()	PURE_VIRTUAL(,)
+	virtual void ClearMode() {}
+	
 protected:
 	ETilemap3DEditMode EditMode = UNKNOWN;
 };
 
 #define CHECK_EDITMODE(InViewPortClient) \
-	if (!CheckEditMode((InViewPortClient)->GetEditMode())) \
+	if (!CheckEditMode((InViewPortClient)->EditMode.Get())) \
 	{ \
 		return; \
 	}

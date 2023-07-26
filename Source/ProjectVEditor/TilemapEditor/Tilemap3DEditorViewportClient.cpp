@@ -18,6 +18,7 @@
 #include "Mode/Tilemap3DRemoveCubeMode.h"
 #include "Mode/Tilemap3DRemoveMeshMode.h"
 #include "Mode/Tilemap3DSelectMeshMode.h"
+#include "Mode/Tilemap3DSpawnChessMode.h"
 #include "StateMachine/Tilemap3DEditeModeStateMachine.h"
 #include "Tilemap/TileSet3DAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
@@ -74,6 +75,7 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	StateMachine->RegisterEditMode<FTilemap3DAddMeshMode>(ETilemap3DEditMode::EEM_Mesh_Append);
 	StateMachine->RegisterEditMode<FTilemap3DSelectMeshMode>(ETilemap3DEditMode::EEM_Mesh_Select);
 	StateMachine->RegisterEditMode<FTilemap3DRemoveMeshMode>(ETilemap3DEditMode::EEM_Mesh_Remove);
+	StateMachine->RegisterEditMode<FTilemap3DSpawnChessMode>(ETilemap3DEditMode::EEM_Chess_Spawn);
 
 	const auto OnTilemapFillFloorDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FTilemap3DEditorViewportClient::OnTilemapFillFloor);
 	FTilemap3DEditDelegates::OnTilemapFillFloor.Add(OnTilemapFillFloorDelegate);

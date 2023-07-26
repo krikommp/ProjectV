@@ -7,6 +7,7 @@
 #include "IImageWrapperModule.h"
 #include "ImageUtils.h"
 #include "ObjectTools.h"
+#include "SingleTileChessWidget.h"
 #include "SingleTileWidget.h"
 #include "SlateOptMacros.h"
 #include "SingleTileMeshWidget.h"
@@ -20,9 +21,10 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 	TileSet = InArgs._TileSet.Get();
 	EditMode = InArgs._EditMode;
 	OnFillFloorClicked = InArgs._OnFillFloorChlicked;
-	
+
 	SAssignNew(TileCubeBox, SHorizontalBox);
 	SAssignNew(TileMeshBox, SHorizontalBox);
+	SAssignNew(TileChessBox, SHorizontalBox);
 
 	// get the first texture in texture array
 	for (const FTileSet3DCube& Tile : TileSet->TileCubeSets)
@@ -58,6 +60,17 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 		];
 	}
 
+	// chess thumbnail
+	for (auto [ID, HeroData] : TileSet->ChessMap)
+	{
+		TileChessBox->AddSlot()
+		           .AutoWidth()
+		           .Padding(10.0f)
+		[
+			SNew(SSingleTileChessWidget, HeroData)
+		];
+	}
+
 	ChildSlot
 	[
 		SNew(SVerticalBox)
@@ -67,9 +80,11 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 			SNew(SBorder)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			.Visibility_Lambda([this]()
-             {
-	             return EditMode.Get() >= EEM_Cube && EditMode.Get() < EEM_Mesh ? EVisibility::Visible : EVisibility::Collapsed;
-             })
+			             {
+				             return EditMode.Get() >= EEM_Cube && EditMode.Get() < EEM_Mesh
+					                    ? EVisibility::Visible
+					                    : EVisibility::Collapsed;
+			             })
 			[
 				TileCubeBox.ToSharedRef()
 			]
@@ -80,9 +95,11 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 			SNew(SBorder)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			.Visibility_Lambda([this]()
-			 {
-				 return EditMode.Get() >= EEM_Cube && EditMode.Get() < EEM_Mesh ? EVisibility::Visible : EVisibility::Collapsed;
-			 })
+			             {
+				             return EditMode.Get() >= EEM_Cube && EditMode.Get() < EEM_Cube_End
+					                    ? EVisibility::Visible
+					                    : EVisibility::Collapsed;
+			             })
 			[
 				SNew(SButton)
 				.OnClicked_Lambda([this]()
@@ -104,11 +121,28 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 			SNew(SBorder)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			.Visibility_Lambda([this]()
-			 {
-				 return EditMode.Get() >= EEM_Mesh ? EVisibility::Visible : EVisibility::Collapsed;
-			 })
+			             {
+				             return EditMode.Get() >= EEM_Mesh && EditMode.Get() < EEM_Mesh_End
+					                    ? EVisibility::Visible
+					                    : EVisibility::Collapsed;
+			             })
 			[
 				TileMeshBox.ToSharedRef()
+			]
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SBorder)
+			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+			.Visibility_Lambda([this]()
+			             {
+				             return EditMode.Get() >= EEM_Chess && EditMode.Get() < EEM_Chess_End
+					                    ? EVisibility::Visible
+					                    : EVisibility::Collapsed;
+			             })
+			[
+				TileChessBox.ToSharedRef()
 			]
 		]
 	];

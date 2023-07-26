@@ -29,7 +29,7 @@ UGridSettingsShared* UGridLocalPlayer::GetSharedSettings() const
 	return SharedSettings;
 }
 
-UGridHeroInfo* UGridLocalPlayer::GetHeroInfo(int32 HeroId) const
+UGridHeroInfo* UGridLocalPlayer::GetHeroInfo(const FName& HeroId) const
 {
 	auto HeroInfo = HeroInfoMap.FindRef(HeroId);
 	if (!HeroInfo)

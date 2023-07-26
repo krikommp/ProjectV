@@ -62,6 +62,12 @@ struct PROJECTVGAME_API FBlock
 
 	UPROPERTY(Transient)
 	int32 MeshInstancedIndex = INDEX_NONE;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FName ChessID;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FTransform ChessTransform = FTransform::Identity;
 };
 
 USTRUCT(BlueprintType)

@@ -47,7 +47,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UGridHeroInfo* InitializePieceInfo(const UGridLocalPlayer* InLocalPlayer, int32 HeroId);
+	UGridHeroInfo* InitializePieceInfo(const UGridLocalPlayer* InLocalPlayer, const FName& HeroId);
 protected:
 	// 当棋子数据完成获取之后返回真
 	bool bReadyToLoadPieceInfo;

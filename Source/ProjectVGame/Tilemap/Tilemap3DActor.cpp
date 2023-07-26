@@ -38,7 +38,7 @@ void ATilemap3DActor::OnConstruction(const FTransform& Transform)
 			true
 		);
 		InstanceMeshCompMap.Empty();
-		for (const FBlock& Block : TilemapAsset->Blocks)
+		for (FBlock& Block : TilemapAsset->Blocks)
 		{
 			if (Block.MeshIndex == FName())
 				continue;
@@ -64,7 +64,7 @@ void ATilemap3DActor::OnConstruction(const FTransform& Transform)
 			{
 				MeshComponent = InstanceMeshCompMap[Block.MeshIndex];
 			}
-			MeshComponent->AddInstance(Block.MeshTransform);
+			Block.MeshInstancedIndex = MeshComponent->AddInstance(Block.MeshTransform);
 		}
 	}
 }

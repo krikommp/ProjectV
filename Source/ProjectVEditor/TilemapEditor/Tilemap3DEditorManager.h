@@ -14,11 +14,18 @@ enum ETilemap3DEditMode : uint8
 	EEM_Cube,
 	EEM_Cube_Append,
 	EEM_Cube_Remove,
+	EEM_Cube_End,
 
 	EEM_Mesh,
 	EEM_Mesh_Select,
 	EEM_Mesh_Append,
 	EEM_Mesh_Remove,
+	EEM_Mesh_End,
+
+	EEM_Chess,
+	EEM_Chess_Spawn,
+	EEM_Chess_Remove,
+	EEM_Chess_End,
 	
 	UNKNOWN
 };

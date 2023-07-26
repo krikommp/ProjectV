@@ -32,14 +32,14 @@ public:
 	void Initialize(UGridLocalPlayer* InLocalPlayer, bool bDefault);
 
 	FString GetSaveSlotName() const;
-	bool IsValid() const { return HeroID != INDEX_NONE; }
+	bool IsValid() const { return HeroID != FName(); }
 
 	UGridCardPackageInfo* GetCurrentCardPackage() { return HoldingCardPackages.FindChecked(UsingCardPackageID); }
 
 public:
 	// 英雄ID
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Grid|Hero")
-	int32 HeroID;
+	FName HeroID = FName();
 
 	// 英雄等级
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Grid|Hero")

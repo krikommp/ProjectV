@@ -13,7 +13,7 @@
 
 UGridHeroInfo::UGridHeroInfo()
 {
-	HeroID = INDEX_NONE;
+	HeroID = FName();
 	HeroLevel = INDEX_NONE;
 	HoldingCardPackageIDs.Empty();
 }
@@ -27,7 +27,7 @@ void UGridHeroInfo::SaveHeroInfoFlush()
 UGridHeroInfo* UGridHeroInfo::LoadOrCreateHeroInfo(const FGridHeroData& HeroData, const UGridLocalPlayer* LocalPlayer)
 {
 	UGridHeroInfo* HeroInfo = nullptr;
-	const FString SlotName = FString::Format(TEXT("GridHeroInfo_{0}"), TArray<FStringFormatArg>({ HeroData.HeroID }));
+	const FString SlotName = FString::Format(TEXT("GridHeroInfo_{0}"), TArray<FStringFormatArg>({ HeroData.HeroID.ToString() }));
 
 	bool bDefault = true;
 	if (UGameplayStatics::DoesSaveGameExist(SlotName,LocalPlayer->GetLocalPlayerIndex()))
@@ -115,5 +115,5 @@ void UGridHeroInfo::Initialize(UGridLocalPlayer* InLocalPlayer, bool bDefault)
 
 FString UGridHeroInfo::GetSaveSlotName() const
 {
-	return FString::Format(TEXT("GridHeroInfo_{0}"), TArray<FStringFormatArg>({ HeroID }));
+	return FString::Format(TEXT("GridHeroInfo_{0}"), TArray<FStringFormatArg>({ HeroID.ToString() }));
 }

@@ -40,7 +40,7 @@ public:
 	UGridSettingsShared* GetSharedSettings() const;
 
 	UFUNCTION()
-	UGridHeroInfo* GetHeroInfo(int32 HeroId) const;
+	UGridHeroInfo* GetHeroInfo(const FName& HeroId) const;
 private:
 	
 	// SharedSettings, 使用 mutable 修饰，表示其可以在 const 函数中被修改
@@ -48,5 +48,5 @@ private:
 	mutable TObjectPtr<UGridSettingsShared> SharedSettings;
 
 	UPROPERTY(Transient)
-	mutable TMap<int32, TObjectPtr<UGridHeroInfo>> HeroInfoMap;
+	mutable TMap<FName, TObjectPtr<UGridHeroInfo>> HeroInfoMap;
 };

@@ -34,7 +34,7 @@ public:
 
 	// 所属 Piece ID
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Grid|ChessPiece")
-	int32 PieceID;
+	FName PieceID;
 
 	// 本地玩家索引，临时
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Grid|ChessPiece")

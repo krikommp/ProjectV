@@ -4,6 +4,7 @@
 #include "Tilemap3DPropertiesTabBody.h"
 #include "Tilemap/TilemapAsset.h"
 #include "Tilemap3DEditorViewport.h"
+#include "Heros/GridHeroData.h"
 
 #define LOCTEXT_NAMESPACE "FTilemap3DEditorToolkit"
 
@@ -77,11 +78,28 @@ void FTilemap3DEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TS
                                        UTilemapAsset* Asset)
 {
 	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->CloseOtherEditors(Asset, this);
-	TilemapBeingEdited = Asset;
 
 	const UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
 	TSharedRef<FTilemap3DEditorToolkit> EditorToolkit = SharedThis(this);
-	DetailPtr = SNew(STilemap3DPropertiesTabBody, EditorToolkit, TilemapBeingEdited->TileSet == nullptr ? Settings->DefaultTileSet.LoadSynchronous() : TilemapBeingEdited->TileSet);
+	
+	TilemapBeingEdited = Asset;
+	UTileSet3DAsset* TileSet3DAsset = TilemapBeingEdited->TileSet == nullptr ? Settings->DefaultTileSet.LoadSynchronous() : TilemapBeingEdited->TileSet;
+	{
+		// 初始化 Chess 数据
+		UDataTable* DataTable = TileSet3DAsset->ChessData.LoadSynchronous();
+		if (DataTable != nullptr)
+		{
+			static const FString Context = FString("FTilemap3DEditorToolkit::LoadHeroData");
+			TArray<FGridHeroData*> HeroDatas;
+			DataTable->GetAllRows<FGridHeroData>(Context, HeroDatas);
+			for (const auto& HeroData : HeroDatas)
+			{
+				TileSet3DAsset->ChessMap.Add(HeroData->HeroID, *HeroData);
+			}
+		}
+	}
+
+	DetailPtr = SNew(STilemap3DPropertiesTabBody, EditorToolkit, TileSet3DAsset);
 
 	ViewportPtr = SNew(STilemap3DEditorViewport)
 		.TilemapDetailPtr(this, &FTilemap3DEditorToolkit::GetDetailPtr);

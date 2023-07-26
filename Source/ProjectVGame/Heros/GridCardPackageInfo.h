@@ -48,7 +48,7 @@ public:
 
 	// 卡包拥有者ID
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Grid|CardPackage")
-	int32 OwnerID;
+	FName OwnerID;
 
 	// 卡包ID
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Grid|CardPackage")

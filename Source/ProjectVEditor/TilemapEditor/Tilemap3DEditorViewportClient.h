@@ -2,6 +2,7 @@
 #include "Tilemap/TilemapAsset.h"
 #include "Tilemap3DPropertiesTabBody.h"
 
+class ATilemap3DPreviewChess;
 class FTilemap3DEditeModeStateMachine;
 class FTilemap3DBaseMode;
 class UTileSet3DAsset;
@@ -39,6 +40,7 @@ public:
 	FTileMeshMap& GetTileMeshMap() { return MeshSet; }
 	const FTileSet3DMesh& GetTileMesh() const { return DetailPtr->GetTileMesh(); }
 	const FTileSet3DCube& GetTileCube() const { return DetailPtr->GetTileCube(); }
+	const FGridHeroData& GetTileChess() const { return DetailPtr->GetTileChess(); }
 	UTileSet3DAsset* GetTileSet() const { return DetailPtr->GetTileSet(); }
 	UProceduralMeshComponent* GetTerrainMesh() const { return TerrainMesh; }
 	UMaterialInterface* GetTerrainMat() const { return TerrainMat; }

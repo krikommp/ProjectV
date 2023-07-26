@@ -14,5 +14,5 @@ public:
 	
 private:
 	float HitResultTraceDistance;
-	FName ChessID;
+	int32 BlockIndex;
 };

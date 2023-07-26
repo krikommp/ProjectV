@@ -13,4 +13,12 @@ class PROJECTVEDITOR_API ATilemap3DPreviewChess : public AActor
 
 public:
 	ATilemap3DPreviewChess();
+	void SetupSkeletalMeshAsset(USkeletalMesh* SkeletalMesh) const;
+	void SetCollisionResponseToChannel(ECollisionChannel Channel, ECollisionResponse NewResponse) const;
+private:
+	UPROPERTY(Transient)
+	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+
+	UPROPERTY(Transient)
+	TObjectPtr<class UCapsuleComponent> CapsuleComponent;
 };

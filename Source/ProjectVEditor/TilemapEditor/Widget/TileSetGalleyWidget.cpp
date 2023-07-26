@@ -64,10 +64,15 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 	for (auto [ID, HeroData] : TileSet->ChessMap)
 	{
 		TileChessBox->AddSlot()
-		           .AutoWidth()
-		           .Padding(10.0f)
+		            .AutoWidth()
+		            .Padding(10.0f)
 		[
 			SNew(SSingleTileChessWidget, HeroData)
+			.OnTileSetClicked_Lambda([this](const FName& ID)
+			{
+				// ReSharper disable once CppExpressionWithoutSideEffects
+				OnClicked_Lambda.ExecuteIfBound(ID);
+			})
 		];
 	}
 
@@ -137,7 +142,7 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			.Visibility_Lambda([this]()
 			             {
-				             return EditMode.Get() >= EEM_Chess && EditMode.Get() < EEM_Chess_End
+				             return EditMode.Get() == EEM_Chess_Spawn
 					                    ? EVisibility::Visible
 					                    : EVisibility::Collapsed;
 			             })

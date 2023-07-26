@@ -125,10 +125,10 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 				.TileSet_Lambda([this]() { return TileSet; })
 				.EditMode_Lambda([this]() { return CurrentEditMode; })
 				.OnFillFloorChlicked_Lambda([this]()
-				{
-					FTilemap3DEditDelegates::OnTilemapFillFloor.Broadcast();
-					return FReply::Handled();
-				})
+				                          {
+					                          FTilemap3DEditDelegates::OnTilemapFillFloor.Broadcast();
+					                          return FReply::Handled();
+				                          })
 				.OnClicked_Lambda([this](const FName& ID)
 				                          {
 					                          if (const auto* TileCube = TileSet->TileCubeSets.FindByPredicate(
@@ -146,6 +146,10 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 						                          }))
 					                          {
 						                          CurrentTileMesh = *TileMesh;
+					                          }
+					                          else if (TileSet->ChessMap.Contains(ID))
+					                          {
+						                          CurrentTileChess = TileSet->ChessMap[ID];
 					                          }
 				                          })
 			]

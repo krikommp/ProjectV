@@ -68,6 +68,9 @@ struct PROJECTVGAME_API FBlock
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FTransform ChessTransform = FTransform::Identity;
+
+	UPROPERTY(Transient)
+	TObjectPtr<AActor> ChessInEditor;
 };
 
 USTRUCT(BlueprintType)

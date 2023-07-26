@@ -21,6 +21,7 @@ private:
 	TWeakObjectPtr<UTileSet3DAsset> TileSet;
 	FTileSet3DCube CurrentTileCube;
 	FTileSet3DMesh CurrentTileMesh;
+	FGridHeroData CurrentTileChess;
 	ETilemap3DEditMode CurrentEditMode = EEM_View;
 
 	//~ Begin Slate UI Components
@@ -42,6 +43,7 @@ public:
 	int32 GetCurrentFloor() const { return CurrentFloor; }
 	const FTileSet3DCube& GetTileCube() const { return CurrentTileCube; }
 	const FTileSet3DMesh& GetTileMesh() const { return CurrentTileMesh; }
+	const FGridHeroData& GetTileChess() const { return CurrentTileChess; }
 	UTileSet3DAsset* GetTileSet() const;
 	int32 GetTextureIndex(UTexture2D* InTexture) const;
 	ETilemap3DEditMode GetEditMode() const { return CurrentEditMode; }

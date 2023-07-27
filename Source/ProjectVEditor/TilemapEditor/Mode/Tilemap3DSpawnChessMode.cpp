@@ -43,6 +43,9 @@ void FTilemap3DSpawnChessMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 			if (ViewportClient->GetTilemapAsset()->Blocks[Index].MeshIndex != FName())
 				return;
 
+			if (ViewportClient->GetTilemapAsset()->Blocks[Index].ChessID != FName())
+				return;
+
 			FTransform Transform = FTransform::Identity;
 			FVector Location = ViewportClient->GetTilemapAsset()->IndexToVector(Index);
 			Location.Z = Index / (ViewportClient->GetTilemapAsset()->LevelSizeX * ViewportClient->GetTilemapAsset()->
@@ -71,6 +74,7 @@ void FTilemap3DSpawnChessMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 			FQuat Rotation = FQuat(FVector::UpVector, FMath::DegreesToRadians(90.0f));
 			Transform.SetRotation(Rotation * Transform.GetRotation());
 			Block.ChessInEditor->SetActorTransform(Transform);
+			Block.ChessTransform = Transform;
 		}
 	}
 }

@@ -45,6 +45,7 @@ TSharedRef<FEditorViewportClient> STilemap3DEditorViewport::MakeEditorViewportCl
 	{
 		TilemapAssetPreviewClient = MakeShareable(
 			new FTilemap3DEditorViewportClient(DetailPtr, *PreviewScene));
+		TilemapAssetPreviewClient->OnConstruction();
 	}
 
 	return TilemapAssetPreviewClient.ToSharedRef();

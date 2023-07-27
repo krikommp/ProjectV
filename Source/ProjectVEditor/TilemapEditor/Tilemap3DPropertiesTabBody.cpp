@@ -5,6 +5,7 @@
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DEditorSettings.h"
 #include "Engine/Texture2DArray.h"
+#include "Widget/Tilemap3DChessDataDetails.h"
 #include "Widget/Tilemap3DEditModeWidget.h"
 #include "Widget/Tilemap3DEditStatusWidget.h"
 #include "Widget/Tilemap3DFloorStatusWidget.h"

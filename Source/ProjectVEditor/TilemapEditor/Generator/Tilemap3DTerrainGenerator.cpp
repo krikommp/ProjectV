@@ -29,7 +29,6 @@ void FTilemap3DTerrainGenerator::ModifyVoxel(UTilemapAsset* TilemapAsset, UProce
 {
 	Block.Type = BlockProperty.BlockType;
 	Block.BlockID = BlockProperty.ID;
-	Block.Cost = Block.Cost;
 
 	ClearMesh(TilemapAsset);
 	GenerateMesh(TilemapAsset, ViewClient);
@@ -46,10 +45,8 @@ void FTilemap3DTerrainGenerator::ClearVoxel(UTilemapAsset* TilemapAsset, UProced
 			for (int32 z = 0; z < TilemapAsset->Floors; ++z)
 			{
 				const int32 Index = TilemapAsset->GetBlockIndex(x, y, z);
-				TilemapAsset->Blocks[Index].bMarked = false;
 				TilemapAsset->Blocks[Index].Type = EBlock::Air;
 				TilemapAsset->Blocks[Index].BlockID = FName();
-				TilemapAsset->Blocks[Index].Cost = MAX_int32;
 			}
 		}
 	}
@@ -64,7 +61,6 @@ void FTilemap3DTerrainGenerator::ModifyVoxelData(UTilemapAsset* TilemapAsset, co
 
 	TilemapAsset->Blocks[Index].Type = Block.BlockType;
 	TilemapAsset->Blocks[Index].BlockID = Block.ID;
-	TilemapAsset->Blocks[Index].Cost = Block.Cost;
 }
 
 int32 FTilemap3DTerrainGenerator::GetTextureIndex(const FBlock& Block, const FVector& Normal,
@@ -105,7 +101,6 @@ void FTilemap3DTerrainGenerator::GenerateMesh(UTilemapAsset* TilemapAsset, FTile
 							           ViewClient);
 						}
 					}
-					TilemapAsset->Blocks[Index].bMarked = true;
 				}
 			}
 		}

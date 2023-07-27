@@ -7,6 +7,7 @@
 
 #include "TilemapAsset.generated.h"
 
+class UGridChessPieceData;
 /**
  * EBlock
  *
@@ -49,12 +50,6 @@ struct PROJECTVGAME_API FBlock
 	EBlock Type = EBlock::Air;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	bool bMarked = false;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	int32 Cost = 1;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FName MeshIndex = FName();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -63,14 +58,11 @@ struct PROJECTVGAME_API FBlock
 	UPROPERTY(Transient)
 	int32 MeshInstancedIndex = INDEX_NONE;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FName ChessID;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FTransform ChessTransform = FTransform::Identity;
-
 	UPROPERTY(Transient)
 	TObjectPtr<AActor> ChessInEditor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UGridChessPieceData> ChessData;
 };
 
 USTRUCT(BlueprintType)

@@ -1,6 +1,7 @@
 ﻿#include "Tilemap3DSpawnChessMode.h"
 
 #include "GridTraceChannel.h"
+#include "ChessPieces/GridChessPieceData.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 #include "TilemapEditor/Preview/Tilemap3DPreviewChess.h"
@@ -43,7 +44,7 @@ void FTilemap3DSpawnChessMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 			if (ViewportClient->GetTilemapAsset()->Blocks[Index].MeshIndex != FName())
 				return;
 
-			if (ViewportClient->GetTilemapAsset()->Blocks[Index].ChessID != FName())
+			if (ViewportClient->GetTilemapAsset()->Blocks[Index].ChessData != nullptr)
 				return;
 
 			FTransform Transform = FTransform::Identity;
@@ -58,8 +59,9 @@ void FTilemap3DSpawnChessMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 			ChessPiece->SetupSkeletalMeshAsset(ViewportClient->GetTileChess().SkeletalMesh);
 			ChessPiece->SetActorTransform(Transform);
 
-			Block.ChessID = ViewportClient->GetTileChess().HeroID;
-			Block.ChessTransform = Transform;
+			Block.ChessData = ViewportClient->GetTileSet()->DefaultChessData.LoadSynchronous();
+			Block.ChessData->PieceID = ViewportClient->GetTileChess().HeroID;
+			Block.ChessData->ChessTransform = Transform;
 			Block.ChessInEditor = ChessPiece;
 			BlockIndex = Index;
 		}
@@ -67,14 +69,14 @@ void FTilemap3DSpawnChessMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 	if (EventArgs.Key == EKeys::R && EventArgs.Event == IE_Pressed && BlockIndex != INDEX_NONE)
 	{
 		FBlock& Block = ViewportClient->GetTilemapAsset()->Blocks[BlockIndex];
-		if (Block.ChessInEditor != nullptr)
+		if (Block.ChessInEditor != nullptr && Block.ChessData != nullptr)
 		{
 			FTransform Transform;
 			Transform = Block.ChessInEditor->GetActorTransform();
 			FQuat Rotation = FQuat(FVector::UpVector, FMath::DegreesToRadians(90.0f));
 			Transform.SetRotation(Rotation * Transform.GetRotation());
 			Block.ChessInEditor->SetActorTransform(Transform);
-			Block.ChessTransform = Transform;
+			Block.ChessData->ChessTransform = Transform;
 		}
 	}
 }

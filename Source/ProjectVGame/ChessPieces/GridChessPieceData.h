@@ -33,8 +33,8 @@ public:
 	TArray<TObjectPtr<UGridAbilitySet>> AbilitySets;
 
 	// 所属 Piece ID
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Grid|ChessPiece")
-	FName PieceID;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Grid|ChessPiece")
+	FName PieceID = FName();
 
 	// 本地玩家索引，临时
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Grid|ChessPiece")
@@ -43,4 +43,8 @@ public:
 	// AI状态机资源
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Grid|AIStateMachine")
 	TSubclassOf<USMInstance> AIStateMachine;
+
+	// 位置
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Grid|ChessPiece")
+	FTransform ChessTransform;
 };

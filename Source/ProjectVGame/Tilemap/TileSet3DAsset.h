@@ -77,5 +77,8 @@ public:
 	TMap<FName, FGridHeroData> ChessMap;
 
 	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UGridChessPieceData> DefaultChessData;
+
+	UPROPERTY(EditAnywhere)
 	bool bDiagonalMovement = false;
 };

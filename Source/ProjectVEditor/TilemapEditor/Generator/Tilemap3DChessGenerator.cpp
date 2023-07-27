@@ -1,5 +1,6 @@
 ﻿#include "Tilemap3DChessGenerator.h"
 
+#include "ChessPieces/GridChessPieceData.h"
 #include "Tilemap/TilemapAsset.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 #include "TilemapEditor/Preview/Tilemap3DPreviewChess.h"
@@ -11,14 +12,18 @@ void FTilemap3DChessGenerator::Setup(FTilemap3DEditorViewportClient* ViewportCli
 	{
 		FBlock& Block = InTilemapAsset->Blocks[Index];
 
-		if (!InTileSetAsset->ChessMap.Contains(Block.ChessID))
+		if (Block.ChessData == nullptr)
 		{
 			continue;
 		}
-		const auto ChessData = InTileSetAsset->ChessMap[Block.ChessID];
+		if (!InTileSetAsset->ChessMap.Contains(Block.ChessData->PieceID))
+		{
+			continue;
+		}
+		const auto ChessData = InTileSetAsset->ChessMap[Block.ChessData->PieceID];
 		auto ChessPiece = ViewportClient->GetWorld()->SpawnActor<ATilemap3DPreviewChess>();
 		ChessPiece->SetupSkeletalMeshAsset(ChessData.SkeletalMesh);
-		ChessPiece->SetActorTransform(Block.ChessTransform);
+		ChessPiece->SetActorTransform(Block.ChessData->ChessTransform);
 		Block.ChessInEditor = ChessPiece;
 	}
 }

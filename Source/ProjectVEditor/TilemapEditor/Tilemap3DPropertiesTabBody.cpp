@@ -22,9 +22,10 @@ void STilemap3DPropertiesTabBody::Construct(const FArguments& InArgs,
 	bEditProperty = false;
 	CurrentFloor = 0;
 
-	const UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
-	CurrentTileCube = Settings->DefaultTileSet.LoadSynchronous()->TileCubeSets[0];
+	SAssignNew(ChessDataDetails, STilemap3DChessDataDetails, InTilemapEditor.Get())
+		.ChessPieceData_Lambda([this]() { return SelectedChessData; });
 
+	const UTilemap3DEditorSettings* Settings = GetMutableDefault<UTilemap3DEditorSettings>();
 	SSingleObjectDetailsPanel::Construct(
 		SSingleObjectDetailsPanel::FArguments().HostCommandList(InTilemapEditor->GetToolkitCommands()).
 		                                        HostTabManager(InTilemapEditor->GetTabManager()),
@@ -81,7 +82,6 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 				{
 					FTilemap3DEditDelegates::OnTilemapEditModeChanged.Broadcast(CurrentEditMode, InEditMode);
 					CurrentEditMode = InEditMode;
-					//todo..
 				})
 			]
 		]
@@ -121,6 +121,21 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 		[
 			SNew(SBorder)
 			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+			.Visibility_Lambda([this]()
+			             {
+				             return GetEditMode() == EEM_Chess_Select
+					                    ? EVisibility::Visible
+					                    : EVisibility::Collapsed;
+			             })
+			[
+				ChessDataDetails.ToSharedRef()
+			]
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SBorder)
+			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 			[
 				SNew(STileSetGalleyWidget)
 				.TileSet_Lambda([this]() { return TileSet; })
@@ -132,26 +147,7 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 				                          })
 				.OnClicked_Lambda([this](const FName& ID)
 				                          {
-					                          if (const auto* TileCube = TileSet->TileCubeSets.FindByPredicate(
-						                          [=](const auto& Item)
-						                          {
-							                          return Item.ID == ID;
-						                          }))
-					                          {
-						                          CurrentTileCube = *TileCube;
-					                          }
-					                          else if (const auto* TileMesh = TileSet->TileMeshSets.FindByPredicate(
-						                          [=](const auto& Item)
-						                          {
-							                          return Item.ID == ID;
-						                          }))
-					                          {
-						                          CurrentTileMesh = *TileMesh;
-					                          }
-					                          else if (TileSet->ChessMap.Contains(ID))
-					                          {
-						                          CurrentTileChess = TileSet->ChessMap[ID];
-					                          }
+					                          TileSetID = ID;
 				                          })
 			]
 		]
@@ -197,6 +193,43 @@ TSharedRef<SWidget> STilemap3DPropertiesTabBody::PopulateSlot(TSharedRef<SWidget
 				]
 			]
 		];
+}
+
+const FTileSet3DCube* STilemap3DPropertiesTabBody::GetTileCube() const
+{
+	const auto* TileCube = TileSet->TileCubeSets.FindByPredicate(
+		[this](const auto& Item)
+		{
+			return Item.ID == TileSetID;
+		});
+	if (TileCube == nullptr)
+	{
+		return nullptr;
+	}
+	return TileCube;
+}
+
+const FTileSet3DMesh* STilemap3DPropertiesTabBody::GetTileMesh() const
+{
+	const auto* TileMesh = TileSet->TileMeshSets.FindByPredicate(
+		[this](const auto& Item)
+		{
+			return Item.ID == TileSetID;
+		});
+	if (TileMesh == nullptr)
+	{
+		return nullptr;
+	}
+	return TileMesh;
+}
+
+const FGridHeroData* STilemap3DPropertiesTabBody::GetTileChess() const
+{
+	if (TileSet->ChessMap.Contains(TileSetID))
+	{
+		return &TileSet->ChessMap[TileSetID];
+	}
+	return nullptr;
 }
 
 UTileSet3DAsset* STilemap3DPropertiesTabBody::GetTileSet() const

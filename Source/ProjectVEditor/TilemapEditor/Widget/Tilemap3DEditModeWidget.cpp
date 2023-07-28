@@ -56,6 +56,9 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 		                                                       OnEditModeChanged.ExecuteIfBound(EditMode.Get());
 	                                                       })
     .Value_Lambda([this] { return static_cast<int32>(EditMode.Get()); }) // Bound
+		+ SSegmentedControl<int32>::Slot(EEM_Chess_Select)
+		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
+		  .Text(LOCTEXT("Select", "Select Chess"))
 		+ SSegmentedControl<int32>::Slot(EEM_Chess_Spawn)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
 		  .Text(LOCTEXT("Spawn", "Spawn Chess"))

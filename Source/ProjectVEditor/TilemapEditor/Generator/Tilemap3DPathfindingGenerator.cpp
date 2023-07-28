@@ -309,8 +309,8 @@ void FTilemap3DPathfindingGenerator::CreateWallsOnGridEdges(UTilemapAsset* InTil
 		const int32 BlockIndex = InTilemapAsset->PathFindingBlockToBlock(Index);
 		if (InTilemapAsset->Blocks.IsValidIndex(BlockIndex))
 		{
-			const FBlock Block = InTilemapAsset->Blocks[BlockIndex];
-			if (Block.Type == EBlock::Air)
+			const UBlock* Block = InTilemapAsset->Blocks[BlockIndex];
+			if (Block->Type == EBlock::Air)
 			{
 				const int32 EdgeLength = PathFindingBlock.EdgeArrayIndex.Num();
 				for (int32 i = EdgeLength - 1; i >= 0; --i)

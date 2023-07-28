@@ -1,32 +1,31 @@
 ﻿#include "Tilemap3DSpawnChessMode.h"
 
 #include "GridTraceChannel.h"
+#include "ProjectVEditor.h"
 #include "ChessPieces/GridChessPieceData.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 #include "TilemapEditor/Preview/Tilemap3DPreviewChess.h"
 
-FTilemap3DSpawnChessMode::FTilemap3DSpawnChessMode()
-	: HitResultTraceDistance(10000.0), BlockIndex(INDEX_NONE)
+FTilemap3DSpawnChessMode::FTilemap3DSpawnChessMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient)
+	: FTilemap3DBaseMode(InViewportClient), HitResultTraceDistance(10000.0), BlockIndex(INDEX_NONE)
 {
-	EditMode = EEM_Chess_Spawn;
 }
 
 void FTilemap3DSpawnChessMode::EnterMode()
 {
 }
 
-void FTilemap3DSpawnChessMode::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
-	const FInputKeyEventArgs& EventArgs)
+void FTilemap3DSpawnChessMode::InputKey(const FInputKeyEventArgs& EventArgs)
 {
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
-		FViewportCursorLocation CursorLocation = ViewportClient->GetCursorWorldLocationFromMousePos();
+		FViewportCursorLocation CursorLocation = ViewportClient.Pin()->GetCursorWorldLocationFromMousePos();
 
 		FHitResult HitResult;
 		const TArray<AActor*> IgnoreActor;
 		UKismetSystemLibrary::LineTraceSingle(
-			ViewportClient->GetWorld(),
+			ViewportClient.Pin()->GetWorld(),
 			CursorLocation.GetOrigin(),
 			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
 			UEngineTypes::ConvertToTraceType(PathTrace),
@@ -37,46 +36,50 @@ void FTilemap3DSpawnChessMode::InputKey(FTilemap3DEditorViewportClient* Viewport
 			false);
 		if (HitResult.bBlockingHit)
 		{
+			if (ViewportClient.Pin()->GetTileChess() == nullptr)
+				return;
+			
 			FVector HitLocation = HitResult.Location;
-			HitLocation.Z -= ViewportClient->GetTilemapAsset()->GridSize * 0.5f;
-			const int32 Index = ViewportClient->GetTilemapAsset()->VectorToIndex(HitLocation);
+			HitLocation.Z -= ViewportClient.Pin()->GetTilemapAsset()->GridSize * 0.5f;
+			const int32 Index = ViewportClient.Pin()->GetTilemapAsset()->VectorToIndex(HitLocation);
 
-			if (ViewportClient->GetTilemapAsset()->Blocks[Index].MeshIndex != FName())
+			if (ViewportClient.Pin()->GetTilemapAsset()->Blocks[Index]->MeshIndex != FName())
 				return;
 
-			if (ViewportClient->GetTilemapAsset()->Blocks[Index].ChessData != nullptr)
+			if (ViewportClient.Pin()->GetTilemapAsset()->Blocks[Index]->ChessData != nullptr)
 				return;
 
 			FTransform Transform = FTransform::Identity;
-			FVector Location = ViewportClient->GetTilemapAsset()->IndexToVector(Index);
-			Location.Z = Index / (ViewportClient->GetTilemapAsset()->LevelSizeX * ViewportClient->GetTilemapAsset()->
-				LevelSizeY) * ViewportClient->GetTilemapAsset()->GridSize + ViewportClient->GetTilemapAsset()->GridSize;
+			FVector Location = ViewportClient.Pin()->GetTilemapAsset()->IndexToVector(Index);
+			Location.Z = Index / (ViewportClient.Pin()->GetTilemapAsset()->LevelSizeX * ViewportClient.Pin()->GetTilemapAsset()->
+				LevelSizeY) * ViewportClient.Pin()->GetTilemapAsset()->GridSize + ViewportClient.Pin()->GetTilemapAsset()->GridSize;
 			Transform.SetLocation(Location);
 
-			FBlock& Block = ViewportClient->GetTilemapAsset()->Blocks[Index];
+			UBlock* Block = ViewportClient.Pin()->GetTilemapAsset()->Blocks[Index];
 
-			auto ChessPiece = ViewportClient->GetWorld()->SpawnActor<ATilemap3DPreviewChess>();
-			ChessPiece->SetupSkeletalMeshAsset(ViewportClient->GetTileChess().SkeletalMesh);
+			auto ChessPiece = ViewportClient.Pin()->GetWorld()->SpawnActor<ATilemap3DPreviewChess>();
+			ChessPiece->SetupSkeletalMeshAsset(ViewportClient.Pin()->GetTileChess()->SkeletalMesh);
+			ChessPiece->SetCollisionResponseToChannel(TilemapChessTrace, ECR_Block);
 			ChessPiece->SetActorTransform(Transform);
 
-			Block.ChessData = ViewportClient->GetTileSet()->DefaultChessData.LoadSynchronous();
-			Block.ChessData->PieceID = ViewportClient->GetTileChess().HeroID;
-			Block.ChessData->ChessTransform = Transform;
-			Block.ChessInEditor = ChessPiece;
+			Block->ChessData = NewObject<UGridChessPieceData>(Block);
+			Block->ChessData->PieceID = ViewportClient.Pin()->GetTileChess()->HeroID;
+			Block->ChessData->ChessTransform = Transform;
+			Block->ChessInEditor = ChessPiece;
 			BlockIndex = Index;
 		}
 	}
 	if (EventArgs.Key == EKeys::R && EventArgs.Event == IE_Pressed && BlockIndex != INDEX_NONE)
 	{
-		FBlock& Block = ViewportClient->GetTilemapAsset()->Blocks[BlockIndex];
-		if (Block.ChessInEditor != nullptr && Block.ChessData != nullptr)
+		UBlock* Block = ViewportClient.Pin()->GetTilemapAsset()->Blocks[BlockIndex];
+		if (Block->ChessInEditor != nullptr &&Block->ChessData != nullptr)
 		{
 			FTransform Transform;
-			Transform = Block.ChessInEditor->GetActorTransform();
+			Transform =Block->ChessInEditor->GetActorTransform();
 			FQuat Rotation = FQuat(FVector::UpVector, FMath::DegreesToRadians(90.0f));
 			Transform.SetRotation(Rotation * Transform.GetRotation());
-			Block.ChessInEditor->SetActorTransform(Transform);
-			Block.ChessData->ChessTransform = Transform;
+			Block->ChessInEditor->SetActorTransform(Transform);
+			Block->ChessData->ChessTransform = Transform;
 		}
 	}
 }

@@ -9,9 +9,9 @@
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-void STilemap3DChessDataDetails::Construct(const FArguments& InArgs, FTilemap3DEditorToolkit* InTilemapEditor, UGridChessPieceData* InChessPieceData)
+void STilemap3DChessDataDetails::Construct(const FArguments& InArgs, FTilemap3DEditorToolkit* InTilemapEditor)
 {
-	ChessPieceData = InChessPieceData;
+	ChessPieceData = InArgs._ChessPieceData;
 	
 	SSingleObjectDetailsPanel::Construct(
 	SSingleObjectDetailsPanel::FArguments().HostCommandList(InTilemapEditor->GetToolkitCommands()).

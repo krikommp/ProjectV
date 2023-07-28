@@ -26,12 +26,11 @@ void FTilemap3DEditeModeStateMachine::ChangeState(const ETilemap3DEditMode NewSt
 	}
 }
 
-void FTilemap3DEditeModeStateMachine::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
-	const FInputKeyEventArgs& EventArgs) const
+void FTilemap3DEditeModeStateMachine::InputKey(const FInputKeyEventArgs& EventArgs) const
 {
 	if (CurrentState != nullptr)
 	{
-		CurrentState.Pin()->InputKey(ViewportClient, EventArgs);
+		CurrentState.Pin()->InputKey(EventArgs);
 	}
 }
 

@@ -38,11 +38,12 @@ enum class EBlockDirection : uint8
 	Down = 5
 };
 
-USTRUCT(BlueprintType)
-struct PROJECTVGAME_API FBlock
+UCLASS(BlueprintType)
+class PROJECTVGAME_API UBlock : public UObject
 {
 	GENERATED_BODY()
-
+	
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FName BlockID = FName();
 
@@ -125,7 +126,7 @@ public:
 	TObjectPtr<class UTileSet3DAsset> TileSet;
 
 	UPROPERTY()
-	TArray<FBlock> Blocks;
+	TArray<TObjectPtr<UBlock>> Blocks;
 
 	UPROPERTY()
 	TArray<FTilemapPathFindingBlock> PathFindingBlocks;

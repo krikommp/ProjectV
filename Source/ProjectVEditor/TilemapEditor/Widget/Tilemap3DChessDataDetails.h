@@ -15,16 +15,17 @@ class PROJECTVEDITOR_API STilemap3DChessDataDetails  : public SSingleObjectDetai
 {
 public:
 	SLATE_BEGIN_ARGS(STilemap3DChessDataDetails)
+		:_ChessPieceData(nullptr)
 		{
 		}
-
+	SLATE_ATTRIBUTE(TObjectPtr<UGridChessPieceData>, ChessPieceData)
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs, FTilemap3DEditorToolkit* InTilemapEditor, UGridChessPieceData* InChessPieceData);
+	void Construct(const FArguments& InArgs, FTilemap3DEditorToolkit* InTilemapEditor);
 
 	virtual UObject* GetObjectToObserve() const override;
 
 private:
-	TObjectPtr<UGridChessPieceData> ChessPieceData;
+	TAttribute<TObjectPtr<UGridChessPieceData>> ChessPieceData;
 };

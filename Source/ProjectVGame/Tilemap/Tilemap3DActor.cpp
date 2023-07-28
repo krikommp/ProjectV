@@ -38,16 +38,16 @@ void ATilemap3DActor::OnConstruction(const FTransform& Transform)
 			true
 		);
 		InstanceMeshCompMap.Empty();
-		for (FBlock& Block : TilemapAsset->Blocks)
+		for (UBlock* Block : TilemapAsset->Blocks)
 		{
-			if (Block.MeshIndex == FName())
+			if (Block->MeshIndex == FName())
 				continue;
 			UInstancedStaticMeshComponent* MeshComponent = nullptr;
-			if (!InstanceMeshCompMap.Contains(Block.MeshIndex))
+			if (!InstanceMeshCompMap.Contains(Block->MeshIndex))
 			{
 				auto TileMeshSet = TilemapAsset->TileSet->TileMeshSets.FindByPredicate([&](const FTileSet3DMesh& Item)
 				{
-					return Item.ID == Block.MeshIndex;
+					return Item.ID ==Block->MeshIndex;
 				});
 				if (TileMeshSet != nullptr)
 				{
@@ -57,14 +57,14 @@ void ATilemap3DActor::OnConstruction(const FTransform& Transform)
 					MeshComponent->SetStaticMesh(TileMeshSet->Mesh);
 					MeshComponent->SetMaterial(0, TileMeshSet->Material);
 					MeshComponent->SetCollisionResponseToChannel(WallTrace, ECR_Block);
-					InstanceMeshCompMap.Add(Block.MeshIndex, MeshComponent);
+					InstanceMeshCompMap.Add(Block->MeshIndex, MeshComponent);
 				}
 			}
 			else
 			{
-				MeshComponent = InstanceMeshCompMap[Block.MeshIndex];
+				MeshComponent = InstanceMeshCompMap[Block->MeshIndex];
 			}
-			Block.MeshInstancedIndex = MeshComponent->AddInstance(Block.MeshTransform);
+			Block->MeshInstancedIndex = MeshComponent->AddInstance(Block->MeshTransform);
 		}
 	}
 }

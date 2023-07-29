@@ -123,6 +123,7 @@ void AGridGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	}
 
 	// fallback experience
+	// 当没有进行任何 Experience 的配置时，调用 B_GridDefaultExperience
 	if (!ExperienceId.IsValid())
 	{
 		ExperienceId = FPrimaryAssetId(FPrimaryAssetType("GridExperienceDefinition"), FName("B_GridDefaultExperience"));

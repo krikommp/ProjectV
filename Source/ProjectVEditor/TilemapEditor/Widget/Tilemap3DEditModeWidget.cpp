@@ -16,7 +16,7 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 	.Value(EditMode.Get()) // InitialValue
 	.OnValueChanged_Lambda([this](int32 InValue)
 	                                                      {
-		                                                      EditMode = static_cast<ETilemap3DEditMode>(InValue);
+		                                                      EditMode = InValue;
 		                                                      // ReSharper disable once CppExpressionWithoutSideEffects
 		                                                      OnEditModeChanged.ExecuteIfBound(EditMode.Get());
 	                                                      })

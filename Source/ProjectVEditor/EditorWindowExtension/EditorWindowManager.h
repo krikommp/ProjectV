@@ -20,7 +20,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-	static UEditorWindowManager* Get();
+	static const UEditorWindowManager& Get();
 protected:
 	/**
 	 * @brief 構建編輯器窗口

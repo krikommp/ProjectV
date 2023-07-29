@@ -17,7 +17,7 @@ public:
 
 	void Construct(const FArguments& InArgs);
 	SEditorWindowViewport();
-	virtual ~SEditorWindowViewport() override;
+	~SEditorWindowViewport();
 
 	// ICommonEditorViewportToolbarInfoProvider interface
 	virtual TSharedRef<class SEditorViewport> GetViewportWidget() override;

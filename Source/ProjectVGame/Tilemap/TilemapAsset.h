@@ -134,6 +134,9 @@ public:
 	UPROPERTY()
 	FTilemap3DTerrainMeshData MeshData;
 
+	UPROPERTY(VisibleAnywhere, Category="Level Values")
+	FTransform PlayerStart;
+
 	int32 GetMaxLevelHeight() const { return (Floors + 1) * GridSize; }
 	int32 GetMinLevelHeight() const { return 0; }
 	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const;

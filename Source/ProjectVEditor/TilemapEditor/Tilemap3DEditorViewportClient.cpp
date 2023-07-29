@@ -16,6 +16,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Mode/Tilemap3DAddCubeMode.h"
 #include "Mode/Tilemap3DAddMeshMode.h"
+#include "Mode/Tilemap3DPlayerStartMode.h"
 #include "Mode/Tilemap3DRemoveChessMode.h"
 #include "Mode/Tilemap3DRemoveCubeMode.h"
 #include "Mode/Tilemap3DRemoveMeshMode.h"
@@ -126,6 +127,7 @@ void FTilemap3DEditorViewportClient::OnConstruction()
 	StateMachine->RegisterEditMode<FTilemap3DSpawnChessMode>(AsShared(), ETilemap3DEditMode::EEM_Chess_Spawn);
 	StateMachine->RegisterEditMode<FTilemap3DSelectChessMode>(AsShared(), ETilemap3DEditMode::EEM_Chess_Select);
 	StateMachine->RegisterEditMode<FTilemap3DRemoveChessMode>(AsShared(), ETilemap3DEditMode::EEM_Chess_Remove);
+	StateMachine->RegisterEditMode<FTilemap3DPlayerStartMode>(AsShared(), ETilemap3DEditMode::EEM_PlayerStart);
 	
 	FTilemap3DTerrainGenerator::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
 	FTilemap3DTileMeshGenerator::Setup(GetTilemapAsset(), MeshSet, PreviewScene, GetTileSet());

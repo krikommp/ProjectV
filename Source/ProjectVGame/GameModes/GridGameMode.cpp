@@ -77,14 +77,10 @@ void AGridGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	FPrimaryAssetId ExperienceId;
 	FString ExperienceIdSource;
 
-	// todo...
-	// 加载顺序
-	// 1. 命令行
-	// 2. World Setting
-	// 3. Default Experience
-
 	UWorld* World = GetWorld();
 
+	// 从配置中加载
+	// 通常采用这种方式加载，需要定义 UserFacingExperienceDefinition 并指定额外参数
 	if (!ExperienceId.IsValid() && UGameplayStatics::HasOption(OptionsString, TEXT("Experience")))
 	{
 		const FString ExperienceFromOptions = UGameplayStatics::ParseOption(OptionsString, TEXT("Experience"));

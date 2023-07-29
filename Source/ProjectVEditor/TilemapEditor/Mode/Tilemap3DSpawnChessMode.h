@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include "Tilemap3DBaseMode.h"
 
-class FTilemap3DSelectMeshMode final : public FTilemap3DBaseMode
+class FTilemap3DSpawnChessMode final : public FTilemap3DBaseMode
 {
 public:
-	FTilemap3DSelectMeshMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient);
+	FTilemap3DSpawnChessMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient);
 
 	//~ Begin FTilemap3DBaseMode interface
 	virtual void EnterMode() override;
@@ -14,7 +14,5 @@ public:
 	
 private:
 	float HitResultTraceDistance;
-	int32 InstancedIndex;
 	int32 BlockIndex;
-	TObjectPtr<UInstancedStaticMeshComponent> MeshComponent;
 };

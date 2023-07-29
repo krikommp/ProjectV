@@ -18,7 +18,7 @@ struct PROJECTVGAME_API FGridHeroData : public FTableRowBase
 public:
 	// 英雄ID
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="GridHeroData")
-	int32 HeroID = INDEX_NONE;
+	FName HeroID = FName();
 
 	// 英雄名称
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="GridHeroData")

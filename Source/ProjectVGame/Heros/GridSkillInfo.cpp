@@ -15,10 +15,10 @@ UGridSkillInfo::UGridSkillInfo()
 }
 
 UGridSkillInfo* UGridSkillInfo::CreateOrLoadSkillInfo(const UGridLocalPlayer* InLocalPlayer,
-                                                      int32 HeroId, const FGridSkillData& InSkillData)
+                                                      const FName& HeroId, const FGridSkillData& InSkillData)
 {
 	UGridSkillInfo* SkillInfo = nullptr;
-	const FString SlotName = FString::Format(TEXT("GridSkillInfo_{0}_{1}"), TArray<FStringFormatArg>({ HeroId, InSkillData.ID.ToString() }));
+	const FString SlotName = FString::Format(TEXT("GridSkillInfo_{0}_{1}"), TArray<FStringFormatArg>({ HeroId.ToString(), InSkillData.ID.ToString() }));
 
 	if (InLocalPlayer != nullptr)
 	{
@@ -46,7 +46,7 @@ UGridSkillInfo* UGridSkillInfo::CreateOrLoadSkillInfo(const UGridLocalPlayer* In
 
 FString UGridSkillInfo::GetSaveSlotName() const
 {
-	return FString::Format(TEXT("GridSkillInfo_{0}_{1}"), TArray<FStringFormatArg>({ HeroId, ID.ToString() }));
+	return FString::Format(TEXT("GridSkillInfo_{0}_{1}"), TArray<FStringFormatArg>({ HeroId.ToString(), ID.ToString() }));
 }
 
 bool UGridSkillInfo::CheckAbilityCanActivate() const

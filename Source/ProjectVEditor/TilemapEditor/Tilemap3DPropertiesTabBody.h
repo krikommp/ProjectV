@@ -4,6 +4,7 @@
 #include "Tilemap/TileSet3DAsset.h"
 #include "Widget/Tilemap3DEditModeWidget.h"
 
+class STilemap3DChessDataDetails;
 class UTilemapAsset;
 class FTilemap3DEditorToolkit;
 
@@ -19,12 +20,12 @@ public:
 private:
 	TWeakPtr<FTilemap3DEditorToolkit> TilemapEditorPtr;
 	TWeakObjectPtr<UTileSet3DAsset> TileSet;
-	FTileSet3DCube CurrentTileCube;
-	FTileSet3DMesh CurrentTileMesh;
 	ETilemap3DEditMode CurrentEditMode = EEM_View;
+	FName TileSetID = FName();
 
 	//~ Begin Slate UI Components
 	TSharedPtr<STextBlock> EditStatusText;
+	TSharedPtr<STilemap3DChessDataDetails> ChessDataDetails;
 	//~ Begin Slate UI Components
 
 	bool bEditProperty = false;
@@ -40,9 +41,13 @@ public:
 
 	UTilemapAsset* GetTilemapAsset() const { return TilemapEditorPtr.Pin()->TilemapBeingEdited; }
 	int32 GetCurrentFloor() const { return CurrentFloor; }
-	const FTileSet3DCube& GetTileCube() const { return CurrentTileCube; }
-	const FTileSet3DMesh& GetTileMesh() const { return CurrentTileMesh; }
+	const FTileSet3DCube* GetTileCube() const;
+	const FTileSet3DMesh* GetTileMesh() const;
+	const FGridHeroData* GetTileChess() const;
 	UTileSet3DAsset* GetTileSet() const;
 	int32 GetTextureIndex(UTexture2D* InTexture) const;
 	ETilemap3DEditMode GetEditMode() const { return CurrentEditMode; }
+	TSharedPtr<STilemap3DChessDataDetails> GetChessDataDetails() const { return ChessDataDetails; }
+	
+	UGridChessPieceData* SelectedChessData = nullptr;
 };

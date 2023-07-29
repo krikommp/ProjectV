@@ -25,7 +25,7 @@ UGridCardPackageInfo* UGridCardPackageInfo::CreateOrLoadCardPackage(const UGridL
 {
 	UGridCardPackageInfo* CardPackage = nullptr;
 
-	const FString SlotName = FString::Format(TEXT("GridPackage_{0}_{1}"), TArray<FStringFormatArg>{HeroData.HeroID, CardPackageID});
+	const FString SlotName = FString::Format(TEXT("GridPackage_{0}_{1}"), TArray<FStringFormatArg>{HeroData.HeroID.ToString(), CardPackageID});
 	if (LocalPlayer != nullptr)
 	{
 		if (UGameplayStatics::DoesSaveGameExist(SlotName, LocalPlayer->GetLocalPlayerIndex()))
@@ -65,7 +65,7 @@ void UGridCardPackageInfo::Initialize(UGridLocalPlayer* LocalPlayer)
 
 FString UGridCardPackageInfo::GetSaveSlotName() const
 {
-	return FString::Format(TEXT("GridPackage_{0}_{1}"), TArray<FStringFormatArg>{OwnerID, ID});
+	return FString::Format(TEXT("GridPackage_{0}_{1}"), TArray<FStringFormatArg>{OwnerID.ToString(), ID});
 }
 
 void UGridCardPackageInfo::AddNewCardToCardPackage(UGridCardInfo* CardToAdd)

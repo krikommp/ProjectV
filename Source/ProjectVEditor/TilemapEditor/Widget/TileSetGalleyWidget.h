@@ -32,6 +32,7 @@ private:
 	FOnClicked OnFillFloorClicked;
 	TSharedPtr<SHorizontalBox> TileCubeBox;
 	TSharedPtr<SHorizontalBox> TileMeshBox;
+	TSharedPtr<SHorizontalBox> TileChessBox;
 	TWeakObjectPtr<UTileSet3DAsset> TileSet;
 	TAttribute<ETilemap3DEditMode> EditMode;	
 };

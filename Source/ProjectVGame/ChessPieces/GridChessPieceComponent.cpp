@@ -184,7 +184,7 @@ void UGridChessPieceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-UGridHeroInfo* UGridChessPieceComponent::InitializePieceInfo(const UGridLocalPlayer* InLocalPlayer, int32 HeroId)
+UGridHeroInfo* UGridChessPieceComponent::InitializePieceInfo(const UGridLocalPlayer* InLocalPlayer, const FName& HeroId)
 {
 	const APawn* Owner = GetPawnChecked<APawn>();
 	

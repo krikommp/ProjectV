@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "TilemapAsset.h"
 #include "UObject/Object.h"
+#include "Heros/GridHeroData.h"
 #include "TileSet3DAsset.generated.h"
+
+class UDataTable;
 
 USTRUCT(BlueprintType)
 struct PROJECTVGAME_API FTileSet3DCube
@@ -66,6 +69,15 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FTileSet3DMesh> TileMeshSets;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UDataTable> ChessData;
+
+	UPROPERTY(Transient)
+	TMap<FName, FGridHeroData> ChessMap;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UGridChessPieceData> DefaultChessData;
 
 	UPROPERTY(EditAnywhere)
 	bool bDiagonalMovement = false;

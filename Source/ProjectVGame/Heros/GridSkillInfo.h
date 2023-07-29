@@ -28,7 +28,7 @@ class PROJECTVGAME_API UGridSkillInfo : public USaveGame
 public:
 	UGridSkillInfo();
 
-	static UGridSkillInfo* CreateOrLoadSkillInfo(const UGridLocalPlayer* InLocalPlayer, int32 InHeroId, const FGridSkillData& InSkillData);
+	static UGridSkillInfo* CreateOrLoadSkillInfo(const UGridLocalPlayer* InLocalPlayer, const FName& InHeroId, const FGridSkillData& InSkillData);
 
 	FString GetSaveSlotName() const;
 
@@ -49,7 +49,7 @@ public:
 	FName ID;
 
 	UPROPERTY(BlueprintReadOnly)
-	int32 HeroId;
+	FName HeroId;
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 Level;

@@ -10,12 +10,12 @@ void FTilemap3DTileMeshGenerator::Setup(UTilemapAsset* InTilemapAsset, FTileMesh
 	const int32 Count = InTilemapAsset->LevelSizeX * InTilemapAsset->LevelSizeY * InTilemapAsset->LevelSizeZ;
 	for (int32 Index = 0; Index < Count; ++Index)
 	{
-		FBlock& Block = InTilemapAsset->Blocks[Index];
-		if (Block.MeshIndex != FName())
+		UBlock* Block = InTilemapAsset->Blocks[Index];
+		if (Block->MeshIndex != FName())
 		{
 			const FTileSet3DMesh* MeshSet = TileSet3DAsset->TileMeshSets.FindByPredicate([&](const FTileSet3DMesh& Item)
 			{
-				return Item.ID == Block.MeshIndex;
+				return Item.ID == Block->MeshIndex;
 			});
 			if (MeshSet != nullptr)
 			{
@@ -23,13 +23,13 @@ void FTilemap3DTileMeshGenerator::Setup(UTilemapAsset* InTilemapAsset, FTileMesh
 					InTilemapAsset,
 					PreviewScene,
 					TileMeshMap,
-					Block.MeshIndex,
+					Block->MeshIndex,
 					MeshSet->Mesh,
-					Block.MeshTransform,
+					Block->MeshTransform,
 					Index,
 					MeshSet->Material
 				});
-				Block.MeshInstancedIndex = InstancedIndex;
+				Block->MeshInstancedIndex = InstancedIndex;
 			}
 		}
 	}
@@ -57,28 +57,28 @@ int32 FTilemap3DTileMeshGenerator::AddTileMesh(const FAddTileMeshParams& Params)
 void FTilemap3DTileMeshGenerator::RemoveTileMesh(UTilemapAsset* InTilemapAsset, const FTileMeshMap& InTileMeshMap,
                                                  const int32 Index)
 {
-	FBlock& Block = InTilemapAsset->Blocks[Index];
+	UBlock* Block = InTilemapAsset->Blocks[Index];
 	RemoveTileMesh(InTilemapAsset, InTileMeshMap, Block);
 }
 
 void FTilemap3DTileMeshGenerator::RemoveTileMesh(UTilemapAsset* InTilemapAsset, const FTileMeshMap& InTileMeshMap,
-                                                 FBlock& Block)
+                                                 UBlock* Block)
 {
 	int32 OldInstanceIndex = INDEX_NONE;
-	if (Block.MeshIndex != FName() && Block.MeshInstancedIndex != INDEX_NONE)
+	if (Block->MeshIndex != FName() && Block->MeshInstancedIndex != INDEX_NONE)
 	{
-		UInstancedStaticMeshComponent* MeshComponent = InTileMeshMap[Block.MeshIndex];
-		MeshComponent->RemoveInstance(Block.MeshInstancedIndex);
-		OldInstanceIndex = Block.MeshInstancedIndex;
-		Block.MeshIndex = FName();
-		Block.MeshTransform = FTransform::Identity;
-		Block.MeshInstancedIndex = INDEX_NONE;
+		UInstancedStaticMeshComponent* MeshComponent = InTileMeshMap[Block->MeshIndex];
+		MeshComponent->RemoveInstance(Block->MeshInstancedIndex);
+		OldInstanceIndex = Block->MeshInstancedIndex;
+		Block->MeshIndex = FName();
+		Block->MeshTransform = FTransform::Identity;
+		Block->MeshInstancedIndex = INDEX_NONE;
 	}
-	for (FBlock& OtherBlock : InTilemapAsset->Blocks)
+	for (UBlock* OtherBlock : InTilemapAsset->Blocks)
 	{
-		if (OtherBlock.MeshInstancedIndex != INDEX_NONE && OtherBlock.MeshInstancedIndex > OldInstanceIndex)
+		if (OtherBlock->MeshInstancedIndex != INDEX_NONE && OtherBlock->MeshInstancedIndex > OldInstanceIndex)
 		{
-			OtherBlock.MeshInstancedIndex -= 1;
+			OtherBlock->MeshInstancedIndex -= 1;
 		}
 	}
 }

@@ -2,6 +2,7 @@
 #include "Tilemap/TilemapAsset.h"
 #include "Tilemap3DPropertiesTabBody.h"
 
+class ATilemap3DPreviewChess;
 class FTilemap3DEditeModeStateMachine;
 class FTilemap3DBaseMode;
 class UTileSet3DAsset;
@@ -13,7 +14,7 @@ class STilemap3DPropertiesTabBody;
 class ATilemap3DSelected;
 class UTextRenderComponent;
 
-class FTilemap3DEditorViewportClient : public FEditorViewportClient
+class FTilemap3DEditorViewportClient : public FEditorViewportClient, public TSharedFromThis<FTilemap3DEditorViewportClient>
 {
 public:
 	explicit FTilemap3DEditorViewportClient(TSharedPtr<STilemap3DPropertiesTabBody> InDetailPtr,
@@ -26,6 +27,7 @@ public:
 	virtual bool InputKey(const FInputKeyEventArgs& EventArgs) override;
 	//~ Begin FEditorViewportClient interface
 
+	void OnConstruction();
 	void DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize, float ZOffset,
 	              const FLinearColor& Color, float Thickness = 3.0f) const;
 	void Clear() const;
@@ -37,11 +39,14 @@ public:
 	UTilemapAsset* GetTilemapAsset() const { return DetailPtr->GetTilemapAsset(); }
 	int32 GetCurrentFloor() const { return DetailPtr->GetCurrentFloor(); }
 	FTileMeshMap& GetTileMeshMap() { return MeshSet; }
-	const FTileSet3DMesh& GetTileMesh() const { return DetailPtr->GetTileMesh(); }
-	const FTileSet3DCube& GetTileCube() const { return DetailPtr->GetTileCube(); }
+	const FTileSet3DMesh* GetTileMesh() const { return DetailPtr->GetTileMesh(); }
+	const FTileSet3DCube* GetTileCube() const { return DetailPtr->GetTileCube(); }
+	const FGridHeroData* GetTileChess() const { return DetailPtr->GetTileChess(); }
 	UTileSet3DAsset* GetTileSet() const { return DetailPtr->GetTileSet(); }
 	UProceduralMeshComponent* GetTerrainMesh() const { return TerrainMesh; }
 	UMaterialInterface* GetTerrainMat() const { return TerrainMat; }
+	TSharedPtr<STilemap3DChessDataDetails> GetChessDataDetails() const { return DetailPtr->GetChessDataDetails(); }
+	void SetChessData(UGridChessPieceData* SelectedChessData) const;
 
 	TAttribute<ETilemap3DEditMode> EditMode;
 protected:

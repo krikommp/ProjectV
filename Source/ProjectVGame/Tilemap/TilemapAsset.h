@@ -7,6 +7,7 @@
 
 #include "TilemapAsset.generated.h"
 
+class UGridChessPieceData;
 /**
  * EBlock
  *
@@ -37,22 +38,17 @@ enum class EBlockDirection : uint8
 	Down = 5
 };
 
-USTRUCT(BlueprintType)
-struct PROJECTVGAME_API FBlock
+UCLASS(BlueprintType)
+class PROJECTVGAME_API UBlock : public UObject
 {
 	GENERATED_BODY()
-
+	
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FName BlockID = FName();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	EBlock Type = EBlock::Air;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	bool bMarked = false;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	int32 Cost = 1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FName MeshIndex = FName();
@@ -62,6 +58,12 @@ struct PROJECTVGAME_API FBlock
 
 	UPROPERTY(Transient)
 	int32 MeshInstancedIndex = INDEX_NONE;
+
+	UPROPERTY(Transient)
+	TObjectPtr<AActor> ChessInEditor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UGridChessPieceData> ChessData;
 };
 
 USTRUCT(BlueprintType)
@@ -124,7 +126,7 @@ public:
 	TObjectPtr<class UTileSet3DAsset> TileSet;
 
 	UPROPERTY()
-	TArray<FBlock> Blocks;
+	TArray<TObjectPtr<UBlock>> Blocks;
 
 	UPROPERTY()
 	TArray<FTilemapPathFindingBlock> PathFindingBlocks;

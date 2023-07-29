@@ -5,10 +5,9 @@
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 #include "TilemapEditor/Generator/Tilemap3DTileMeshGenerator.h"
 
-FTilemap3DAddMeshMode::FTilemap3DAddMeshMode()
-	: HitResultTraceDistance(10000.0), InstancedIndex(INDEX_NONE), BlockIndex(INDEX_NONE)
+FTilemap3DAddMeshMode::FTilemap3DAddMeshMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient)
+	: FTilemap3DBaseMode(InViewportClient), HitResultTraceDistance(10000.0), InstancedIndex(INDEX_NONE), BlockIndex(INDEX_NONE)
 {
-	EditMode = EEM_Mesh_Append;
 }
 
 void FTilemap3DAddMeshMode::EnterMode()
@@ -18,17 +17,16 @@ void FTilemap3DAddMeshMode::EnterMode()
 	MeshComponent = nullptr;
 }
 
-void FTilemap3DAddMeshMode::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
-                                     const FInputKeyEventArgs& EventArgs)
+void FTilemap3DAddMeshMode::InputKey(const FInputKeyEventArgs& EventArgs)
 {
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
-		FViewportCursorLocation CursorLocation = ViewportClient->GetCursorWorldLocationFromMousePos();
+		FViewportCursorLocation CursorLocation = ViewportClient.Pin()->GetCursorWorldLocationFromMousePos();
 
 		FHitResult HitResult;
 		const TArray<AActor*> IgnoreActor;
 		UKismetSystemLibrary::LineTraceSingle(
-			ViewportClient->GetWorld(),
+			ViewportClient.Pin()->GetWorld(),
 			CursorLocation.GetOrigin(),
 			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
 			UEngineTypes::ConvertToTraceType(PathTrace),
@@ -39,42 +37,45 @@ void FTilemap3DAddMeshMode::InputKey(FTilemap3DEditorViewportClient* ViewportCli
 			false);
 		if (HitResult.bBlockingHit)
 		{
+			if (ViewportClient.Pin()->GetTileMesh() == nullptr)
+				return;
+			
 			FVector HitLocation = HitResult.Location;
-			HitLocation.Z -= ViewportClient->GetTilemapAsset()->GridSize * 0.5f;
-			const int32 Index = ViewportClient->GetTilemapAsset()->VectorToIndex(HitLocation);
+			HitLocation.Z -= ViewportClient.Pin()->GetTilemapAsset()->GridSize * 0.5f;
+			const int32 Index = ViewportClient.Pin()->GetTilemapAsset()->VectorToIndex(HitLocation);
 
-			if (ViewportClient->GetTilemapAsset()->Blocks[Index].MeshIndex != FName())
+			if (ViewportClient.Pin()->GetTilemapAsset()->Blocks[Index]->MeshIndex != FName())
 				return;
 
 			FTransform Transform = FTransform::Identity;
-			FVector Location = ViewportClient->GetTilemapAsset()->IndexToVector(Index);
-			Location.Z = Index / (ViewportClient->GetTilemapAsset()->LevelSizeX * ViewportClient->GetTilemapAsset()->
-				LevelSizeY) * ViewportClient->GetTilemapAsset()->GridSize + ViewportClient->GetTilemapAsset()->GridSize;
+			FVector Location = ViewportClient.Pin()->GetTilemapAsset()->IndexToVector(Index);
+			Location.Z = Index / (ViewportClient.Pin()->GetTilemapAsset()->LevelSizeX * ViewportClient.Pin()->GetTilemapAsset()->
+				LevelSizeY) * ViewportClient.Pin()->GetTilemapAsset()->GridSize + ViewportClient.Pin()->GetTilemapAsset()->GridSize;
 			Transform.SetLocation(Location);
 
-			FBlock& Block = ViewportClient->GetTilemapAsset()->Blocks[Index];
-			Block.MeshIndex = ViewportClient->GetTileMesh().ID;
-			Block.MeshTransform = Transform;
+			UBlock* Block = ViewportClient.Pin()->GetTilemapAsset()->Blocks[Index];
+			Block->MeshIndex = ViewportClient.Pin()->GetTileMesh()->ID;
+			Block->MeshTransform = Transform;
 
-			Block.MeshInstancedIndex = FTilemap3DTileMeshGenerator::AddTileMesh({
-				ViewportClient->GetTilemapAsset(),
-				ViewportClient->GetPreviewScene(),
-				ViewportClient->GetTileMeshMap(),
-				Block.MeshIndex,
-				ViewportClient->GetTileMesh().Mesh,
+			Block->MeshInstancedIndex = FTilemap3DTileMeshGenerator::AddTileMesh({
+				ViewportClient.Pin()->GetTilemapAsset(),
+				ViewportClient.Pin()->GetPreviewScene(),
+				ViewportClient.Pin()->GetTileMeshMap(),
+				Block->MeshIndex,
+				ViewportClient.Pin()->GetTileMesh()->Mesh,
 				Transform,
 				Index,
-				ViewportClient->GetTileMesh().Material
+				ViewportClient.Pin()->GetTileMesh()->Material
 			});
 
-			InstancedIndex = Block.MeshInstancedIndex;
+			InstancedIndex =Block->MeshInstancedIndex;
 			BlockIndex = Index;
-			MeshComponent = ViewportClient->GetTileMeshMap()[Block.MeshIndex];
+			MeshComponent = ViewportClient.Pin()->GetTileMeshMap()[Block->MeshIndex];
 		}
 	}
 	if (EventArgs.Key == EKeys::R && EventArgs.Event == IE_Pressed)
 	{
-		if (MeshComponent != nullptr && InstancedIndex != INDEX_NONE && ViewportClient->GetTilemapAsset()->Blocks.IsValidIndex(BlockIndex))
+		if (MeshComponent != nullptr && InstancedIndex != INDEX_NONE && ViewportClient.Pin()->GetTilemapAsset()->Blocks.IsValidIndex(BlockIndex))
 		{
 			FTransform Transform;
 			MeshComponent->GetInstanceTransform(InstancedIndex, Transform);
@@ -82,8 +83,8 @@ void FTilemap3DAddMeshMode::InputKey(FTilemap3DEditorViewportClient* ViewportCli
 			Transform.SetRotation(Rotation * Transform.GetRotation());
 			MeshComponent->UpdateInstanceTransform(InstancedIndex, Transform, false, true, false);
 
-			FBlock& Block = ViewportClient->GetTilemapAsset()->Blocks[BlockIndex];
-			Block.MeshTransform = Transform;
+			UBlock* Block = ViewportClient.Pin()->GetTilemapAsset()->Blocks[BlockIndex];
+			Block->MeshTransform = Transform;
 		}
 	}
 }

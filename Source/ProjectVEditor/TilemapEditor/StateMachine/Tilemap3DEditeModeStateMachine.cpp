@@ -7,6 +7,11 @@ void FTilemap3DEditeModeStateMachine::ChangeState(const ETilemap3DEditMode NewSt
 	if (!EditeModeStates.Contains(NewState))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NewState %d is not registered. Please re-register it."), static_cast<int32>(NewState));
+		if (CurrentState != nullptr)
+		{
+			CurrentState.Pin()->ExitMode();
+			CurrentState = nullptr;
+		}
 		return;
 	}
 	TWeakPtr<FTilemap3DBaseMode> State = EditeModeStates[NewState];
@@ -21,12 +26,11 @@ void FTilemap3DEditeModeStateMachine::ChangeState(const ETilemap3DEditMode NewSt
 	}
 }
 
-void FTilemap3DEditeModeStateMachine::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
-	const FInputKeyEventArgs& EventArgs) const
+void FTilemap3DEditeModeStateMachine::InputKey(const FInputKeyEventArgs& EventArgs) const
 {
 	if (CurrentState != nullptr)
 	{
-		CurrentState.Pin()->InputKey(ViewportClient, EventArgs);
+		CurrentState.Pin()->InputKey(EventArgs);
 	}
 }
 

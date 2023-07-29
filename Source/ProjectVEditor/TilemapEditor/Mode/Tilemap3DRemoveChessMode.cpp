@@ -1,20 +1,20 @@
-﻿#include "Tilemap3DRemoveMeshMode.h"
+﻿#include "Tilemap3DRemoveChessMode.h"
 
-#include "GridTraceChannel.h"
+#include "ProjectVEditor.h"
+#include "ChessPieces/GridChessPieceData.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
-#include "TilemapEditor/Generator/Tilemap3DTileMeshGenerator.h"
 
-FTilemap3DRemoveMeshMode::FTilemap3DRemoveMeshMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient)
-	: FTilemap3DBaseMode(InViewportClient), HitResultTraceDistance(10000.0f)
+FTilemap3DRemoveChessMode::FTilemap3DRemoveChessMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient)
+	:FTilemap3DBaseMode(InViewportClient), HitResultTraceDistance(10000.0f)
 {
 }
 
-void FTilemap3DRemoveMeshMode::EnterMode()
+void FTilemap3DRemoveChessMode::EnterMode()
 {
 }
 
-void FTilemap3DRemoveMeshMode::InputKey(const FInputKeyEventArgs& EventArgs)
+void FTilemap3DRemoveChessMode::InputKey(const FInputKeyEventArgs& EventArgs)
 {
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
@@ -26,7 +26,7 @@ void FTilemap3DRemoveMeshMode::InputKey(const FInputKeyEventArgs& EventArgs)
 			ViewportClient.Pin()->GetWorld(),
 			CursorLocation.GetOrigin(),
 			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
-			UEngineTypes::ConvertToTraceType(WallTrace),
+			UEngineTypes::ConvertToTraceType(TilemapChessTrace),
 			false,
 			IgnoreActor,
 			EDrawDebugTrace::None,
@@ -43,23 +43,25 @@ void FTilemap3DRemoveMeshMode::InputKey(const FInputKeyEventArgs& EventArgs)
 				if (!ViewportClient.Pin()->GetTilemapAsset()->Blocks.IsValidIndex(Index))
 					continue;
 				UBlock* Block = ViewportClient.Pin()->GetTilemapAsset()->Blocks[Index];
-				if (Block->MeshIndex != FName())
+				if (Block->ChessData != nullptr)
 				{
-					if (Block->MeshTransform.GetLocation().Z < HitResult.Location.Z)
+					if (Block->ChessData->ChessTransform.GetLocation().Z < HitResult.Location.Z)
 					{
 						BottomBlock = Block;
 					}
 				}
 			}
 
-			if (BottomBlock != nullptr)
+			if (BottomBlock != nullptr && BottomBlock->ChessData != nullptr)
 			{
-				FTilemap3DTileMeshGenerator::RemoveTileMesh(ViewportClient.Pin()->GetTilemapAsset(), ViewportClient.Pin()->GetTileMeshMap(), BottomBlock);
+				BottomBlock->ChessInEditor->Destroy();
+				BottomBlock->ChessInEditor = nullptr;
+				BottomBlock->ChessData = nullptr;
 			}
 		}
 	}
 }
 
-void FTilemap3DRemoveMeshMode::ExitMode()
+void FTilemap3DRemoveChessMode::ExitMode()
 {
 }

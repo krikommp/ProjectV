@@ -34,4 +34,5 @@ private:
 
 	TSharedPtr<SSegmentedControl<int32>> CubePanelControl;
 	TSharedPtr<SSegmentedControl<int32>> MeshPanelControl;
+	TSharedPtr<SSegmentedControl<int32>> ChessPanelControl;
 };

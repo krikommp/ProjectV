@@ -1,23 +1,22 @@
-﻿#include "Tilemap3DSelectMeshMode.h"
+﻿#include "Tilemap3DSelectChessMode.h"
 
-#include "GridTraceChannel.h"
-#include "Components/InstancedStaticMeshComponent.h"
+#include "ProjectVEditor.h"
+#include "ChessPieces/GridChessPieceData.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 
-FTilemap3DSelectMeshMode::FTilemap3DSelectMeshMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient)
-	: FTilemap3DBaseMode(InViewportClient), HitResultTraceDistance(10000.0), InstancedIndex(INDEX_NONE), BlockIndex(INDEX_NONE)
+FTilemap3DSelectChessMode::FTilemap3DSelectChessMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient)
+	: FTilemap3DBaseMode(InViewportClient), HitResultTraceDistance(10000.0), BlockIndex(INDEX_NONE)
 {
 }
 
-void FTilemap3DSelectMeshMode::EnterMode()
+void FTilemap3DSelectChessMode::EnterMode()
 {
-	InstancedIndex = INDEX_NONE;
+	ViewportClient.Pin()->SetChessData(nullptr);
 	BlockIndex = INDEX_NONE;
-	MeshComponent = nullptr;
 }
 
-void FTilemap3DSelectMeshMode::InputKey(const FInputKeyEventArgs& EventArgs)
+void FTilemap3DSelectChessMode::InputKey(const FInputKeyEventArgs& EventArgs)
 {
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
@@ -29,7 +28,7 @@ void FTilemap3DSelectMeshMode::InputKey(const FInputKeyEventArgs& EventArgs)
 			ViewportClient.Pin()->GetWorld(),
 			CursorLocation.GetOrigin(),
 			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
-			UEngineTypes::ConvertToTraceType(WallTrace),
+			UEngineTypes::ConvertToTraceType(TilemapChessTrace),
 			false,
 			IgnoreActor,
 			EDrawDebugTrace::None,
@@ -46,9 +45,9 @@ void FTilemap3DSelectMeshMode::InputKey(const FInputKeyEventArgs& EventArgs)
 				if (!ViewportClient.Pin()->GetTilemapAsset()->Blocks.IsValidIndex(Index))
 					continue;
 				const UBlock* Block = ViewportClient.Pin()->GetTilemapAsset()->Blocks[Index];
-				if (Block->MeshIndex != FName())
+				if (Block->ChessData != nullptr)
 				{
-					if (Block->MeshTransform.GetLocation().Z < HitResult.Location.Z)
+					if (Block->ChessData->ChessTransform.GetLocation().Z < HitResult.Location.Z)
 					{
 						BottomBlock = Block;
 						BlockIndex = Index;
@@ -56,33 +55,29 @@ void FTilemap3DSelectMeshMode::InputKey(const FInputKeyEventArgs& EventArgs)
 				}
 			}
 
-			if (BottomBlock != nullptr)
+			if (BottomBlock != nullptr && BottomBlock->ChessData != nullptr)
 			{
-				InstancedIndex = BottomBlock->MeshInstancedIndex;
-				MeshComponent = ViewportClient.Pin()->GetTileMeshMap()[BottomBlock->MeshIndex];
-				//MeshComponent->SelectInstance(true, BottomBlock->MeshInstancedIndex);
+				ViewportClient.Pin()->SetChessData(BottomBlock->ChessData);
 			}
 		}
 	}
-	if (EventArgs.Key == EKeys::R && EventArgs.Event == IE_Pressed)
+	if (EventArgs.Key == EKeys::R && EventArgs.Event == IE_Pressed && BlockIndex != INDEX_NONE)
 	{
-		if (MeshComponent != nullptr && InstancedIndex != INDEX_NONE && ViewportClient.Pin()->GetTilemapAsset()->Blocks.IsValidIndex(BlockIndex))
+		UBlock* Block = ViewportClient.Pin()->GetTilemapAsset()->Blocks[BlockIndex];
+		if (Block->ChessInEditor != nullptr &&Block->ChessData != nullptr)
 		{
 			FTransform Transform;
-			MeshComponent->GetInstanceTransform(InstancedIndex, Transform);
+			Transform =Block->ChessInEditor->GetActorTransform();
 			FQuat Rotation = FQuat(FVector::UpVector, FMath::DegreesToRadians(90.0f));
 			Transform.SetRotation(Rotation * Transform.GetRotation());
-			MeshComponent->UpdateInstanceTransform(InstancedIndex, Transform, false, true, false);
-
-			UBlock* Block = ViewportClient.Pin()->GetTilemapAsset()->Blocks[BlockIndex];
-			Block->MeshTransform = Transform;
+			Block->ChessInEditor->SetActorTransform(Transform);
+			Block->ChessData->ChessTransform = Transform;
 		}
 	}
 }
 
-void FTilemap3DSelectMeshMode::ExitMode()
+void FTilemap3DSelectChessMode::ExitMode()
 {
-	InstancedIndex = INDEX_NONE;
+	ViewportClient.Pin()->SetChessData(nullptr);
 	BlockIndex = INDEX_NONE;
-	MeshComponent = nullptr;
 }

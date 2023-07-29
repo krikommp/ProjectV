@@ -6,27 +6,25 @@
 #include "TilemapEditor/Generator/Tilemap3DTerrainGenerator.h"
 #include "TilemapEditor/Generator/Tilemap3DTileMeshGenerator.h"
 
-FTilemap3DAddCubeMode::FTilemap3DAddCubeMode()
-	: HitResultTraceDistance(10000.0f)
+FTilemap3DAddCubeMode::FTilemap3DAddCubeMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient)
+	: FTilemap3DBaseMode(InViewportClient), HitResultTraceDistance(10000.0f)
 {
-	EditMode = EEM_Cube_Append;
 }
 
 void FTilemap3DAddCubeMode::EnterMode()
 {
 }
 
-void FTilemap3DAddCubeMode::InputKey(FTilemap3DEditorViewportClient* ViewportClient,
-                                     const FInputKeyEventArgs& EventArgs)
+void FTilemap3DAddCubeMode::InputKey(const FInputKeyEventArgs& EventArgs)
 {
 	if (EventArgs.Key == EKeys::LeftMouseButton && EventArgs.Event == IE_Pressed)
 	{
-		FViewportCursorLocation CursorLocation = ViewportClient->GetCursorWorldLocationFromMousePos();
+		FViewportCursorLocation CursorLocation = ViewportClient.Pin()->GetCursorWorldLocationFromMousePos();
 
 		FHitResult HitResult;
 		const TArray<AActor*> IgnoreActor;
 		UKismetSystemLibrary::LineTraceSingle(
-			ViewportClient->GetWorld(),
+			ViewportClient.Pin()->GetWorld(),
 			CursorLocation.GetOrigin(),
 			CursorLocation.GetOrigin() + CursorLocation.GetDirection() * HitResultTraceDistance,
 			UEngineTypes::ConvertToTraceType(TilemapEditTrace),
@@ -37,16 +35,16 @@ void FTilemap3DAddCubeMode::InputKey(FTilemap3DEditorViewportClient* ViewportCli
 			false);
 		if (HitResult.bBlockingHit)
 		{
-			if (ViewportClient->GetCurrentFloor() != 0)
+			if (ViewportClient.Pin()->GetCurrentFloor() != 0)
 			{
-				const int32 Index = ViewportClient->GetTilemapAsset()->VectorToIndex(HitResult.Location, ViewportClient->GetCurrentFloor() - 1);
-				FTilemap3DTileMeshGenerator::RemoveTileMesh(ViewportClient->GetTilemapAsset(), ViewportClient->GetTileMeshMap(), Index);
+				const int32 Index = ViewportClient.Pin()->GetTilemapAsset()->VectorToIndex(HitResult.Location, ViewportClient.Pin()->GetCurrentFloor() - 1);
+				FTilemap3DTileMeshGenerator::RemoveTileMesh(ViewportClient.Pin()->GetTilemapAsset(), ViewportClient.Pin()->GetTileMeshMap(), Index);
 			}
-			FTilemap3DTerrainGenerator::ModifyVoxel(ViewportClient->GetTilemapAsset(), ViewportClient->GetTerrainMesh(),
+			FTilemap3DTerrainGenerator::ModifyVoxel(ViewportClient.Pin()->GetTilemapAsset(), ViewportClient.Pin()->GetTerrainMesh(),
 			                                        HitResult.Location,
-			                                        ViewportClient->GetTileCube(),
-			                                        ViewportClient->GetCurrentFloor(), ViewportClient->GetTerrainMat(),
-			                                        ViewportClient);
+			                                        ViewportClient.Pin()->GetTileCube(),
+			                                        ViewportClient.Pin()->GetCurrentFloor(), ViewportClient.Pin()->GetTerrainMat(),
+			                                        ViewportClient.Pin().Get());
 		}
 	}
 }

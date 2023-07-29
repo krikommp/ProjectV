@@ -9,15 +9,19 @@
 #include "Tilemap3DSelected.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "Generator/Tilemap3DChessGenerator.h"
 #include "Generator/Tilemap3DPathfindingGenerator.h"
 #include "Generator/Tilemap3DTerrainGenerator.h"
 #include "Generator/Tilemap3DTileMeshGenerator.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Mode/Tilemap3DAddCubeMode.h"
 #include "Mode/Tilemap3DAddMeshMode.h"
+#include "Mode/Tilemap3DRemoveChessMode.h"
 #include "Mode/Tilemap3DRemoveCubeMode.h"
 #include "Mode/Tilemap3DRemoveMeshMode.h"
+#include "Mode/Tilemap3DSelectChessMode.h"
 #include "Mode/Tilemap3DSelectMeshMode.h"
+#include "Mode/Tilemap3DSpawnChessMode.h"
 #include "StateMachine/Tilemap3DEditeModeStateMachine.h"
 #include "Tilemap/TileSet3DAsset.h"
 #include "TilemapEditor/Tilemap3DEditorSettings.h"
@@ -68,39 +72,20 @@ FTilemap3DEditorViewportClient::FTilemap3DEditorViewportClient(TSharedPtr<STilem
 	const auto OnTilemapEditModeChangedDelegate = FTilemap3DEditDelegates::FOnTilemapEditModeChanged::FDelegate::CreateRaw(
 	this, &FTilemap3DEditorViewportClient::OnTilemapEditModeChanged);
 	FTilemap3DEditDelegates::OnTilemapEditModeChanged.Add(OnTilemapEditModeChangedDelegate);
-	StateMachine = MakeUnique<FTilemap3DEditeModeStateMachine>();
-	StateMachine->RegisterEditMode<FTilemap3DAddCubeMode>(ETilemap3DEditMode::EEM_Cube_Append);
-	StateMachine->RegisterEditMode<FTilemap3DRemoveCubeMode>(ETilemap3DEditMode::EEM_Cube_Remove);
-	StateMachine->RegisterEditMode<FTilemap3DAddMeshMode>(ETilemap3DEditMode::EEM_Mesh_Append);
-	StateMachine->RegisterEditMode<FTilemap3DSelectMeshMode>(ETilemap3DEditMode::EEM_Mesh_Select);
-	StateMachine->RegisterEditMode<FTilemap3DRemoveMeshMode>(ETilemap3DEditMode::EEM_Mesh_Remove);
-
 	const auto OnTilemapFillFloorDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FTilemap3DEditorViewportClient::OnTilemapFillFloor);
 	FTilemap3DEditDelegates::OnTilemapFillFloor.Add(OnTilemapFillFloorDelegate);
-	
+	const auto OnTilemapEditStatueChangedDelegate =FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate::CreateRaw(this, &FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged);
+	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Add(OnTilemapEditStatueChangedDelegate);
+	const auto OnTilemapClearVoxelDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FTilemap3DEditorViewportClient::OnTilemapClearVoxel);
+	FTilemap3DEditDelegates::OnTilemapClearVoxel.Add(OnTilemapClearVoxelDelegate);
+	const auto OnTilemapGeneratePathFindingDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FTilemap3DEditorViewportClient::OnTilemapGeneratePathFinding);
+	FTilemap3DEditDelegates::OnTilemapGeneratePathFinding.Add(OnTilemapGeneratePathFindingDelegate);
+	StateMachine = MakeUnique<FTilemap3DEditeModeStateMachine>();
+
 	SetViewLocation(FVector(0.f, 100.f, 100.f));
 	SetLookAtLocation(FVector::Zero(), true);
 
 	HitResultTraceDistance = 10000.0f;
-
-	const auto OnTilemapEditStatueChangedDelegate =
-		FTilemap3DEditDelegates::FOnTilemapEditStatueChanged::FDelegate::CreateRaw(
-			this, &FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged);
-	FTilemap3DEditDelegates::OnTilemapEditStatueChanged.Add(
-		OnTilemapEditStatueChangedDelegate);
-
-	const auto OnTilemapClearVoxelDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(
-		this, &FTilemap3DEditorViewportClient::OnTilemapClearVoxel);
-	FTilemap3DEditDelegates::OnTilemapClearVoxel.Add(OnTilemapClearVoxelDelegate);
-
-	const auto OnTilemapGeneratePathFindingDelegate = FSimpleMulticastDelegate::FDelegate::CreateRaw(
-		this, &FTilemap3DEditorViewportClient::OnTilemapGeneratePathFinding);
-	FTilemap3DEditDelegates::OnTilemapGeneratePathFinding.Add(OnTilemapGeneratePathFindingDelegate);
-
-	FTilemap3DTerrainGenerator::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
-	FTilemap3DTileMeshGenerator::Setup(GetTilemapAsset(), MeshSet, PreviewScene, GetTileSet());
-
-	Clear();
 }
 
 FTilemap3DEditorViewportClient::~FTilemap3DEditorViewportClient()
@@ -127,12 +112,26 @@ void FTilemap3DEditorViewportClient::AddReferencedObjects(FReferenceCollector& C
 
 bool FTilemap3DEditorViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	// for (const auto& Mode : EditModes)
-	// {
-	// 	Mode->InputKey(this, EventArgs);
-	// }
-	StateMachine->InputKey(this, EventArgs);
+	StateMachine->InputKey(EventArgs);
 	return FEditorViewportClient::InputKey(EventArgs);
+}
+
+void FTilemap3DEditorViewportClient::OnConstruction()
+{
+	StateMachine->RegisterEditMode<FTilemap3DAddCubeMode>(AsShared(), ETilemap3DEditMode::EEM_Cube_Append);
+	StateMachine->RegisterEditMode<FTilemap3DRemoveCubeMode>(AsShared(), ETilemap3DEditMode::EEM_Cube_Remove);
+	StateMachine->RegisterEditMode<FTilemap3DAddMeshMode>(AsShared(), ETilemap3DEditMode::EEM_Mesh_Append);
+	StateMachine->RegisterEditMode<FTilemap3DSelectMeshMode>(AsShared(), ETilemap3DEditMode::EEM_Mesh_Select);
+	StateMachine->RegisterEditMode<FTilemap3DRemoveMeshMode>(AsShared(), ETilemap3DEditMode::EEM_Mesh_Remove);
+	StateMachine->RegisterEditMode<FTilemap3DSpawnChessMode>(AsShared(), ETilemap3DEditMode::EEM_Chess_Spawn);
+	StateMachine->RegisterEditMode<FTilemap3DSelectChessMode>(AsShared(), ETilemap3DEditMode::EEM_Chess_Select);
+	StateMachine->RegisterEditMode<FTilemap3DRemoveChessMode>(AsShared(), ETilemap3DEditMode::EEM_Chess_Remove);
+	
+	FTilemap3DTerrainGenerator::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
+	FTilemap3DTileMeshGenerator::Setup(GetTilemapAsset(), MeshSet, PreviewScene, GetTileSet());
+	FTilemap3DChessGenerator::Setup(this, GetTilemapAsset(), GetTileSet());
+	
+	Clear();
 }
 
 void FTilemap3DEditorViewportClient::DrawGrid(const FVector& Location, int32 RowCount, int32 ColCount, float CellSize,
@@ -211,6 +210,11 @@ int32 FTilemap3DEditorViewportClient::GetBlockTextureIndex(const FName& ID, int3
 	return -1;
 }
 
+void FTilemap3DEditorViewportClient::SetChessData(UGridChessPieceData* SelectedChessData) const
+{
+	DetailPtr->SelectedChessData = SelectedChessData;
+}
+
 void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 {
 	if (Statue)
@@ -221,8 +225,13 @@ void FTilemap3DEditorViewportClient::OnTilemapEditStatueChanged(bool Statue)
 		if (GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->Floors !=
 			GetTilemapAsset()->Blocks.Num())
 		{
-			TArray<FBlock> NewBlocks;
+			TArray<TObjectPtr<UBlock>> NewBlocks;
 			NewBlocks.SetNum(GetTilemapAsset()->LevelSizeX * GetTilemapAsset()->LevelSizeY * GetTilemapAsset()->Floors);
+			for (int32 Index = 0; Index < NewBlocks.Num(); Index++)
+			{
+				UBlock* NewBlock = NewObject<UBlock>(GetTilemapAsset());
+				NewBlocks[Index] = NewBlock;
+			}
 			for (int32 x = 0; x < GetTilemapAsset()->LevelSizeX; ++x)
 			{
 				for (int32 y = 0; y < GetTilemapAsset()->LevelSizeY; ++y)
@@ -387,6 +396,9 @@ void FTilemap3DEditorViewportClient::OnTilemapEditModeChanged(const ETilemap3DEd
 
 void FTilemap3DEditorViewportClient::OnTilemapFillFloor()
 {
+	if (GetTileCube() == nullptr)
+		return;
+	
 	auto* TilemapAsset = GetTilemapAsset();
 	for (int x = 0; x < TilemapAsset->LevelSizeX; ++x)
 	{
@@ -395,7 +407,7 @@ void FTilemap3DEditorViewportClient::OnTilemapFillFloor()
 			const int32 Index = x + y * TilemapAsset->LevelSizeX + GetCurrentFloor() * TilemapAsset->LevelSizeX * TilemapAsset->LevelSizeY;
 			if (TilemapAsset->Blocks.IsValidIndex(Index))
 			{
-				FBlock& Block = TilemapAsset->Blocks[Index];
+				UBlock* Block = TilemapAsset->Blocks[Index];
 				FTilemap3DTerrainGenerator::ModifyVoxel(TilemapAsset, TerrainMesh, GetTileCube(), Block, GetTerrainMat(), this);
 			}
 		}

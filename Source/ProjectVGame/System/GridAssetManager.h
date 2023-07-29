@@ -47,7 +47,7 @@ public:
 
 	const UGridGameData& GetGameData();
 	const UGridPawnData* GetDefaultPawnData() const;
-	const FGridHeroData& GetHeroData(int32 HeroID) const;
+	const FGridHeroData& GetHeroData(const FName& HeroID) const;
 	bool CheckCardData(const FString& CardId) const;
 	const FGridCardData& GetCardData(const FString& CardId) const;
 	const FGridSkillData& GetSkillData(const FName& SkillId) const;
@@ -119,7 +119,7 @@ protected:
 
 	// 已加载入内存的英雄数据
 	UPROPERTY(Transient)
-	TMap<int32, FGridHeroData> HeroDataMap;
+	TMap<FName, FGridHeroData> HeroDataMap;
 
 	// 全局卡牌数据
 	UPROPERTY(Config)

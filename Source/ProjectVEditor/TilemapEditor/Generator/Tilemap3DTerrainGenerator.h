@@ -10,23 +10,23 @@ public:
 	static void Setup(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
 	                  UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient);
 	static void ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
-	                        const FVector& Position, const FTileSet3DCube& Block, const int32 Floor,
+	                        const FVector& Position, const FTileSet3DCube* Block, const int32 Floor,
 	                        UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient);
 	static void ModifyVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
-							const FTileSet3DCube& BlockProperty, FBlock& Block,
+							const FTileSet3DCube* BlockProperty, UBlock* Block,
 							UMaterialInterface* Material, FTilemap3DEditorViewportClient* ViewClient);
 	static void ClearVoxel(UTilemapAsset* TilemapAsset, UProceduralMeshComponent* MeshComponent,
 	                       UMaterialInterface* Material);
 private:
 	static bool Check(UTilemapAsset* TilemapAsset, const FVector& Position);
 	static void CreateFace(UTilemapAsset* TilemapAsset, const EBlockDirection Direction,
-	                       const FVector& Position, const FBlock& Block, FTilemap3DEditorViewportClient* ViewClient);
+	                       const FVector& Position, const UBlock* Block, FTilemap3DEditorViewportClient* ViewClient);
 	static TArray<FVector> GetFaceVertices(const EBlockDirection Direction, const FVector& Position);
 	static FVector GetPositionInDirection(const EBlockDirection Direction, const FVector& Position);
 	static FVector GetNormal(const EBlockDirection Direction);
-	static void ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position, const FTileSet3DCube& Block,
+	static void ModifyVoxelData(UTilemapAsset* TilemapAsset, const FVector& Position, const FTileSet3DCube* Block,
 	                            const int32 Floor);
-	static int32 GetTextureIndex(const FBlock& Block, const FVector& Normal,
+	static int32 GetTextureIndex(const UBlock* Block, const FVector& Normal,
 	                             FTilemap3DEditorViewportClient* ViewClient);
 
 

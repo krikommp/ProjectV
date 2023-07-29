@@ -149,7 +149,7 @@ const UGridPawnData* UGridAssetManager::GetDefaultPawnData() const
 	return GetAsset(DefaultPawnData);
 }
 
-const FGridHeroData& UGridAssetManager::GetHeroData(int32 HeroID) const
+const FGridHeroData& UGridAssetManager::GetHeroData(const FName& HeroID) const
 {
 	return HeroDataMap.FindChecked(HeroID);
 }

@@ -4,11 +4,11 @@
 class FTilemap3DAddMeshMode final : public FTilemap3DBaseMode
 {
 public:
-	FTilemap3DAddMeshMode();
+	FTilemap3DAddMeshMode(const TSharedPtr<FTilemap3DEditorViewportClient>& InViewportClient);
 
 	//~ Begin FTilemap3DBaseMode interface
 	virtual void EnterMode() override;
-	virtual void InputKey(FTilemap3DEditorViewportClient* ViewportClient, const FInputKeyEventArgs& EventArgs) override;
+	virtual void InputKey(const FInputKeyEventArgs& EventArgs) override;
 	virtual void ExitMode() override;
 	//~ Begin FTilemap3DBaseMode interface
 private:

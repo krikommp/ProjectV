@@ -301,7 +301,7 @@ void AGridGameMode::InitGameState()
 
 	UGridExperienceManagerComponent* ExperienceManagerComponent = GameState->FindComponentByClass<UGridExperienceManagerComponent>();
 	check(ExperienceManagerComponent);
-	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded_HighPriority(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 }
 
 void AGridGameMode::PostLogin(APlayerController* NewPlayer)

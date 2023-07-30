@@ -137,6 +137,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="Level Values")
 	FTransform PlayerStart;
 
+	UPROPERTY(VisibleAnywhere, Category="Level Values")
+	float PlayerStartHeight = 100.0f;
+
 	int32 GetMaxLevelHeight() const { return (Floors + 1) * GridSize; }
 	int32 GetMinLevelHeight() const { return 0; }
 	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const;

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TilemapAsset.h"
 #include "GameFramework/Actor.h"
 #include "Tilemap3DActor.generated.h"
 
@@ -17,12 +18,13 @@ class PROJECTVGAME_API ATilemap3DActor : public AActor
 public:
 	ATilemap3DActor();
 
-	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 
+	// 设置该对象的TilemapAsset
+	void SetupTilemapAsset(const UTilemapAsset* InTilemapAsset);
+
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
-	TObjectPtr<UTilemapAsset> TilemapAsset;
+	TWeakObjectPtr<const UTilemapAsset> TilemapAsset;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UProceduralMeshComponent> ProceduralMeshComponent;

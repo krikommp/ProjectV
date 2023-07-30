@@ -41,7 +41,7 @@ void FTilemap3DPlayerStartMode::InputKey(const FInputKeyEventArgs& EventArgs)
 			FVector Location = ViewportClient.Pin()->GetTilemapAsset()->IndexToVector(Index);
 			Location.Z = Index / (ViewportClient.Pin()->GetTilemapAsset()->LevelSizeX * ViewportClient.Pin()->GetTilemapAsset()->
 				LevelSizeY) * ViewportClient.Pin()->GetTilemapAsset()->GridSize + ViewportClient.Pin()->GetTilemapAsset()->GridSize;
-			Transform.SetLocation(Location);
+			Transform.SetLocation(Location + FVector::UpVector * ViewportClient.Pin()->GetTilemapAsset()->PlayerStartHeight);
 
 			ViewportClient.Pin()->GetTilemapAsset()->PlayerStart = Transform;
 		}

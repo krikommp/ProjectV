@@ -22,6 +22,7 @@
 #include "ChessPieces/GridChessPieceExtensionComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameModes/GridExperienceManagerComponent.h"
 #include "GridMapManager/GridMapManager.h"
 #include "GridTurnManager/GridTurnManagerComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -35,7 +36,6 @@
 UGridTurnBaseMasterComponent::UGridTurnBaseMasterComponent(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
-	GridMapManager = nullptr;
 	bEdgeScrolling = false;
 
 	PrimaryComponentTick.bCanEverTick = true;
@@ -51,32 +51,9 @@ void UGridTurnBaseMasterComponent::OnRegister()
 
 	FGridGlobalDelegates::OnActiveInputModeChanged.AddUObject(this, &ThisClass::HandleActiveInputModeChanged);
 	FGridGlobalDelegates::OnChessPieceSelectChanged.AddUObject(this, &ThisClass::HandleChessPieceSelectChanged);
-	
-	if (UGridMapStateComponent* GridMapStateComponent = World->GetGameState()->FindComponentByClass<UGridMapStateComponent>())
-	{
-		GridMapStateComponent->CallOrRegister_OnGridMapInitialized(FOnGridMapMangerInitielized::FDelegate::CreateUObject(this, &ThisClass::OnGridMapInitialized));
-	}else
-	{
-		UE_LOG(LogGrid, Error,
-	   TEXT(
-		   "[UGridTurnBaseMasterComponent:OnRegister] This component has been added to a blueprint whose base class is not a Pawn. To use this component, it MUST be placed on a Pawn Blueprint."
-	   ));
 
-#if WITH_EDITOR
-		if (GIsEditor)
-		{
-			static const FText Message = NSLOCTEXT("GridTurnBaseMasterComponent", "NotOnPawnError",
-												   "has been added to a blueprint whose base class is not a Pawn. To use this component, it MUST be placed on a Pawn Blueprint. This will cause a crash if you PIE!");
-			static const FName HeroMessageLogName = TEXT("GridTurnBaseMasterComponent");
-
-			FMessageLog(HeroMessageLogName).Error()
-										   ->AddToken(FUObjectToken::Create(this, FText::FromString(GetNameSafe(this))))
-										   ->AddToken(FTextToken::Create(Message));
-
-			FMessageLog(HeroMessageLogName).Open();
-		}
-#endif
-	}
+	bCanPan = true;
+	bEdgeScrolling = true;
 }
 
 void UGridTurnBaseMasterComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -334,7 +311,7 @@ void UGridTurnBaseMasterComponent::CameraControllerMove()
 		const FVector ForwardVector = UKismetMathLibrary::GetForwardVector(UKismetMathLibrary::MakeRotator(0.0f, 0.0f, Character->GetCameraComponent()->GetComponentRotation().Yaw));
 		FVector NewLocation = ForwardVector * ( CameraMoveSpeed * (Character->GetSpringArmComponent()->TargetArmLength / 2000.0f) * UIInputUpDown );
 		NewLocation += Character->GetActorLocation();
-		NewLocation = CheckOuterBounds(NewLocation);
+		//NewLocation = CheckOuterBounds(NewLocation);
 		Character->SetActorLocation(NewLocation);
 		bIsPanning = true;
 	}
@@ -343,37 +320,37 @@ void UGridTurnBaseMasterComponent::CameraControllerMove()
 		const FVector RightVector = UKismetMathLibrary::GetRightVector(UKismetMathLibrary::MakeRotator(0.0f, 0.0f, Character->GetCameraComponent()->GetComponentRotation().Yaw));
 		FVector NewLocation = RightVector * ( CameraMoveSpeed * (Character->GetSpringArmComponent()->TargetArmLength / 2000.0f) * UIInputRightLeft );
 		NewLocation += Character->GetActorLocation();
-		NewLocation = CheckOuterBounds(NewLocation);
+		//NewLocation = CheckOuterBounds(NewLocation);
 		Character->SetActorLocation(NewLocation);
 		bIsPanning = true;
 	}
 }
 
-void UGridTurnBaseMasterComponent::OnGridMapInitialized(AGridMapManager* InGridMapManager)
-{
-	check(InGridMapManager);
-
-	if (GridMapManager != InGridMapManager)
-	{
-		GridMapManager = InGridMapManager;
-	}
-
-	bEdgeScrolling = true;
-	bCanPan = true;
-}
-
-FVector UGridTurnBaseMasterComponent::CheckOuterBounds(const FVector& InLocation) const
-{
-	check(GridMapManager);
-	
-	FVector NewLocation;
-
-	const float XValue = GridMapManager->GridSizeX * GridMapManager->TileBoundsX;
-	const float YValue = GridMapManager->GridSizeY * GridMapManager->TileBoundsY;
-
-	NewLocation.X = FMath::Max(InLocation.X < XValue ? InLocation.X : XValue, 0.0f);
-	NewLocation.Y = FMath::Max(InLocation.Y < YValue ? InLocation.Y : YValue, 0.0f);
-	NewLocation.Z = InLocation.Z;
-
-	return NewLocation;
-}
+// void UGridTurnBaseMasterComponent::OnGridMapInitialized(AGridMapManager* InGridMapManager)
+// {
+// 	check(InGridMapManager);
+//
+// 	if (GridMapManager != InGridMapManager)
+// 	{
+// 		GridMapManager = InGridMapManager;
+// 	}
+//
+// 	bEdgeScrolling = true;
+// 	bCanPan = true;
+// }
+//
+// FVector UGridTurnBaseMasterComponent::CheckOuterBounds(const FVector& InLocation) const
+// {
+// 	check(GridMapManager);
+// 	
+// 	FVector NewLocation;
+//
+// 	const float XValue = GridMapManager->GridSizeX * GridMapManager->TileBoundsX;
+// 	const float YValue = GridMapManager->GridSizeY * GridMapManager->TileBoundsY;
+//
+// 	NewLocation.X = FMath::Max(InLocation.X < XValue ? InLocation.X : XValue, 0.0f);
+// 	NewLocation.Y = FMath::Max(InLocation.Y < YValue ? InLocation.Y : YValue, 0.0f);
+// 	NewLocation.Z = InLocation.Z;
+//
+// 	return NewLocation;
+// }

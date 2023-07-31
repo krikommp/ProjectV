@@ -8,6 +8,9 @@
 #include "Components/PawnComponent.h"
 #include "MasterInputComponent.generated.h"
 
+struct FMappableConfigPair;
+struct FInputActionValue;
+
 #define FIND_COMP(Name)\
 	UFUNCTION(BlueprintPure) \
 	static U##Name* Find##Name(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<U##Name>() : nullptr); }
@@ -19,6 +22,10 @@ class PROJECTVGAME_API UMasterInputComponent : public UPawnComponent, public IGa
 	GENERATED_UCLASS_BODY()
 	FIND_COMP(MasterInputComponent)
 
+	// 默认的输入配置
+	UPROPERTY(EditAnywhere)
+	TArray<FMappableConfigPair> DefaultInputConfigs;
+	
 protected:
 	virtual void OnRegister() override;
 	virtual void BeginPlay() override;
@@ -48,4 +55,10 @@ private:
 
 	// 执行按键绑定的操作
 	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
+
+	//~ Begin 按键操作函数
+	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
+	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
+	void Input_Move(const FInputActionValue& InputActionValue);
+	//~ Begin 按键操作函数
 };

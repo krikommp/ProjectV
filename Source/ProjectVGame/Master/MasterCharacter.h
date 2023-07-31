@@ -8,6 +8,7 @@
 #include "MasterCharacter.generated.h"
 
 
+class UMasterMovementComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class UGridPawnExtensionComponent;
@@ -42,4 +43,6 @@ private:
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY(VisibleAnywhere, Category="Gird|Components")
 	TObjectPtr<UCameraComponent> CameraComponent;
+	UPROPERTY(VisibleAnywhere, Category="Gird|Components")
+	TObjectPtr<UMasterMovementComponent> MovementComponent;
 };

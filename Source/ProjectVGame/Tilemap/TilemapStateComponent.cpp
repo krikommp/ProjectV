@@ -71,7 +71,7 @@ void UTilemapStateComponent::LoadTilemapFinished()
 	// 尝试获取默认玩家控制对象
 	const UTilemapAsset* TilemapAsset = ExperienceManagerComponent->GetCurrentExperienceChecked()->TilemapAsset;
 	const APlayerController* DefaultPlayerController = GetWorld()->GetFirstPlayerController();
-	ACharacter* Character = DefaultPlayerController->GetCharacter();
+	APawn* Character = DefaultPlayerController->GetPawn();
 	Character->SetActorTransform(TilemapAsset->PlayerStart);
 
 	// 为TilemapActor设置TilemapAsset

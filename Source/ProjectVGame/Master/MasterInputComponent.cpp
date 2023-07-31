@@ -3,12 +3,17 @@
 
 #include "MasterInputComponent.h"
 
+#include "EnhancedInputSubsystems.h"
 #include "GridGameplayTags.h"
 #include "GridLogChannel.h"
 #include "Character/GridPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "Input/GridInputComponent.h"
+#include "Input/GridMappableConfigPair.h"
+#include "Player/GridLocalPlayer.h"
 #include "Player/GridPlayerController.h"
 #include "Player/GridPlayerState.h"
+#include "PlayerMappableInputConfig.h"
 #if WITH_EDITOR
 #include "Misc/UObjectToken.h"
 #endif	// WITH_EDITOR
@@ -58,6 +63,13 @@ void UMasterInputComponent::OnRegister()
 void UMasterInputComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 监听 PawnExtComp 的状态改变事件
+	BindOnActorInitStateChanged(UGridPawnExtensionComponent::NAME_ActorFeatureName, FGameplayTag(), nullptr);
+
+	// 当前我们已经完成了 Spawn，需要重置当前的初始化状态
+	ensure(TryToChangeInitState(FGridGameplayTags::Get().InitState_Spawned));
+	CheckDefaultInitialization();
 }
 
 void UMasterInputComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -179,4 +191,107 @@ void UMasterInputComponent::CheckDefaultInitialization()
 
 void UMasterInputComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
 {
+	check(PlayerInputComponent);
+
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+
+	const APlayerController* PC = GetController<APlayerController>();
+	check(PC);
+
+	const UGridLocalPlayer* LP = Cast<UGridLocalPlayer>(PC->GetLocalPlayer());
+	check(LP);
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	Subsystem->ClearAllMappings();
+
+	if (const UGridPawnExtensionComponent* PawnExtComp = UGridPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	{
+		if (const UGridPawnData* PawnData = PawnExtComp->GetPawnData<UGridPawnData>())
+		{
+			if (const UGridInputConfig* InputConfig = PawnData->InputConfig)
+			{
+				const FGridGameplayTags& GameplayTags = FGridGameplayTags::Get();
+
+				// Register any default input configs with the settings so that they will be applied to the player during AddInputMappings
+				for (const FMappableConfigPair& Pair : DefaultInputConfigs)
+				{
+					if (Pair.bShouldActivateAutomatically && Pair.CanBeActivated())
+					{
+						FModifyContextOptions Options = {};
+						Options.bIgnoreAllPressedKeysUntilRelease = false;
+						// Actually add the config to the local player							
+						Subsystem->AddPlayerMappableConfig(Pair.Config.LoadSynchronous(), Options);	
+					}
+				}
+
+				UGridInputComponent* GridIC = CastChecked<UGridInputComponent>(PlayerInputComponent);
+				GridIC->AddInputMappings(InputConfig, Subsystem);
+
+				TArray<uint32> BindHandles;
+				GridIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+				GridIC->BindNativeAction(InputConfig, GameplayTags.InputTag_TileBaseCameraMove, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
+			}
+		}
+	}
+}
+
+void UMasterInputComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UGridPawnExtensionComponent* PawnExtComp = UGridPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (UGridAbilitySystemComponent* GridASC = PawnExtComp->GetGridAbilitySystemComponent())
+			{
+				//GridASC->AbilityInputTagPressed(InputTag);
+			}
+		}	
+	}
+}
+
+void UMasterInputComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+
+	if (const UGridPawnExtensionComponent* PawnExtComp = UGridPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	{
+		if (UGridAbilitySystemComponent* GridASC = PawnExtComp->GetGridAbilitySystemComponent())
+		{
+			//GridASC->AbilityInputTagReleased(InputTag);
+		}
+	}
+}
+
+void UMasterInputComponent::Input_Move(const FInputActionValue& InputActionValue)
+{
+	APawn* Pawn = GetPawn<APawn>();
+	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
+
+	if (Controller)
+	{
+		const FVector2D Value = InputActionValue.Get<FVector2D>();
+		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+
+		if (Value.X != 0.0f)
+		{
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+			Pawn->AddMovementInput(MovementDirection, Value.X);
+		}
+
+		if (Value.Y != 0.0f)
+		{
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+			Pawn->AddMovementInput(MovementDirection, Value.Y);
+		}
+	}
 }

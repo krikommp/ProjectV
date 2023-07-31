@@ -8,7 +8,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-
+#include "MasterMovementComponent.h"
 
 AMasterCharacter::AMasterCharacter(const FObjectInitializer& ObjectInitializer)
 {
@@ -26,6 +26,7 @@ AMasterCharacter::AMasterCharacter(const FObjectInitializer& ObjectInitializer)
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	
 	ExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UGridPawnExtensionComponent>(this, TEXT("ExtensionComponent"));
+	MovementComponent = ObjectInitializer.CreateDefaultSubobject<UMasterMovementComponent>(this, TEXT("MovementComponent"));
 	
 	PrimaryActorTick.bCanEverTick = true;
 }

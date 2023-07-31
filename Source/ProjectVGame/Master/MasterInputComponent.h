@@ -12,6 +12,11 @@
 struct FMappableConfigPair;
 struct FInputActionValue;
 
+/**
+ * UMasterInputComponent
+ *
+ * 主相机输入组件，用于定义玩家的各种输入配置
+ */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTVGAME_API UMasterInputComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
 {

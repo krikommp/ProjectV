@@ -23,6 +23,9 @@ public:
 	// 设置该对象的TilemapAsset
 	void SetupTilemapAsset(const UTilemapAsset* InTilemapAsset);
 
+	// 检测传入位置是否越界, 如果越界将会返回修正之后的位置，否则返回原始位置
+	void CheckLocationOutBound(FVector& InLocation) const;
+
 private:
 	TWeakObjectPtr<const UTilemapAsset> TilemapAsset;
 

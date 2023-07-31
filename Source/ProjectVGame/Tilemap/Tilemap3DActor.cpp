@@ -74,3 +74,14 @@ void ATilemap3DActor::SetupTilemapAsset(const UTilemapAsset* InTilemapAsset)
 		Block->MeshInstancedIndex = MeshComponent->AddInstance(Block->MeshTransform);
 	}
 }
+
+void ATilemap3DActor::CheckLocationOutBound(FVector& InLocation) const
+{
+	check(TilemapAsset.IsValid());
+	
+	const float XValue = TilemapAsset->GridSize * TilemapAsset->LevelSizeX - TilemapAsset->MapBoundOffset;
+	const float YValue = TilemapAsset->GridSize * TilemapAsset->LevelSizeY - TilemapAsset->MapBoundOffset;
+
+	InLocation.X = GetActorLocation().X + FMath::Max(InLocation.X < XValue ? InLocation.X : XValue, TilemapAsset->MapBoundOffset);
+	InLocation.Y = GetActorLocation().Y + FMath::Max(InLocation.Y < YValue ? InLocation.Y : YValue, TilemapAsset->MapBoundOffset);
+}

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GridComponents.h"
 #include "Components/ActorComponent.h"
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "Components/PawnComponent.h"
@@ -10,11 +11,6 @@
 
 struct FMappableConfigPair;
 struct FInputActionValue;
-
-#define FIND_COMP(Name)\
-	UFUNCTION(BlueprintPure) \
-	static U##Name* Find##Name(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<U##Name>() : nullptr); }
-
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTVGAME_API UMasterInputComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
@@ -47,7 +43,7 @@ public:
 
 private:
 	// 用于告知其他模块输入绑定完成
-	static const FName Name_BindInputsNow;
+	static const FName NAME_BindInputsNow;
 	// 定义该模块的名称
 	static const FName NAME_ActorFeatureName;
 	// 是否完成绑定标志位

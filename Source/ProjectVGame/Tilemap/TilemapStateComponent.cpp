@@ -6,6 +6,7 @@
 #include "GridLogChannel.h"
 #include "Tilemap3DActor.h"
 #include "TilemapAsset.h"
+#include "TilemapExtensionComponent.h"
 #include "GameFramework/Character.h"
 #include "GameModes/GridExperienceDefinition.h"
 #include "GameModes/GridExperienceManagerComponent.h"
@@ -76,6 +77,12 @@ void UTilemapStateComponent::LoadTilemapFinished()
 
 	// 为TilemapActor设置TilemapAsset
 	TilemapActor->SetupTilemapAsset(TilemapAsset);
+
+	// 设置 Tilemap 数据到主相机
+	if (UTilemapExtensionComponent* TilemapExtensionComponent = UTilemapExtensionComponent::FindTilemapExtensionComponent(Character))
+	{
+		TilemapExtensionComponent->SetTilemap(TilemapActor);
+	}
 
 	bLoadTilemapFinished = true;
 }

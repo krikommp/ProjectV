@@ -18,7 +18,7 @@
 #include "Misc/UObjectToken.h"
 #endif	// WITH_EDITOR
 
-const FName UMasterInputComponent::Name_BindInputsNow("BindInputsNow");
+const FName UMasterInputComponent::NAME_BindInputsNow("BindInputsNow");
 const FName UMasterInputComponent::NAME_ActorFeatureName("MasterInput");
 
 UMasterInputComponent::UMasterInputComponent(const FObjectInitializer& ObjectInitializer)
@@ -141,8 +141,8 @@ bool UMasterInputComponent::CanChangeInitState(UGameFrameworkComponentManager* M
 	{
 		AGridPlayerState* GridPS = GetPlayerState<AGridPlayerState>();
 
-		// 这里是判断 PawnExtComp 的数据是否准备完毕
-		// 默认可控制对象上面都会挂载一个 PawnExtComp
+		// 这里是判断 TilemapExtComp 的数据是否准备完毕
+		// master 和 棋子对象上面都会挂载一个 TilemapExtComp
 		return GridPS && Manager->HasFeatureReachedInitState(Pawn, UGridPawnExtensionComponent::NAME_ActorFeatureName, InitTags.InitState_DataInitialized);
 	}else if (CurrentState == InitTags.InitState_DataInitialized && DesiredState == InitTags.InitState_GameplayReady)
 	{
@@ -239,6 +239,10 @@ void UMasterInputComponent::InitializePlayerInput(UInputComponent* PlayerInputCo
 			}
 		}
 	}
+
+	// 通知
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APlayerController*>(PC), NAME_BindInputsNow);
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
 }
 
 void UMasterInputComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)

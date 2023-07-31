@@ -8,6 +8,7 @@
 #include "MasterCharacter.generated.h"
 
 
+class UTilemapExtensionComponent;
 class UMasterMovementComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -39,6 +40,8 @@ private:
 	TObjectPtr<UArrowComponent> ArrowComponent;
 	UPROPERTY(VisibleAnywhere, Category="Gird|Components")
 	TObjectPtr<UGridPawnExtensionComponent> ExtensionComponent;
+	UPROPERTY(VisibleAnywhere, Category="Gird|Components")
+	TObjectPtr<UTilemapExtensionComponent> TilemapExtensionComponent;
 	UPROPERTY(VisibleAnywhere, Category="Gird|Components")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY(VisibleAnywhere, Category="Gird|Components")

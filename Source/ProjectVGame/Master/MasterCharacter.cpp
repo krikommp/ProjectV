@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MasterMovementComponent.h"
+#include "Tilemap/TilemapExtensionComponent.h"
 
 AMasterCharacter::AMasterCharacter(const FObjectInitializer& ObjectInitializer)
 {
@@ -27,6 +28,7 @@ AMasterCharacter::AMasterCharacter(const FObjectInitializer& ObjectInitializer)
 	
 	ExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UGridPawnExtensionComponent>(this, TEXT("ExtensionComponent"));
 	MovementComponent = ObjectInitializer.CreateDefaultSubobject<UMasterMovementComponent>(this, TEXT("MovementComponent"));
+	TilemapExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UTilemapExtensionComponent>(this, TEXT("TilemapExtensionComponent"));
 	
 	PrimaryActorTick.bCanEverTick = true;
 }

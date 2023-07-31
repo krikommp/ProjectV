@@ -83,11 +83,6 @@ void UMasterMovementComponent::HandleChangeInitState(UGameFrameworkComponentMana
 	if (CurrentState == FGridGameplayTags::Get().InitState_DataAvailable && DesiredState == FGridGameplayTags::Get().InitState_DataInitialized)
 	{
 		bPanning = false;
-		const APawn* Pawn = GetPawn<APawn>();
-		if (const UTilemapExtensionComponent* TilemapExtensionComponent = UTilemapExtensionComponent::FindTilemapExtensionComponent(Pawn))
-		{
-			Tilemap3DActorRef = TilemapExtensionComponent->GetTilemap();
-		}
 	}
 }
 
@@ -207,7 +202,10 @@ void UMasterMovementComponent::Moving(float DeltaTime) const
 
 	const FVector CurrentLocation = GetOwner()->GetActorLocation();
 	FVector NewLocation = CurrentLocation + InputVector * MoveSpeed * DeltaTime;
-	Tilemap3DActorRef->CheckLocationOutBound(NewLocation);
+	if (const auto* TilemapExtComp = UTilemapExtensionComponent::FindTilemapExtensionComponent(Pawn))
+	{
+		TilemapExtComp->CheckLocationOutBound(NewLocation);
+	}
 	Pawn->SetActorLocation(NewLocation);
 }
 
@@ -264,5 +262,4 @@ void UMasterMovementComponent::FinishMovement()
 		bNeedJump = false;
 		InterpJump.Reset();
 	}
-	
 }

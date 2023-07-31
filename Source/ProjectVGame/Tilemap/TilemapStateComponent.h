@@ -33,7 +33,8 @@ public:
 	
 private:
 	void OnExperienceLoaded(const UGridExperienceDefinition* Experience);
-	void LoadTilemapFinished();
+	void LoadTilemapFinished_Step1();
+	void LoadTilemapFinished_Step2();
 	
 	// 需要被放置到场景中的 Tilemap
 	UPROPERTY(Transient)

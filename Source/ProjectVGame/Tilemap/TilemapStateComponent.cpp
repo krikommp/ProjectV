@@ -51,18 +51,18 @@ void UTilemapStateComponent::OnExperienceLoaded(const UGridExperienceDefinition*
 	{
 		UE_LOG(LogGrid, Verbose, TEXT("Multiple TilemapActors found in the scene, prioritizing the first TilemapActor."));
 		TilemapActor = Cast<ATilemap3DActor>(OuterActors[0]);
-		LoadTilemapFinished();
+		LoadTilemapFinished_Step1();
 	}else
 	{
 		// 当前场景中没有手动放置任何 TilemapActor
 		// 尝试自动创建一个 Actor 并放置到场景中
 		TilemapActor = GetWorld()->SpawnActor<ATilemap3DActor>();
 		TilemapActor->SetActorTransform(FTransform::Identity);
-		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished));
+		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step1));
 	}
 }
 
-void UTilemapStateComponent::LoadTilemapFinished()
+void UTilemapStateComponent::LoadTilemapFinished_Step1()
 {
 	const UGridExperienceManagerComponent* ExperienceManagerComponent = GetGameState<AGridGameState>()->FindComponentByClass<UGridExperienceManagerComponent>();
 	if (ExperienceManagerComponent == nullptr)
@@ -84,5 +84,10 @@ void UTilemapStateComponent::LoadTilemapFinished()
 		TilemapExtensionComponent->SetTilemap(TilemapActor);
 	}
 
+	LoadTilemapFinished_Step2();
+}
+
+void UTilemapStateComponent::LoadTilemapFinished_Step2()
+{
 	bLoadTilemapFinished = true;
 }

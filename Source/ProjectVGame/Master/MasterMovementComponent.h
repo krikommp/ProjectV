@@ -78,7 +78,5 @@ private:
 	uint8 bNeedJump : 1;
 	uint8 bPanning : 1;
 	
-	TWeakObjectPtr<const ATilemap3DActor> Tilemap3DActorRef;
-
 	FInterpJump InterpJump;
 };

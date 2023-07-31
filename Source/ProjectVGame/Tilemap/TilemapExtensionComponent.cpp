@@ -6,6 +6,7 @@
 #include "GridGameplayTags.h"
 #include "Character/GridPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "TilemapAsset.h"
 #include "Player/GridPlayerState.h"
 
 const FName UTilemapExtensionComponent::NAME_ActorFeatureName("TilemapExtension");
@@ -17,6 +18,17 @@ UTilemapExtensionComponent::UTilemapExtensionComponent(const FObjectInitializer&
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Tilemap3DActor = nullptr;
+}
+
+void UTilemapExtensionComponent::CheckLocationOutBound(FVector& InLocation) const
+{
+	check(Tilemap3DActor->GetTilemap());
+	
+	const float XValue = Tilemap3DActor->GetTilemap()->GridSize * Tilemap3DActor->GetTilemap()->LevelSizeX - Tilemap3DActor->GetTilemap()->MapBoundOffset;
+	const float YValue = Tilemap3DActor->GetTilemap()->GridSize * Tilemap3DActor->GetTilemap()->LevelSizeY - Tilemap3DActor->GetTilemap()->MapBoundOffset;
+
+	InLocation.X = Tilemap3DActor->GetActorLocation().X + FMath::Max(InLocation.X < XValue ? InLocation.X : XValue, Tilemap3DActor->GetTilemap()->MapBoundOffset);
+	InLocation.Y = Tilemap3DActor->GetActorLocation().Y + FMath::Max(InLocation.Y < YValue ? InLocation.Y : YValue, Tilemap3DActor->GetTilemap()->MapBoundOffset);
 }
 
 void UTilemapExtensionComponent::OnRegister()

@@ -27,6 +27,9 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	// 定义该模块的名称
 	static const FName NAME_ActorFeatureName;
 
+	// 检测传入位置是否越界, 如果越界将会返回修正之后的位置，否则返回原始位置
+	void CheckLocationOutBound(FVector& InLocation) const;
+
 protected:
 	virtual void OnRegister() override;
 	virtual void BeginPlay() override;

@@ -53,9 +53,6 @@ int32 UTilemapAsset::PathFindingBlockToBlock(int32 Index) const
 	const FTilemapPathFindingBlock PathFindingBlock = PathFindingBlocks[Index];
 	const FVector TileLocation = PathFindingBlock.Location;
 
-	//const int32 Floor = FMath::Floor(TileLocation.Z / GridSize);
-
-	//return VectorToIndex(TileLocation, Floor);
 	return VectorToIndex(TileLocation);
 }
 

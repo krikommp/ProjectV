@@ -18,11 +18,19 @@ protected:
 
 	// 地面检测的射线高度，也就是与地面的距离
 	UPROPERTY(EditAnywhere, Category="Ground")
-	float GroundCheckLength = 0.1f;
+	float GroundCheckLength = 100.f;
 
 	// 下坠速度
 	UPROPERTY(EditAnywhere, Category="Ground")
-	float FallingSpeed = 10.0f;
+	float FallingSpeed = 30.0f;
+
+	// 移动检测距离
+	UPROPERTY(EditAnywhere, Category="Move")
+	float MoveCheckLength = 50.0f;
+
+	// 移动速度
+	UPROPERTY(EditAnywhere, Category="Move")
+	float MoveSpeed = 30.0f;
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
@@ -30,4 +38,11 @@ public:
 private:
 	void Falling(float DeltaTime) const;
 	bool CheckUnderGround() const;
+
+	void Moving(float DeltaTime) const;
+	bool CheckNeedJump() const;
+
+	void FinishMovement();
+
+	bool bNeedJump;
 };

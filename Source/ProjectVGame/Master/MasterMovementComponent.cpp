@@ -8,7 +8,7 @@
 
 
 UMasterMovementComponent::UMasterMovementComponent(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer), bNeedJump(false)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
@@ -25,6 +25,9 @@ void UMasterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	Falling(DeltaTime);
+	bNeedJump = CheckNeedJump();
+	Moving(DeltaTime);
+	FinishMovement();
 }
 
 void UMasterMovementComponent::Falling(float DeltaTime) const
@@ -46,7 +49,48 @@ bool UMasterMovementComponent::CheckUnderGround() const
 
 	FHitResult HitResult;
 	TArray<AActor*> IgnoreActors;
-	UKismetSystemLibrary::LineTraceSingle(GetWorld(), RayStart, RayEnd, UEngineTypes::ConvertToTraceType(PathTrace), false, IgnoreActors, EDrawDebugTrace::Persistent, HitResult, false);
+	UKismetSystemLibrary::LineTraceSingle(GetWorld(), RayStart, RayEnd, UEngineTypes::ConvertToTraceType(PathTrace), false, IgnoreActors, EDrawDebugTrace::None, HitResult, false);
 
 	return HitResult.bBlockingHit;
+}
+
+void UMasterMovementComponent::Moving(float DeltaTime) const
+{
+	APawn* Pawn = GetPawn<APawn>();
+
+	const FVector InputVector = Pawn->GetPendingMovementInputVector();
+	if (InputVector == FVector::Zero())
+		return;
+
+	const FVector CurrentLocation = GetOwner()->GetActorLocation();
+	const FVector NewLocation = CurrentLocation + InputVector * MoveSpeed * DeltaTime + (bNeedJump ? FVector::UpVector * 100.0f : FVector::Zero()); 
+	Pawn->SetActorLocation(NewLocation);
+}
+
+bool UMasterMovementComponent::CheckNeedJump() const
+{
+	APawn* Pawn = GetPawn<APawn>();
+
+	FVector InputVector = Pawn->GetPendingMovementInputVector();
+	if (InputVector == FVector::Zero())
+		return false;
+	InputVector.Normalize();
+
+	const FVector ActorLocation = Pawn->GetActorLocation();
+
+	const FVector RayStart = ActorLocation;
+	const FVector RayEnd = ActorLocation - InputVector * MoveCheckLength;
+
+	FHitResult HitResult;
+	TArray<AActor*> IgnoreActors;
+	UKismetSystemLibrary::LineTraceSingle(GetWorld(), RayStart, RayEnd, UEngineTypes::ConvertToTraceType(PathTrace), false, IgnoreActors, EDrawDebugTrace::None, HitResult, false);
+
+	return HitResult.bBlockingHit;
+}
+
+void UMasterMovementComponent::FinishMovement()
+{
+	APawn* Pawn = GetPawn<APawn>();
+	Pawn->ConsumeMovementInputVector();
+	bNeedJump = false;
 }

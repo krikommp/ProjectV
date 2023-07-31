@@ -22,8 +22,32 @@ UMasterMovementComponent::UMasterMovementComponent(const FObjectInitializer& Obj
 }
 
 
+void FInterpJump::Init(float Z, float ZOffset)
+{
+	StartZ = Z;
+	EndZ = StartZ + ZOffset;
+}
+
+float FInterpJump::Interp(float DeltaTime, float Speed)
+{
+	Time = FMath::Clamp(Time + DeltaTime * Speed, 0.0f, 1.0f);
+	return FMath::Lerp(StartZ, EndZ, Time);
+}
+
+void FInterpJump::Reset()
+{
+	StartZ = 0.0f;
+	EndZ = 0.0f;
+	Time = 0.0f;
+}
+
+bool FInterpJump::Check(float Z)
+{
+	return FMath::Abs(EndZ - Z)  <= 1.e-4f;
+}
+
 bool UMasterMovementComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
-	FGameplayTag DesiredState) const
+                                                  FGameplayTag DesiredState) const
 {
 	check(Manager);
 
@@ -140,10 +164,12 @@ void UMasterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
                                              FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (bPanning)
+		return;
 
 	Falling(DeltaTime);
-	bNeedJump = CheckNeedJump();
 	Moving(DeltaTime);
+	MovingUp(DeltaTime);
 	FinishMovement();
 }
 
@@ -180,9 +206,27 @@ void UMasterMovementComponent::Moving(float DeltaTime) const
 		return;
 
 	const FVector CurrentLocation = GetOwner()->GetActorLocation();
-	FVector NewLocation = CurrentLocation + InputVector * MoveSpeed * DeltaTime + (bNeedJump ? FVector::UpVector * 100.0f : FVector::Zero());
+	FVector NewLocation = CurrentLocation + InputVector * MoveSpeed * DeltaTime;
 	Tilemap3DActorRef->CheckLocationOutBound(NewLocation);
 	Pawn->SetActorLocation(NewLocation);
+}
+
+void UMasterMovementComponent::MovingUp(float DeltaTime)
+{
+	APawn* Pawn = GetPawn<APawn>();
+	FVector CurrentLocation = Pawn->GetActorLocation();
+	
+	if (!bNeedJump)
+	{
+		bNeedJump = CheckNeedJump();
+		if (!bNeedJump)
+			return;
+		InterpJump.Init(CurrentLocation.Z, 100.0f);
+	}
+
+	CurrentLocation.Z = InterpJump.Interp(DeltaTime, JumpSpeed);
+
+	Pawn->SetActorLocation(CurrentLocation);
 }
 
 bool UMasterMovementComponent::CheckNeedJump() const
@@ -210,5 +254,15 @@ void UMasterMovementComponent::FinishMovement()
 {
 	APawn* Pawn = GetPawn<APawn>();
 	Pawn->ConsumeMovementInputVector();
-	bNeedJump = false;
+
+	FVector Location = Pawn->GetActorLocation();
+	if (InterpJump.Check(Location.Z))
+	{
+		Location.Z = InterpJump.EndZ;
+		Pawn->SetActorLocation(Location);
+
+		bNeedJump = false;
+		InterpJump.Reset();
+	}
+	
 }

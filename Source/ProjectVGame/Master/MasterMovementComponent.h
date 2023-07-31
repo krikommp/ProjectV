@@ -8,6 +8,18 @@
 #include "Components/PawnComponent.h"
 #include "MasterMovementComponent.generated.h"
 
+struct FInterpJump
+{
+	float StartZ = 0.0f;
+	float EndZ = 0.0f;
+	float Time = 0.0f;
+
+	void Init(float Z, float ZOffset);
+	float Interp(float DeltaTime, float Speed);
+	void Reset();
+	bool Check(float Z);
+};
+
 class ATilemap3DActor;
 /**
  * UMasterMovementComponent
@@ -46,6 +58,9 @@ protected:
 	// 移动速度
 	UPROPERTY(EditAnywhere, Category="Move")
 	float MoveSpeed = 30.0f;
+	// 上跳速度
+	UPROPERTY(EditAnywhere, Category="Move")
+	float JumpSpeed = 1.5f;
 	// 定义该模块的名称
 	static const FName NAME_ActorFeatureName;
 public:
@@ -56,11 +71,14 @@ private:
 	void Falling(float DeltaTime) const;
 	bool CheckUnderGround() const;
 	void Moving(float DeltaTime) const;
+	void MovingUp(float DeltaTime);
 	bool CheckNeedJump() const;
 	void FinishMovement();
 
 	uint8 bNeedJump : 1;
 	uint8 bPanning : 1;
-
+	
 	TWeakObjectPtr<const ATilemap3DActor> Tilemap3DActorRef;
+
+	FInterpJump InterpJump;
 };

@@ -26,6 +26,8 @@ protected:
 public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void SetupSkeletalMeshAsset(USkeletalMesh* SkeletalMesh) const;
+	void SetupAnimInstanceClass(TSubclassOf<UAnimInstance> AnimBlueprint) const;
+	
 protected:
 	UPROPERTY(VisibleAnywhere, Category="Grid|Components")
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;

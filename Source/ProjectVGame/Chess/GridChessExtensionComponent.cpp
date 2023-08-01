@@ -126,6 +126,7 @@ void UGridChessExtensionComponent::HandleChangeInitState(UGameFrameworkComponent
 
 		const AGridChessBase* Chess = GetPawnChecked<AGridChessBase>();
 		Chess->SetupSkeletalMeshAsset(ChessInfo->HeroData.SkeletalMesh);
+		Chess->SetupAnimInstanceClass(ChessInfo->HeroData.AnimBlueprint);
 	}
 }
 

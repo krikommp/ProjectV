@@ -43,3 +43,8 @@ void AGridChessBase::SetupSkeletalMeshAsset(USkeletalMesh* SkeletalMesh) const
 	SkeletalMeshComponent->SetSkeletalMeshAsset(SkeletalMesh);
 }
 
+void AGridChessBase::SetupAnimInstanceClass(TSubclassOf<UAnimInstance> AnimBlueprint) const
+{
+	SkeletalMeshComponent->SetAnimInstanceClass(AnimBlueprint);
+}
+

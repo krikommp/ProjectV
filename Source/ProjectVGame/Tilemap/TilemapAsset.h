@@ -7,7 +7,7 @@
 
 #include "TilemapAsset.generated.h"
 
-class UGridChessPieceData;
+class UGridChessData;
 /**
  * EBlock
  *
@@ -63,7 +63,7 @@ public:
 	TObjectPtr<AActor> ChessInEditor;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UGridChessPieceData> ChessData;
+	TObjectPtr<UGridChessData> ChessData;
 };
 
 USTRUCT(BlueprintType)

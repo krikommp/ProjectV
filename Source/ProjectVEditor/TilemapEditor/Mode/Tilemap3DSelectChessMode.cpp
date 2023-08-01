@@ -1,7 +1,7 @@
 ﻿#include "Tilemap3DSelectChessMode.h"
 
 #include "ProjectVEditor.h"
-#include "ChessPieces/GridChessPieceData.h"
+#include "Chess/GridChessData.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 

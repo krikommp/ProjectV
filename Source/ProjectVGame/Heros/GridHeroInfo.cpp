@@ -106,10 +106,10 @@ void UGridHeroInfo::Initialize(UGridLocalPlayer* InLocalPlayer, bool bDefault)
 	}
 
 	RuntimeFriendlyFactions.AddTag(HeroData.Faction);
-	for (const auto& Faction : HeroData.FriendlyFactions)
-	{
-		RuntimeFriendlyFactions.AddTag(Faction);
-	}
+	// for (const auto& Faction : HeroData.FriendlyFactions)
+	// {
+	// 	RuntimeFriendlyFactions.AddTag(Faction);
+	// }
 	RuntimeFaction = HeroData.Faction;
 }
 

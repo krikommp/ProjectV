@@ -7,6 +7,11 @@
 #include "GridGameplayTags.h"
 #include "GridLogChannel.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "GridChessData.h"
+#include "Heros/GridHeroInfo.h"
+#include "Player/GridLocalPlayer.h"
+#include "System/GridAssetManager.h"
+#include "System/GridGameInstance.h"
 
 const FName UGridChessExtensionComponent::NAME_ActorFeatureName("PawnExtension");
 
@@ -20,14 +25,14 @@ UGridChessExtensionComponent::UGridChessExtensionComponent(const FObjectInitiali
 }
 
 
-void UGridChessExtensionComponent::SetChessData(const UGridChessPieceData* InData)
+void UGridChessExtensionComponent::SetChessData(const UGridChessData* InData)
 {
 	check(InData);
 
 	if (ChessData)
 	{
 		APawn* Pawn = GetPawnChecked<APawn>();
-		UE_LOG(LogGrid, Error, TEXT("Trying to set PieceData [%s] on pawn [%s] that already has valid PieceData [%s]."), *GetNameSafe(InData), *GetNameSafe(Pawn), *GetNameSafe(ChessData));
+		UE_LOG(LogGrid, Error, TEXT("Trying to set ChessData [%s] on pawn [%s] that already has valid ChessData [%s]."), *GetNameSafe(InData), *GetNameSafe(Pawn), *GetNameSafe(ChessData));
 		return;
 	}
 
@@ -104,6 +109,23 @@ void UGridChessExtensionComponent::HandleChangeInitState(UGameFrameworkComponent
 	if (DesiredState == FGridGameplayTags::Get().InitState_DataInitialized)
 	{
 		// todo...
+		check(ChessData);
+
+		// todo... 临时方法，通过Data上的PlayerIndex来判断是否是玩家可控制对象
+		const auto LocalPlayer = Cast<UGridLocalPlayer>(
+					GetGameInstance<UGridGameInstance>()->GetLocalPlayerByIndex(ChessData->PlayerIndex));
+		if (LocalPlayer == nullptr)
+		{
+			UE_LOG(LogGrid, Log, TEXT("InValid Player to set, i will get hero info by default"));
+			const UGridAssetManager& AssetManager = UGridAssetManager::Get();
+			ChessInfo = UGridHeroInfo::CreateHeroInfo(AssetManager.GetHeroData(ChessData->ChessID));
+		}else
+		{
+			ChessInfo = LocalPlayer->GetHeroInfo(ChessData->ChessID);
+		}
+
+		const AGridChessBase* Chess = GetPawnChecked<AGridChessBase>();
+		Chess->SetupSkeletalMeshAsset(ChessInfo->HeroData.SkeletalMesh);
 	}
 }
 

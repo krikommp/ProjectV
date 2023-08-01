@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GridComponents.h"
-#include "ChessPieces/GridChessPieceData.h"
 #include "Components/PawnComponent.h"
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "GridChessExtensionComponent.generated.h"
 
-
-class UGridChessPieceData;
+class UGridHeroInfo;
+class UGridChessData;
 
 /**
  * UGridChessExtensionComponent
@@ -25,8 +24,8 @@ class PROJECTVGAME_API UGridChessExtensionComponent : public UPawnComponent, pub
 	FIND_COMP(GridChessExtensionComponent)
 	static const FName NAME_ActorFeatureName;
 
-	void SetChessData(const UGridChessPieceData* InData);
-	const UGridChessPieceData* GetChessData() const { return ChessData; }
+	void SetChessData(const UGridChessData* InData);
+	const UGridChessData* GetChessData() const { return ChessData; }
 
 protected:
 	virtual void OnRegister() override;
@@ -45,5 +44,7 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category=Gameplay)
-	TObjectPtr<const UGridChessPieceData> ChessData;
+	TObjectPtr<const UGridChessData> ChessData;
+	UPROPERTY(VisibleAnywhere, Category=Gameplay)
+	TObjectPtr<const UGridHeroInfo> ChessInfo;
 };

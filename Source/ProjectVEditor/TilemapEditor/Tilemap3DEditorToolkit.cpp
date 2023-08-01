@@ -83,7 +83,11 @@ void FTilemap3DEditorToolkit::Initialize(const EToolkitMode::Type Mode, const TS
 	TSharedRef<FTilemap3DEditorToolkit> EditorToolkit = SharedThis(this);
 	
 	TilemapBeingEdited = Asset;
-	UTileSet3DAsset* TileSet3DAsset = TilemapBeingEdited->TileSet == nullptr ? Settings->DefaultTileSet.LoadSynchronous() : TilemapBeingEdited->TileSet;
+	UTileSet3DAsset* TileSet3DAsset = TilemapBeingEdited->TileSet;
+	if (TileSet3DAsset == nullptr)
+	{
+		TileSet3DAsset = Settings->DefaultTileSet.LoadSynchronous();
+	}
 	{
 		// 初始化 Chess 数据
 		UDataTable* DataTable = TileSet3DAsset->ChessData.LoadSynchronous();

@@ -49,5 +49,5 @@ public:
 	ETilemap3DEditMode GetEditMode() const { return CurrentEditMode; }
 	TSharedPtr<STilemap3DChessDataDetails> GetChessDataDetails() const { return ChessDataDetails; }
 	
-	UGridChessPieceData* SelectedChessData = nullptr;
+	UGridChessData* SelectedChessData = nullptr;
 };

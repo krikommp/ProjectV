@@ -46,7 +46,7 @@ public:
 	UProceduralMeshComponent* GetTerrainMesh() const { return TerrainMesh; }
 	UMaterialInterface* GetTerrainMat() const { return TerrainMat; }
 	TSharedPtr<STilemap3DChessDataDetails> GetChessDataDetails() const { return DetailPtr->GetChessDataDetails(); }
-	void SetChessData(UGridChessPieceData* SelectedChessData) const;
+	void SetChessData(UGridChessData* SelectedChessData) const;
 
 	TAttribute<ETilemap3DEditMode> EditMode;
 protected:

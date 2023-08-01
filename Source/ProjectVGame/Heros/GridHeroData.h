@@ -57,6 +57,6 @@ public:
 	FGameplayTag Faction;
 
 	// 默认友好派系
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="GridHeroData")
-	FGameplayTagContainer FriendlyFactions;
+	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="GridHeroData")
+	//FGameplayTagContainer FriendlyFactions;
 };

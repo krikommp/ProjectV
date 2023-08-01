@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "SSingleObjectDetailsPanel.h"
-#include "ChessPieces/GridChessPieceData.h"
 #include "Widgets/SCompoundWidget.h"
 
+class UGridChessData;
 class FTilemap3DEditorToolkit;
 /**
  * 
@@ -18,7 +18,7 @@ public:
 		:_ChessPieceData(nullptr)
 		{
 		}
-	SLATE_ATTRIBUTE(TObjectPtr<UGridChessPieceData>, ChessPieceData)
+	SLATE_ATTRIBUTE(TObjectPtr<UGridChessData>, ChessPieceData)
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
@@ -27,5 +27,5 @@ public:
 	virtual UObject* GetObjectToObserve() const override;
 
 private:
-	TAttribute<TObjectPtr<UGridChessPieceData>> ChessPieceData;
+	TAttribute<TObjectPtr<UGridChessData>> ChessPieceData;
 };

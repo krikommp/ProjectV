@@ -7,6 +7,7 @@
 #include "ProjectVEditor.h"
 #include "Tilemap3DEditorManager.h"
 #include "Tilemap3DSelected.h"
+#include "Chess/GridChessData.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Generator/Tilemap3DChessGenerator.h"
@@ -212,7 +213,7 @@ int32 FTilemap3DEditorViewportClient::GetBlockTextureIndex(const FName& ID, int3
 	return -1;
 }
 
-void FTilemap3DEditorViewportClient::SetChessData(UGridChessPieceData* SelectedChessData) const
+void FTilemap3DEditorViewportClient::SetChessData(UGridChessData* SelectedChessData) const
 {
 	DetailPtr->SelectedChessData = SelectedChessData;
 }

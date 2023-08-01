@@ -142,7 +142,7 @@ void UMasterMovementComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// 监听 TilemapExtComp 的状态改变事件
-	BindOnActorInitStateChanged(UTilemapExtensionComponent::NAME_ActorFeatureName, FGameplayTag(), nullptr);
+	BindOnActorInitStateChanged(UTilemapExtensionComponent::NAME_ActorFeatureName, FGameplayTag(), false);
 
 	// 当前我们已经完成了 Spawn，需要重置当前的初始化状态
 	ensure(TryToChangeInitState(FGridGameplayTags::Get().InitState_Spawned));

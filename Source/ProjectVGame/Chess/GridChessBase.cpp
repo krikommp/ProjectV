@@ -17,8 +17,6 @@ AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
 
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
 	SkeletalMeshComponent->SetupAttachment(RootComponent);
-	SkeletalMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -70.0f));
-	SkeletalMeshComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
 	ArrowComponent->SetupAttachment(RootComponent);

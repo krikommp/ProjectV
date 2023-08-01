@@ -8,6 +8,7 @@
 #include "UObject/Object.h"
 #include "TilemapStateComponent.generated.h"
 
+class AGridChessBase;
 class UGridExperienceDefinition;
 class ATilemap3DActor;
 /**
@@ -39,6 +40,8 @@ private:
 	// 需要被放置到场景中的 Tilemap
 	UPROPERTY(Transient)
 	TObjectPtr<ATilemap3DActor> TilemapActor;
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<AGridChessBase>> TempChesses;
 
 	// 是否 Tilemap 资源加载完毕
 	bool bLoadTilemapFinished = false;

@@ -7,6 +7,9 @@
 #include "Tilemap3DActor.h"
 #include "TilemapAsset.h"
 #include "TilemapExtensionComponent.h"
+#include "Chess/GridChessBase.h"
+#include "Chess/GridChessData.h"
+#include "Chess/GridChessExtensionComponent.h"
 #include "GameFramework/Character.h"
 #include "GameModes/GridExperienceDefinition.h"
 #include "GameModes/GridExperienceManagerComponent.h"
@@ -84,7 +87,29 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 		TilemapExtensionComponent->SetTilemap(TilemapActor);
 	}
 
-	LoadTilemapFinished_Step2();
+	// 放置棋子
+	for (const auto& PathfindingBlock : TilemapAsset->PathFindingBlocks)
+	{
+		const int32 Index = TilemapAsset->PathFindingBlockToBlock(PathfindingBlock);
+		if (!TilemapAsset->Blocks.IsValidIndex(Index))
+			continue;
+		
+		const auto& Block = TilemapAsset->Blocks[Index];
+		if (Block->ChessData == nullptr)
+			continue;;
+
+		const FActorSpawnParameters Parameters;
+		AGridChessBase* Chess = GetWorld()->SpawnActor<AGridChessBase>(Block->ChessData->ChessClass, Block->ChessData->ChessTransform, Parameters);
+
+		if (UGridChessExtensionComponent* ChessExtensionComponent = UGridChessExtensionComponent::FindGridChessExtensionComponent(Chess))
+		{
+			ChessExtensionComponent->SetChessData(Block->ChessData);
+		}
+		
+		TempChesses.Add(Chess);
+	}
+
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step2));
 }
 
 void UTilemapStateComponent::LoadTilemapFinished_Step2()

@@ -150,6 +150,7 @@ public:
 	int32 VectorToIndex(const FVector& Location, int32 Floor) const;
 	int32 VectorToIndex(const FVector& Location) const;
 	int32 PathFindingBlockToBlock(int32 Index) const;
+	int32 PathFindingBlockToBlock(const FTilemapPathFindingBlock& PathFindingBlock) const;
 
 	FVector IndexToVector(int32 Index) const;
 

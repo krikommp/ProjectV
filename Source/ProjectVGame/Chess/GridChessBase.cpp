@@ -5,6 +5,7 @@
 
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GridChessExtensionComponent.h"
 
 
 AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
@@ -21,6 +22,8 @@ AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
 
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
 	ArrowComponent->SetupAttachment(RootComponent);
+
+	ChessExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UGridChessExtensionComponent>(this, TEXT("ChessExtensionComponent"));
 	
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;

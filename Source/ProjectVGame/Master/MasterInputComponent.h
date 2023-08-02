@@ -21,7 +21,7 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTVGAME_API UMasterInputComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
 {
 	GENERATED_UCLASS_BODY()
-	FIND_COMP(MasterInputComponent)
+	FIND_PAWN_COMP_FUNC(MasterInputComponent)
 
 	// 默认的输入配置
 	UPROPERTY(EditAnywhere)

@@ -66,7 +66,7 @@ void UTilemapStateComponent::OnExperienceLoaded(const UGridExperienceDefinition*
 
 void UTilemapStateComponent::LoadTilemapFinished_Step1()
 {
-	const UGridExperienceManagerComponent* ExperienceManagerComponent = GetGameState<AGridGameState>()->FindComponentByClass<UGridExperienceManagerComponent>();
+	const UGridExperienceManagerComponent* ExperienceManagerComponent = FIND_STATE_COMP(AGridGameState, GridExperienceManagerComponent);
 	if (ExperienceManagerComponent == nullptr)
 		return;
 	if (ExperienceManagerComponent->GetCurrentExperienceChecked()->TilemapAsset == nullptr)
@@ -100,12 +100,12 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 		const FActorSpawnParameters Parameters;
 		AGridChessBase* Chess = GetWorld()->SpawnActor<AGridChessBase>(Block->ChessData->ChessClass, Block->ChessData->ChessTransform, Parameters);
 
-		if (UGridChessExtensionComponent* ChessExtensionComponent = UGridChessExtensionComponent::FindGridChessExtensionComponent(Chess))
+		if (UGridChessExtensionComponent* ChessExtensionComponent = FIND_PAWN_COMP(GridChessExtensionComponent, Chess))
 		{
 			ChessExtensionComponent->SetChessData(Block->ChessData);
 		}
 
-		if (UTilemapExtensionComponent* TilemapExtensionComponent = UTilemapExtensionComponent::FindTilemapExtensionComponent(Chess))
+		if (UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Chess))
 		{
 			TilemapExtensionComponent->SetTilemap(TilemapActor, PathfindingIndex);
 		}

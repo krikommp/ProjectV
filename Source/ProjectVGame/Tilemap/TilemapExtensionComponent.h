@@ -22,7 +22,7 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
 {
 	GENERATED_UCLASS_BODY()
-	FIND_COMP(TilemapExtensionComponent)
+	FIND_PAWN_COMP_FUNC(TilemapExtensionComponent)
 	
 	// 定义该模块的名称
 	static const FName NAME_ActorFeatureName;

@@ -21,7 +21,7 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTVGAME_API UGridChessExtensionComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
 {
 	GENERATED_UCLASS_BODY()
-	FIND_COMP(GridChessExtensionComponent)
+	FIND_PAWN_COMP_FUNC(GridChessExtensionComponent)
 	static const FName NAME_ActorFeatureName;
 
 	void SetChessData(const UGridChessData* InData);

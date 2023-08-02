@@ -8,10 +8,12 @@
 #include "GridLogChannel.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GridChessData.h"
+#include "GameModes/GridGameState.h"
 #include "Heros/GridHeroInfo.h"
 #include "Player/GridLocalPlayer.h"
 #include "System/GridAssetManager.h"
 #include "System/GridGameInstance.h"
+#include "Tilemap/TilemapStateComponent.h"
 
 const FName UGridChessExtensionComponent::NAME_ActorFeatureName("PawnExtension");
 
@@ -53,6 +55,11 @@ void UGridChessExtensionComponent::OnRegister()
 	ensureAlwaysMsgf((PawnExtensionComponents.Num() == 1), TEXT("Only one UGridChessExtensionComponent should exist on [%s]."), *GetNameSafe(GetOwner()));
 
 	RegisterInitStateFeature();
+
+	if (UTilemapStateComponent* TilemapStateComponent = GetWorld()->GetGameState()->FindComponentByClass<UTilemapStateComponent>())
+	{
+		TilemapStateComponent->CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate::CreateUObject(this, &ThisClass::OnChessSpawn));
+	}
 }
 
 void UGridChessExtensionComponent::BeginPlay()
@@ -72,8 +79,15 @@ void UGridChessExtensionComponent::EndPlay(const EEndPlayReason::Type EndPlayRea
 	Super::EndPlay(EndPlayReason);
 }
 
+void UGridChessExtensionComponent::OnChessSpawn(const FTilemapSpawnParameters& Parameters)
+{
+	if (Parameters.Chess != GetPawn<AGridChessBase>())
+		return;
+	SetChessData(Parameters.ChessData);
+}
+
 bool UGridChessExtensionComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager,
-	FGameplayTag CurrentState, FGameplayTag DesiredState) const
+                                                      FGameplayTag CurrentState, FGameplayTag DesiredState) const
 {
 	check(Manager);
 

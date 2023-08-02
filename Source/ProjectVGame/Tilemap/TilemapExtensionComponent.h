@@ -11,6 +11,7 @@
 #include "TilemapExtensionComponent.generated.h"
 
 
+struct FTilemapSpawnParameters;
 class ATilemap3DActor;
 /**
  * UTilemapExtensionComponent
@@ -34,6 +35,8 @@ protected:
 	virtual void OnRegister() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	void OnChessSpawn(const FTilemapSpawnParameters& Parameters);
 
 public:
 	//~ Begin IGameFrameworkInitStateInterface interface

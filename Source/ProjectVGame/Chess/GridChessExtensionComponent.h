@@ -8,6 +8,7 @@
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "GridChessExtensionComponent.generated.h"
 
+struct FTilemapSpawnParameters;
 class UGridHeroInfo;
 class UGridChessData;
 
@@ -31,6 +32,8 @@ protected:
 	virtual void OnRegister() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	void OnChessSpawn(const FTilemapSpawnParameters& Parameters);
 
 public:
 

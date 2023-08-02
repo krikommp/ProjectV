@@ -3,6 +3,12 @@
 
 #include "ChessTeamComponent.h"
 
+#include "GridComponents.h"
+#include "Chess/GridChessBase.h"
+#include "Chess/GridChessData.h"
+#include "GameModes/GridGameState.h"
+#include "Tilemap/TilemapStateComponent.h"
+
 UChessTeamComponent::UChessTeamComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -11,6 +17,16 @@ UChessTeamComponent::UChessTeamComponent(const FObjectInitializer& ObjectInitial
 void UChessTeamComponent::OnRegister()
 {
 	Super::OnRegister();
+
+	if (UTilemapStateComponent* TilemapStateComponent = FIND_STATE_COMP(AGridGameState, TilemapStateComponent))
+	{
+		TilemapStateComponent->CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate::CreateUObject(this, &ThisClass::OnChessSpawn));
+	}
+}
+
+void UChessTeamComponent::OnChessSpawn(const FTilemapSpawnParameters& Parameters)
+{
+	AddTeamMember(Parameters.ChessData->Team, Parameters.Chess);
 }
 
 void UChessTeamComponent::AddTeamMember(const ETeamType Team, AGridChessBase* Member)

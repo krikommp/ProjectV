@@ -7,7 +7,9 @@
 #include "Character/GridPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "TilemapAsset.h"
+#include "TilemapStateComponent.h"
 #include "Player/GridPlayerState.h"
+#include "Chess/GridChessBase.h"
 
 const FName UTilemapExtensionComponent::NAME_ActorFeatureName("TilemapExtension");
 
@@ -45,6 +47,11 @@ void UTilemapExtensionComponent::OnRegister()
 	                 *GetNameSafe(GetOwner()));
 
 	RegisterInitStateFeature();
+
+	if (UTilemapStateComponent* TilemapStateComponent = GetWorld()->GetGameState()->FindComponentByClass<UTilemapStateComponent>())
+	{
+		TilemapStateComponent->CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate::CreateUObject(this, &ThisClass::OnChessSpawn));
+	}
 }
 
 void UTilemapExtensionComponent::BeginPlay()
@@ -63,6 +70,14 @@ void UTilemapExtensionComponent::EndPlay(const EEndPlayReason::Type EndPlayReaso
 {
 	UnregisterInitStateFeature();
 	Super::EndPlay(EndPlayReason);
+}
+
+void UTilemapExtensionComponent::OnChessSpawn(const FTilemapSpawnParameters& Parameters)
+{
+	if (Parameters.Chess != GetPawn<AGridChessBase>())
+		return;
+	
+	SetTilemap(Parameters.Tilemap, Parameters.PathfindingIndex);
 }
 
 bool UTilemapExtensionComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,

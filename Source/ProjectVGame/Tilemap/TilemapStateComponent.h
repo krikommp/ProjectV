@@ -6,6 +6,7 @@
 #include "LoadingProcessInterface.h"
 #include "Components/GameStateComponent.h"
 #include "UObject/Object.h"
+#include "TilemapSpawnParameters.h"
 #include "TilemapStateComponent.generated.h"
 
 class AGridChessBase;
@@ -35,14 +36,22 @@ public:
 private:
 	void OnExperienceLoaded(const UGridExperienceDefinition* Experience);
 	void LoadTilemapFinished_Step1();
-	void LoadTilemapFinished_Step2();
 	
 	// 需要被放置到场景中的 Tilemap
 	UPROPERTY(Transient)
 	TObjectPtr<ATilemap3DActor> TilemapActor;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<AGridChessBase>> TempChesses;
 
 	// 是否 Tilemap 资源加载完毕
 	bool bLoadTilemapFinished = false;
+	
+public:
+	// 注册或调用棋子放置的委托
+	void CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate&& Delegate);
+
+private:
+	// 当放置棋子时调用的委托
+	FOnTilemapSpawnChess OnTilemapSpawnChess;
+
+	// 缓存的放置信息
+	TArray<FTilemapSpawnParameters> CachedSpawnParameters;
 };

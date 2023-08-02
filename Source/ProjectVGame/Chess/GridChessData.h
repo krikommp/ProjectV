@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "Team/TeamType.h"
 #include "GridChessData.generated.h"
 
 class AGridChessBase;
@@ -33,4 +34,7 @@ public:
 	// 需要被实例化的棋子
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Chess)
 	TSubclassOf<AGridChessBase> ChessClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Chess)
+	ETeamType Team;
 };

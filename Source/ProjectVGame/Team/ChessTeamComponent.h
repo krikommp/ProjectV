@@ -5,20 +5,11 @@
 #include "CoreMinimal.h"
 #include "Components/GameStateComponent.h"
 #include "UObject/Object.h"
+#include "TeamType.h"
 #include "ChessTeamComponent.generated.h"
 
 class AGridChessBase;
-/**
- * ETeamType
- *
- * 定义队伍标识
- */
-UENUM(BlueprintType)
-enum class PROJECTVGAME_API ETeamType : uint8
-{
-	Player UMETA(DisplayName = "Player Team"),
-	Enemy UMETA(DisplayName = "Enemy Team")
-};
+struct FTilemapSpawnParameters;
 
 /**
  * UChessTeamComponent
@@ -29,18 +20,22 @@ UCLASS()
 class PROJECTVGAME_API UChessTeamComponent : public UGameStateComponent
 {
 	GENERATED_UCLASS_BODY()
-	
+
+
+protected:
 	//~ Begin UActorComponent Interface.
 	virtual void OnRegister() override;
 	//~ Begin UActorComponent Interface.
 
-private:
-	// 队伍
-	TMap<const ETeamType, TArray<TWeakObjectPtr<AGridChessBase>>> Teams;
+	void OnChessSpawn(const FTilemapSpawnParameters& Parameters);
 
 public:
 
 	// 添加队伍成员
 	void AddTeamMember(const ETeamType Team, AGridChessBase* Member);
 	void AddTeamMember(const ETeamType Team, const TArray<AGridChessBase*>& Members);
+
+private:
+	// 队伍
+	TMap<const ETeamType, TArray<TWeakObjectPtr<AGridChessBase>>> Teams;
 };

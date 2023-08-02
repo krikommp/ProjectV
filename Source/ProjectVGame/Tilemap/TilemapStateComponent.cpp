@@ -24,7 +24,7 @@ void UTilemapStateComponent::OnRegister()
 {
 	Super::OnRegister();
 
-	if (UGridExperienceManagerComponent* ExperienceManagerComponent = GetGameState<AGridGameState>()->FindComponentByClass<UGridExperienceManagerComponent>())
+	if (UGridExperienceManagerComponent* ExperienceManagerComponent = FIND_STATE_COMP(AGridGameState, GridExperienceManagerComponent))
 	{
 		ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 	}else
@@ -53,15 +53,14 @@ void UTilemapStateComponent::OnExperienceLoaded(const UGridExperienceDefinition*
 	{
 		UE_LOG(LogGrid, Verbose, TEXT("Multiple TilemapActors found in the scene, prioritizing the first TilemapActor."));
 		TilemapActor = Cast<ATilemap3DActor>(OuterActors[0]);
-		LoadTilemapFinished_Step1();
 	}else
 	{
 		// 当前场景中没有手动放置任何 TilemapActor
 		// 尝试自动创建一个 Actor 并放置到场景中
 		TilemapActor = GetWorld()->SpawnActor<ATilemap3DActor>();
 		TilemapActor->SetActorTransform(FTransform::Identity);
-		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step1));
 	}
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step1));
 }
 
 void UTilemapStateComponent::LoadTilemapFinished_Step1()
@@ -81,12 +80,13 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 	TilemapActor->SetupTilemapAsset(TilemapAsset);
 
 	// 设置 Tilemap 数据到主相机
-	if (UTilemapExtensionComponent* TilemapExtensionComponent = UTilemapExtensionComponent::FindTilemapExtensionComponent(Character))
+	if (UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Character))
 	{
 		TilemapExtensionComponent->SetTilemap(TilemapActor);
 	}
 
 	// 放置棋子
+	CachedSpawnParameters.Empty();
 	for (int32 PathfindingIndex = 0; PathfindingIndex < TilemapAsset->PathFindingBlocks.Num(); ++PathfindingIndex)
 	{
 		const int32 Index = TilemapAsset->PathFindingBlockToBlock(PathfindingIndex);
@@ -100,23 +100,34 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 		const FActorSpawnParameters Parameters;
 		AGridChessBase* Chess = GetWorld()->SpawnActor<AGridChessBase>(Block->ChessData->ChessClass, Block->ChessData->ChessTransform, Parameters);
 
-		if (UGridChessExtensionComponent* ChessExtensionComponent = FIND_PAWN_COMP(GridChessExtensionComponent, Chess))
-		{
-			ChessExtensionComponent->SetChessData(Block->ChessData);
-		}
+		FTilemapSpawnParameters SpawnParameters;
+		SpawnParameters.Chess = Chess;
+		SpawnParameters.Tilemap = TilemapActor;
+		SpawnParameters.ChessData = Block->ChessData;
+		SpawnParameters.PathfindingIndex = PathfindingIndex;
 
-		if (UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Chess))
+		CachedSpawnParameters.Add(SpawnParameters);
+
+		if (OnTilemapSpawnChess.IsBound())
 		{
-			TilemapExtensionComponent->SetTilemap(TilemapActor, PathfindingIndex);
+			OnTilemapSpawnChess.Broadcast(SpawnParameters);
 		}
-		
-		TempChesses.Add(Chess);
 	}
 
-	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step2));
+	OnTilemapSpawnChess.Clear();
+	bLoadTilemapFinished = true;
 }
 
-void UTilemapStateComponent::LoadTilemapFinished_Step2()
+void UTilemapStateComponent::CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate&& Delegate)
 {
-	bLoadTilemapFinished = true;
+	if (bLoadTilemapFinished)
+	{
+		for (const auto& Parameter : CachedSpawnParameters)
+		{
+			Delegate.Execute(Parameter);
+		}
+	}else
+	{
+		OnTilemapSpawnChess.Add(Delegate);
+	}
 }

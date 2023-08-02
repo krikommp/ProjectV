@@ -67,7 +67,7 @@ void UTilemapExtensionComponent::OnRegister()
 
 	RegisterInitStateFeature();
 
-	if (UTilemapStateComponent* TilemapStateComponent = GetWorld()->GetGameState()->FindComponentByClass<UTilemapStateComponent>())
+	if (UTilemapStateComponent* TilemapStateComponent = FIND_STATE_COMP_IN_PAWN(TilemapStateComponent))
 	{
 		TilemapStateComponent->CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate::CreateUObject(this, &ThisClass::OnChessSpawn));
 	}

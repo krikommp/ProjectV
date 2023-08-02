@@ -140,6 +140,16 @@ TArray<int32> UTilemapPathfindingComponent::PathFinding(int32 StartIndex, int32 
 		{
 			break;
 		}
+		if (PathFindingCached.CurrentSearchStep <= PathfindingMove)
+		{
+			break;
+		}
+	}
+	
+	PathFindingCached.CanMoveToArray[CurrentIndex] = { CurrentIndex, 0, CurrentIndex };
+	for (const auto& CanMove : PathFindingCached.CanMoveToArray)
+	{
+		OutPathfindingArray.Add(CanMove.Index);
 	}
 	
 	return OutPathfindingArray;

@@ -18,7 +18,7 @@ void UChessTeamComponent::OnRegister()
 {
 	Super::OnRegister();
 
-	if (UTilemapStateComponent* TilemapStateComponent = FIND_STATE_COMP(AGridGameState, TilemapStateComponent))
+	if (UTilemapStateComponent* TilemapStateComponent = FIND_STATE_COMP_IN_STATE(AGridGameState, TilemapStateComponent))
 	{
 		TilemapStateComponent->CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate::CreateUObject(this, &ThisClass::OnChessSpawn));
 	}

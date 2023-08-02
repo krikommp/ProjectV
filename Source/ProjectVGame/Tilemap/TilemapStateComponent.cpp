@@ -24,7 +24,7 @@ void UTilemapStateComponent::OnRegister()
 {
 	Super::OnRegister();
 
-	if (UGridExperienceManagerComponent* ExperienceManagerComponent = FIND_STATE_COMP(AGridGameState, GridExperienceManagerComponent))
+	if (UGridExperienceManagerComponent* ExperienceManagerComponent = FIND_STATE_COMP_IN_STATE(AGridGameState, GridExperienceManagerComponent))
 	{
 		ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 	}else
@@ -60,17 +60,12 @@ void UTilemapStateComponent::OnExperienceLoaded(const UGridExperienceDefinition*
 		TilemapActor = GetWorld()->SpawnActor<ATilemap3DActor>();
 		TilemapActor->SetActorTransform(FTransform::Identity);
 	}
-	if (TilemapActor)
-	{
-		TilemapActor->ChessArray.Empty();
-		TilemapActor->ChessArray.SetNumZeroed(TilemapActor->GetPathfindingArrayNum());
-	}
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step1));
 }
 
 void UTilemapStateComponent::LoadTilemapFinished_Step1()
 {
-	const UGridExperienceManagerComponent* ExperienceManagerComponent = FIND_STATE_COMP(AGridGameState, GridExperienceManagerComponent);
+	const UGridExperienceManagerComponent* ExperienceManagerComponent = FIND_STATE_COMP_IN_STATE(AGridGameState, GridExperienceManagerComponent);
 	if (ExperienceManagerComponent == nullptr)
 		return;
 	if (ExperienceManagerComponent->GetCurrentExperienceChecked()->TilemapAsset == nullptr)
@@ -88,6 +83,12 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 	if (UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Character))
 	{
 		TilemapExtensionComponent->SetTilemap(TilemapActor);
+	}
+
+	if (TilemapActor)
+	{
+		TilemapActor->ChessArray.Empty();
+		TilemapActor->ChessArray.SetNumZeroed(TilemapActor->GetPathfindingArrayNum());
 	}
 
 	// 放置棋子

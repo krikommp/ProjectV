@@ -30,6 +30,12 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 
 	// 检测传入位置是否越界, 如果越界将会返回修正之后的位置，否则返回原始位置
 	void CheckLocationOutBound(FVector& InLocation) const;
+	// 检测传入位置索引上是否有棋子
+	FORCEINLINE bool CheckChessExist(int32 Index) const;
+	// 获取寻路数组总大小
+	FORCEINLINE int32 GetPathfindingArrayNum() const;
+	// 获取寻路方块
+	FORCEINLINE const FTilemapPathFindingBlock& GetPathfindingBlock(int32 Index) const;
 
 protected:
 	virtual void OnRegister() override;

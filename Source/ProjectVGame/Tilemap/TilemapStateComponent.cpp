@@ -60,6 +60,11 @@ void UTilemapStateComponent::OnExperienceLoaded(const UGridExperienceDefinition*
 		TilemapActor = GetWorld()->SpawnActor<ATilemap3DActor>();
 		TilemapActor->SetActorTransform(FTransform::Identity);
 	}
+	if (TilemapActor)
+	{
+		TilemapActor->ChessArray.Empty();
+		TilemapActor->ChessArray.SetNumZeroed(TilemapActor->GetPathfindingArrayNum());
+	}
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step1));
 }
 
@@ -99,6 +104,8 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 
 		const FActorSpawnParameters Parameters;
 		AGridChessBase* Chess = GetWorld()->SpawnActor<AGridChessBase>(Block->ChessData->ChessClass, Block->ChessData->ChessTransform, Parameters);
+
+		TilemapActor->ChessArray[PathfindingIndex] = Chess;
 
 		FTilemapSpawnParameters SpawnParameters;
 		SpawnParameters.Chess = Chess;

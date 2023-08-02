@@ -74,3 +74,8 @@ void ATilemap3DActor::SetupTilemapAsset(const UTilemapAsset* InTilemapAsset)
 		Block->MeshInstancedIndex = MeshComponent->AddInstance(Block->MeshTransform);
 	}
 }
+
+int32 ATilemap3DActor::GetPathfindingArrayNum() const
+{
+	return TilemapAsset->LevelSizeX * TilemapAsset->LevelSizeY * TilemapAsset->LevelSizeZ;
+}

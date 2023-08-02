@@ -42,9 +42,6 @@ struct PROJECTVGAME_API FTilemapPathFindingBlock
 	FVector Location = FVector::Zero();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FTilemapPathFinding CanMoveTo;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TArray<int32> EdgeArrayIndex;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

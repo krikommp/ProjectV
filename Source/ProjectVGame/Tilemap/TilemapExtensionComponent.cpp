@@ -33,6 +33,25 @@ void UTilemapExtensionComponent::CheckLocationOutBound(FVector& InLocation) cons
 	InLocation.Y = Tilemap3DActor->GetActorLocation().Y + FMath::Max(InLocation.Y < YValue ? InLocation.Y : YValue, Tilemap3DActor->GetTilemap()->MapBoundOffset);
 }
 
+bool UTilemapExtensionComponent::CheckChessExist(int32 Index) const
+{
+	if (!Tilemap3DActor->ChessArray.IsValidIndex(Index))
+		return false;
+	return Tilemap3DActor->ChessArray[Index] == nullptr;
+}
+
+int32 UTilemapExtensionComponent::GetPathfindingArrayNum() const
+{
+	return Tilemap3DActor->GetPathfindingArrayNum();
+}
+
+const FTilemapPathFindingBlock& UTilemapExtensionComponent::GetPathfindingBlock(int32 Index) const
+{
+	ensureAlwaysMsgf(Tilemap3DActor->GetTilemap()->PathFindingBlocks.IsValidIndex(Index), TEXT("InValid pathfinding Block Index: [%d]!"), Index);
+
+	return Tilemap3DActor->GetTilemap()->PathFindingBlocks[Index];
+}
+
 void UTilemapExtensionComponent::OnRegister()
 {
 	Super::OnRegister();

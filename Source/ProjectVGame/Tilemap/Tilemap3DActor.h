@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "Tilemap3DActor.generated.h"
 
+class AGridChessBase;
 class UProceduralMeshComponent;
 class UTilemapAsset;
 
@@ -14,6 +15,8 @@ UCLASS()
 class PROJECTVGAME_API ATilemap3DActor : public AActor
 {
 	GENERATED_BODY()
+	friend class UTilemapStateComponent;
+	friend class UTilemapExtensionComponent;
 
 public:
 	ATilemap3DActor();
@@ -24,8 +27,13 @@ public:
 	void SetupTilemapAsset(const UTilemapAsset* InTilemapAsset);
 	const UTilemapAsset* GetTilemap() const { return TilemapAsset.Get(); }
 
+	// 获取寻路数组总大小
+	int32 GetPathfindingArrayNum() const;
+
 private:
 	TWeakObjectPtr<const UTilemapAsset> TilemapAsset;
+
+	TArray<TWeakObjectPtr<const AGridChessBase>> ChessArray;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UProceduralMeshComponent> ProceduralMeshComponent;

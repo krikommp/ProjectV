@@ -125,19 +125,17 @@ void UGridChessExtensionComponent::HandleChangeInitState(UGameFrameworkComponent
 		// todo...
 		check(ChessData);
 
-		// todo... 临时方法，通过Data上的PlayerIndex来判断是否是玩家可控制对象
-		const auto LocalPlayer = Cast<UGridLocalPlayer>(
-					GetGameInstance<UGridGameInstance>()->GetLocalPlayerByIndex(ChessData->PlayerIndex));
-		if (LocalPlayer == nullptr)
+		// todo... 临时方法，通过Data上的Team来判断是否是玩家可控制对象
+		if (ChessData->Team == ETeamType::Player)
 		{
-			UE_LOG(LogGrid, Log, TEXT("InValid Player to set, i will get hero info by default"));
-			const UGridAssetManager& AssetManager = UGridAssetManager::Get();
-			ChessInfo = UGridHeroInfo::CreateHeroInfo(AssetManager.GetHeroData(ChessData->ChessID));
+			const auto LocalPlayer = Cast<UGridLocalPlayer>(GetGameInstance<UGridGameInstance>()->GetFirstGamePlayer());
+			ChessInfo = LocalPlayer->GetHeroInfo(ChessData->ChessID);
 		}else
 		{
-			ChessInfo = LocalPlayer->GetHeroInfo(ChessData->ChessID);
+			const UGridAssetManager& AssetManager = UGridAssetManager::Get();
+			ChessInfo = UGridHeroInfo::CreateHeroInfo(AssetManager.GetHeroData(ChessData->ChessID));
 		}
-
+		
 		const AGridChessBase* Chess = GetPawnChecked<AGridChessBase>();
 		Chess->SetupSkeletalMeshAsset(ChessInfo->HeroData.SkeletalMesh);
 		Chess->SetupAnimInstanceClass(ChessInfo->HeroData.AnimBlueprint);

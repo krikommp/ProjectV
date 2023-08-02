@@ -46,10 +46,12 @@ public:
 	virtual void CheckDefaultInitialization() override;
 	//~ End IGameFrameworkInitStateInterface interface
 
-	void SetTilemap(const ATilemap3DActor* InTilemap);
+	void SetTilemap(const ATilemap3DActor* InTilemap, int32 InPathfindingIndex = INDEX_NONE);
 	const ATilemap3DActor* GetTilemap() const { return Tilemap3DActor.Get(); }
 	
 private:
 	// 弱引用场景中的Tilemap
 	TWeakObjectPtr<const ATilemap3DActor> Tilemap3DActor;
+	// 当前位置寻路索引
+	int32 PathfindingIndex = INDEX_NONE;
 };

@@ -6,6 +6,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GridChessExtensionComponent.h"
+#include "Tilemap/TilemapExtensionComponent.h"
 
 
 AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
@@ -22,6 +23,7 @@ AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
 	ArrowComponent->SetupAttachment(RootComponent);
 
 	ChessExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UGridChessExtensionComponent>(this, TEXT("ChessExtensionComponent"));
+	TilemapExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UTilemapExtensionComponent>(this, TEXT("TilemapExtensionComponent"));
 	
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;

@@ -139,11 +139,12 @@ void UTilemapExtensionComponent::CheckDefaultInitialization()
 	ContinueInitStateChain(StateChain);
 }
 
-void UTilemapExtensionComponent::SetTilemap(const ATilemap3DActor* InTilemap)
+void UTilemapExtensionComponent::SetTilemap(const ATilemap3DActor* InTilemap, int32 InPathfindingIndex)
 {
 	check(InTilemap);
 
 	Tilemap3DActor = InTilemap;
+	PathfindingIndex = InPathfindingIndex;
 
 	CheckDefaultInitialization();
 }

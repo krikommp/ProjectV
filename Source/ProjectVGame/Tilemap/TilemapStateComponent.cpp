@@ -10,7 +10,6 @@
 #include "Chess/GridChessBase.h"
 #include "Chess/GridChessData.h"
 #include "Chess/GridChessExtensionComponent.h"
-#include "GameFramework/Character.h"
 #include "GameModes/GridExperienceDefinition.h"
 #include "GameModes/GridExperienceManagerComponent.h"
 #include "GameModes/GridGameState.h"
@@ -88,9 +87,9 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 	}
 
 	// 放置棋子
-	for (const auto& PathfindingBlock : TilemapAsset->PathFindingBlocks)
+	for (int32 PathfindingIndex = 0; PathfindingIndex < TilemapAsset->PathFindingBlocks.Num(); ++PathfindingIndex)
 	{
-		const int32 Index = TilemapAsset->PathFindingBlockToBlock(PathfindingBlock);
+		const int32 Index = TilemapAsset->PathFindingBlockToBlock(PathfindingIndex);
 		if (!TilemapAsset->Blocks.IsValidIndex(Index))
 			continue;
 		
@@ -104,6 +103,11 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 		if (UGridChessExtensionComponent* ChessExtensionComponent = UGridChessExtensionComponent::FindGridChessExtensionComponent(Chess))
 		{
 			ChessExtensionComponent->SetChessData(Block->ChessData);
+		}
+
+		if (UTilemapExtensionComponent* TilemapExtensionComponent = UTilemapExtensionComponent::FindTilemapExtensionComponent(Chess))
+		{
+			TilemapExtensionComponent->SetTilemap(TilemapActor, PathfindingIndex);
 		}
 		
 		TempChesses.Add(Chess);

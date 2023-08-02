@@ -7,6 +7,7 @@
 #include "GameFramework/Pawn.h"
 #include "GridChessBase.generated.h"
 
+class UTilemapExtensionComponent;
 class UGridChessExtensionComponent;
 class UCapsuleComponent;
 class UArrowComponent;
@@ -37,4 +38,6 @@ protected:
 	TObjectPtr<UArrowComponent> ArrowComponent;
 	UPROPERTY(VisibleAnywhere,Category="Grid|Components")
 	TObjectPtr<UGridChessExtensionComponent> ChessExtensionComponent;
+	UPROPERTY(VisibleAnywhere,Category="Grid|Components")
+	TObjectPtr<UTilemapExtensionComponent> TilemapExtensionComponent;
 };

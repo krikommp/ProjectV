@@ -121,8 +121,15 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 			OnTilemapSpawnChess.Broadcast(SpawnParameters);
 		}
 	}
-
 	OnTilemapSpawnChess.Clear();
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step2));
+}
+
+void UTilemapStateComponent::LoadTilemapFinished_Step2()
+{
+	if (OnTilemapSpawnFinished.IsBound())
+		OnTilemapSpawnFinished.Broadcast();
+	OnTilemapSpawnFinished.Clear();
 	bLoadTilemapFinished = true;
 }
 
@@ -137,5 +144,16 @@ void UTilemapStateComponent::CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::F
 	}else
 	{
 		OnTilemapSpawnChess.Add(Delegate);
+	}
+}
+
+void UTilemapStateComponent::CallOrRegister_OnSpawnFinished(FSimpleMulticastDelegate::FDelegate&& Delegate)
+{
+	if (bLoadTilemapFinished)
+	{
+		Delegate.Execute();
+	}else
+	{
+		OnTilemapSpawnFinished.Add(Delegate);
 	}
 }

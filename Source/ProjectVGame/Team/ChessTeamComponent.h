@@ -35,7 +35,23 @@ public:
 	void AddTeamMember(const ETeamType Team, AGridChessBase* Member);
 	void AddTeamMember(const ETeamType Team, const TArray<AGridChessBase*>& Members);
 
+	// 获取队伍长度
+	FORCEINLINE int32 GetTeamLength(const ETeamType Team) const { return Teams[Team].Num(); }
+
+	// 获取队伍成员
+	FORCEINLINE AGridChessBase* GetMember(const ETeamType Team, int32 Index) const { return Teams[Team][Index].Get(); }
+
 private:
 	// 队伍
 	TMap<const ETeamType, TArray<TWeakObjectPtr<AGridChessBase>>> Teams;
 };
+
+#define BEGIN_TEAM_SCOPE(TEAM_TYPE)\
+{ \
+	const ETeamType Team = TEAM_TYPE;
+
+#define END_TEAM_SCOPE()\
+}
+
+#define GET_TEAM_NUM(TEAM_COMP) TEAM_COMP->GetTeamLength(Team)
+#define GET_TEAM_MEM(TEAM_COMP, INDEX) TEAM_COMP->GetMember(Team, INDEX)

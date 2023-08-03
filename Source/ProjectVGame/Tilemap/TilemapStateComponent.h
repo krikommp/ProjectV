@@ -36,6 +36,7 @@ public:
 private:
 	void OnExperienceLoaded(const UGridExperienceDefinition* Experience);
 	void LoadTilemapFinished_Step1();
+	void LoadTilemapFinished_Step2();
 	
 	// 需要被放置到场景中的 Tilemap
 	UPROPERTY(Transient)
@@ -48,10 +49,16 @@ public:
 	// 注册或调用棋子放置的委托
 	void CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate&& Delegate);
 
+	// 注册或调用地图放置完成委托
+	void CallOrRegister_OnSpawnFinished(FSimpleMulticastDelegate::FDelegate&& Delegate);
+
 private:
 	// 当放置棋子时调用的委托
 	FOnTilemapSpawnChess OnTilemapSpawnChess;
 
 	// 缓存的放置信息
 	TArray<FTilemapSpawnParameters> CachedSpawnParameters;
+
+	// 地图准备完成
+	FSimpleMulticastDelegate OnTilemapSpawnFinished;
 };

@@ -23,14 +23,24 @@ void UChessTurnComponent::OnRegister()
 	}
 }
 
+void UChessTurnComponent::CallOrRegister_OnTurnReady(FSimpleMulticastDelegate::FDelegate&& Delegate)
+{
+	if (bReadyToStartTurn)
+	{
+		Delegate.Execute();
+	}else
+	{
+		OnReady.Add(Delegate);
+	}
+}
+
 void UChessTurnComponent::OnTilemapLoaded()
 {
 	TurnCount = 0;
 	bReadyToStartTurn = true;
 
-	// todo... 模拟一个开始回合逻辑，这里需要放到关卡中编辑
-	FTimerHandle TempHandle;
-	GetWorld()->GetTimerManager().SetTimer(TempHandle, this, &ThisClass::StartTurn, 2.0f, false);
+	OnReady.Broadcast();
+	OnReady.Clear();
 }
 
 void UChessTurnComponent::StartTurn()

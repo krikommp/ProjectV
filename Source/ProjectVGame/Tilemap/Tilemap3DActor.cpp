@@ -9,7 +9,8 @@
 #include "TileSet3DAsset.h"
 
 
-ATilemap3DActor::ATilemap3DActor()
+ATilemap3DActor::ATilemap3DActor(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	ProceduralMeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMeshComponent"));
@@ -78,4 +79,12 @@ void ATilemap3DActor::SetupTilemapAsset(const UTilemapAsset* InTilemapAsset)
 int32 ATilemap3DActor::GetPathfindingArrayNum() const
 {
 	return TilemapAsset->LevelSizeX * TilemapAsset->LevelSizeY * TilemapAsset->LevelSizeZ;
+}
+
+FVector ATilemap3DActor::GetPathfindingBlockLocation(int32 Index) const
+{
+	if (!TilemapAsset->PathFindingBlocks.IsValidIndex(Index))
+		return FVector::Zero();
+
+	return GetActorLocation() + TilemapAsset->PathFindingBlocks[Index].Location;
 }

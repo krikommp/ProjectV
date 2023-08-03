@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ModularPawn.h"
 #include "TilemapAsset.h"
 #include "GameFramework/Actor.h"
 #include "Tilemap3DActor.generated.h"
@@ -12,23 +13,22 @@ class UProceduralMeshComponent;
 class UTilemapAsset;
 
 UCLASS()
-class PROJECTVGAME_API ATilemap3DActor : public AActor
+class PROJECTVGAME_API ATilemap3DActor : public AModularPawn
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 	friend class UTilemapStateComponent;
 	friend class UTilemapExtensionComponent;
-
-public:
-	ATilemap3DActor();
-
-	virtual void BeginPlay() override;
 
 	// 设置该对象的TilemapAsset
 	void SetupTilemapAsset(const UTilemapAsset* InTilemapAsset);
 	const UTilemapAsset* GetTilemap() const { return TilemapAsset.Get(); }
-
 	// 获取寻路数组总大小
 	int32 GetPathfindingArrayNum() const;
+	// 获取寻路节点的位置
+	FVector GetPathfindingBlockLocation(int32 Index) const;
+
+protected:
+	virtual void BeginPlay() override;
 
 private:
 	TWeakObjectPtr<const UTilemapAsset> TilemapAsset;

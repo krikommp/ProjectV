@@ -6,6 +6,8 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "AsyncAction_TurnReady.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnReadyAsyncDelegate);
+
 /**
  * UAsyncAction_TurnReady
  *
@@ -15,7 +17,7 @@
 UCLASS()
 class PROJECTVGAME_API UAsyncAction_TurnReady : public UBlueprintAsyncActionBase
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 
 	UFUNCTION(BlueprintCallable, meta=(WorldContext = "WorldContextObject", BlueprintInternalUseOnly="true"))
 	static UAsyncAction_TurnReady* WaitForTurnReady(UObject* WorldContextObject);
@@ -26,7 +28,7 @@ private:
 
 public:
 	UPROPERTY(BlueprintAssignable)
-	FSimpleMulticastDelegate OnReady;
+	FTurnReadyAsyncDelegate OnReady;
 
 private:
 	void Step1_HandleGameStateSet(AGameStateBase* GameState);

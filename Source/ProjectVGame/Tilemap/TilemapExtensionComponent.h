@@ -23,7 +23,12 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
 {
 	GENERATED_UCLASS_BODY()
-	FIND_PAWN_COMP_FUNC(TilemapExtensionComponent)
+
+	UFUNCTION(BlueprintPure)
+	static UTilemapExtensionComponent* FindTilemapExtensionComponent(const AActor* Actor)
+	{
+		return (Actor ? Actor->FindComponentByClass<UTilemapExtensionComponent>() : nullptr);
+	}
 	
 	// 定义该模块的名称
 	static const FName NAME_ActorFeatureName;
@@ -36,6 +41,8 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	FORCEINLINE int32 GetPathfindingArrayNum() const;
 	// 获取寻路方块
 	FORCEINLINE const FTilemapPathFindingBlock& GetPathfindingBlock(int32 Index) const;
+	// 获取寻路索引
+	FORCEINLINE int32 GetPathfindingIndex() const { return PathfindingIndex; }
 
 protected:
 	virtual void OnRegister() override;

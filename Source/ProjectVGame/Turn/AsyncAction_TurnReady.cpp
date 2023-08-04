@@ -58,7 +58,7 @@ void UAsyncAction_TurnReady::Step1_HandleGameStateSet(AGameStateBase* GameState)
 void UAsyncAction_TurnReady::Step2_ListenToTurnReady(AGameStateBase* GameState)
 {
 	check(GameState);
-	UChessTurnComponent* TurnComponent = FIND_STATE_COMP_IN_PAWN(ChessTurnComponent);
+	UChessTurnComponent* TurnComponent = GameState->FindComponentByClass<UChessTurnComponent>();
 	check(TurnComponent);
 
 	if (TurnComponent->IsReady())

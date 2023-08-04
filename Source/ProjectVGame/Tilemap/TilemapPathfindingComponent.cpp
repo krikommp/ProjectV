@@ -25,8 +25,21 @@ void UTilemapPathfindingComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-TArray<int32> UTilemapPathfindingComponent::PathFinding(int32 StartIndex, int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,
+TArray<int32> UTilemapPathfindingComponent::PathfindingSelf(int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,
 	bool bContinueFromLastPathfinding, bool bShowStartIndex)
+{
+	const UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, GetPawn<APawn>());
+
+	if (TilemapExtensionComponent == nullptr)
+	{
+		return TArray<int32>{};
+	}
+
+	return Pathfinding(TilemapExtensionComponent->GetPathfindingIndex(), MoveRange, MaxMoveRange, bExcludeFriendly, bContinueFromLastPathfinding, bShowStartIndex);
+}
+
+TArray<int32> UTilemapPathfindingComponent::Pathfinding(int32 StartIndex, int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,
+                                                        bool bContinueFromLastPathfinding, bool bShowStartIndex)
 {
 	const APawn* Pawn = GetPawn<APawn>();
 	const UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Pawn);

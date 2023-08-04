@@ -36,15 +36,27 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTVGAME_API UTilemapPathfindingComponent : public UPawnComponent
 {
 	GENERATED_UCLASS_BODY()
-	FIND_PAWN_COMP_FUNC(TilemapPathfindingComponent)
+
+	UFUNCTION(BlueprintPure)
+	static UTilemapPathfindingComponent* FindTilemapPathfindingComponent(const AActor* Actor)
+	{
+		return (Actor ? Actor->FindComponentByClass<UTilemapPathfindingComponent>() : nullptr);
+	}
 
 protected:
 	virtual void BeginPlay() override;
 
 public:
 	//根据输入的当前位置和移动范围大小，计算出可移动到的Tiles
-	TArray<int32> PathFinding(int32 StartIndex, int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,
+	UFUNCTION(BlueprintCallable)
+	TArray<int32> Pathfinding(int32 StartIndex, int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,
 	                          bool bContinueFromLastPathfinding, bool bShowStartIndex = false);
+
+	// 自身寻路
+	// 根据输入的当前位置和移动范围大小，计算出可移动到的Tiles
+	UFUNCTION(BlueprintCallable)
+	TArray<int32> PathfindingSelf(int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,
+							  bool bContinueFromLastPathfinding, bool bShowStartIndex = false);
 
 private:
 	FPathFindingCached PathFindingCached;

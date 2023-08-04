@@ -19,14 +19,22 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTVGAME_API UTilemapVisibleComponent : public UPawnComponent
 {
 	GENERATED_UCLASS_BODY()
-	FIND_PAWN_COMP_FUNC(TilemapVisibleComponent)
+
+	UFUNCTION(BlueprintPure)
+	static UTilemapVisibleComponent* FindTilemapVisibleComponent(const AActor* Actor)
+	{
+		return (Actor ? Actor->FindComponentByClass<UTilemapVisibleComponent>() : nullptr);
+	}
 	
 protected:
 	virtual void BeginPlay() override;
 
 public:
 	// 绘制寻路贴画
-	void DisplayPathfindingDecal(int32 Index, UMaterialInterface* Material);
+	UFUNCTION(BlueprintCallable)
+	void DisplayPathfindingDecal(TArray<int32> Indexes, UMaterialInterface* Material);
+
+	UFUNCTION(BlueprintCallable)
 	// 清理所有缓存的贴花
 	void ClearAllDecalComponents();
 

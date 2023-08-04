@@ -36,9 +36,11 @@ public:
 	void AddTeamMember(const ETeamType Team, const TArray<AGridChessBase*>& Members);
 
 	// 获取队伍长度
+	UFUNCTION(BlueprintCallable, Category=Team)
 	FORCEINLINE int32 GetTeamLength(const ETeamType Team) const { return Teams[Team].Num(); }
 
 	// 获取队伍成员
+	UFUNCTION(BlueprintCallable, Category=Team)
 	FORCEINLINE AGridChessBase* GetMember(const ETeamType Team, int32 Index) const { return Teams[Team][Index].Get(); }
 
 private:

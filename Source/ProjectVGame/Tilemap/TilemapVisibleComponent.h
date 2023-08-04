@@ -44,5 +44,5 @@ private:
 	TArray<TObjectPtr<UDecalComponent>> DecalComponents;
 
 	// 贴画大小
-	const FVector DecalSize = { 100.0f, 50.0f, 50.0f };
+	const FVector DecalSize = { 95.0f, 45.0f, 45.0f };
 };

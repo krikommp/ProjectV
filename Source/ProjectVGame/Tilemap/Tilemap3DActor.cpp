@@ -66,6 +66,7 @@ void ATilemap3DActor::SetupTilemapAsset(const UTilemapAsset* InTilemapAsset)
 				MeshComponent->SetStaticMesh(TileMeshSet->Mesh);
 				MeshComponent->SetMaterial(0, TileMeshSet->Material);
 				MeshComponent->SetCollisionResponseToChannel(WallTrace, ECR_Block);
+				MeshComponent->SetReceivesDecals(false);
 				InstanceMeshCompMap.Add(Block->MeshIndex, MeshComponent);
 			}
 		}

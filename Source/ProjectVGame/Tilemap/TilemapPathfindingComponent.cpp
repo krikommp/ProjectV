@@ -160,9 +160,11 @@ TArray<int32> UTilemapPathfindingComponent::Pathfinding(int32 StartIndex, int32 
 	}
 	
 	PathFindingCached.CanMoveToArray[CurrentIndex] = { CurrentIndex, 0, CurrentIndex };
-	for (const auto& CanMove : PathFindingCached.CanMoveToArray)
+	for (int32 Index = 0; Index < PathFindingCached.CanMoveToArray.Num(); ++Index)
 	{
-		OutPathfindingArray.Add(CanMove.Index);
+		if (PathFindingCached.CanMoveToArray[Index].Cost == INDEX_NONE)
+			continue;
+		OutPathfindingArray.Add(Index);
 	}
 	
 	return OutPathfindingArray;

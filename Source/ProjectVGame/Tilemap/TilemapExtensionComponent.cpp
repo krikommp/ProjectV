@@ -37,7 +37,7 @@ bool UTilemapExtensionComponent::CheckChessExist(int32 Index) const
 {
 	if (!Tilemap3DActor->ChessArray.IsValidIndex(Index))
 		return false;
-	return Tilemap3DActor->ChessArray[Index] == nullptr;
+	return Tilemap3DActor->ChessArray[Index] != nullptr;
 }
 
 int32 UTilemapExtensionComponent::GetPathfindingArrayNum() const

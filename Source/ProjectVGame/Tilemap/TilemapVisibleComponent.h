@@ -12,8 +12,8 @@
  * UTilemapVisibleComponent
  *
  * 地图可见性组件
- * 实现显示移动范围，可视范围等功能
- * 挂载到需要显示范围的物体上
+ * 用于计算棋子当前可见范围
+ * 挂载到需要计算可见范围的物体上
  */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTVGAME_API UTilemapVisibleComponent : public UPawnComponent
@@ -30,19 +30,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// 绘制寻路贴画
-	UFUNCTION(BlueprintCallable)
-	void DisplayPathfindingDecal(TArray<int32> Indexes);
-
-	UFUNCTION(BlueprintCallable)
-	// 清理所有缓存的贴花
-	void ClearAllDecalComponents();
 
 private:
-	// 记录生成的贴画组件
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UDecalComponent>> DecalComponents;
-
-	// 贴画大小
-	const FVector DecalSize = { 95.0f, 45.0f, 45.0f };
 };

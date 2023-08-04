@@ -19,7 +19,7 @@ class PROJECTVGAME_API UTilemapDrawRangeComponent : public UPawnComponent
 	GENERATED_UCLASS_BODY()
 
 	UFUNCTION(BlueprintPure)
-	static UTilemapDrawRangeComponent* FindTilemapVisibleComponent(const AActor* Actor)
+	static UTilemapDrawRangeComponent* FindTilemapDrawRangeComponent(const AActor* Actor)
 	{
 		return (Actor ? Actor->FindComponentByClass<UTilemapDrawRangeComponent>() : nullptr);
 	}

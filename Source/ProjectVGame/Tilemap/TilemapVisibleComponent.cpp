@@ -4,8 +4,6 @@
 #include "TilemapVisibleComponent.h"
 
 #include "TilemapExtensionComponent.h"
-#include "Components/DecalComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 UTilemapVisibleComponent::UTilemapVisibleComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -17,30 +15,4 @@ UTilemapVisibleComponent::UTilemapVisibleComponent(const FObjectInitializer& Obj
 void UTilemapVisibleComponent::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-void UTilemapVisibleComponent::DisplayPathfindingDecal(TArray<int32> Indexes)
-{
-	const APawn* Pawn = GetPawnChecked<APawn>();
-
-	const UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Pawn);
-	if (TilemapExtensionComponent == nullptr)
-		return;
-
-	for (const int32 Index : Indexes)
-	{
-		const FVector DecalLocation = TilemapExtensionComponent->GetTilemap()->GetPathfindingBlockLocation(Index);
-		UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), TilemapExtensionComponent->GetTilemap()->GetTilemap()->MoveRangeMat, DecalSize, DecalLocation, {90.0f, 0.0f, 0.0f});
-
-		DecalComponents.Add(DecalComponent);
-	}
-}
-
-void UTilemapVisibleComponent::ClearAllDecalComponents()
-{
-	for (const auto& DecalComp : DecalComponents)
-	{
-		DecalComp->DestroyComponent();
-	}
-	DecalComponents.Empty();
 }

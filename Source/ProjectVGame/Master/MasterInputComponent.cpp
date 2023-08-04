@@ -335,9 +335,6 @@ void UMasterInputComponent::Input_MouseConfirm(const FInputActionValue& InputAct
 
 	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
 	MessageSubsystem.BroadcastMessage(Message.EventTag, Message);
-
-	// print hit object's name and location
-	UE_LOG(LogTemp, Warning, TEXT("Hit: %s, Location: %s"), *HitResult.GetActor()->GetName(), *HitResult.Location.ToString());
 }
 
 void UMasterInputComponent::Input_MouseCancel(const FInputActionValue& InputActionValue)

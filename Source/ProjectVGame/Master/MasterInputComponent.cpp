@@ -241,6 +241,7 @@ void UMasterInputComponent::InitializePlayerInput(UInputComponent* PlayerInputCo
 				GridIC->BindNativeAction(InputConfig, GameplayTags.InputTag_TileBaseCameraMove, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
 				GridIC->BindNativeAction(InputConfig, GameplayTags.InputTag_MouseConfirm, ETriggerEvent::Started, this, &ThisClass::Input_MouseConfirm, /*bLogIfNotFound=*/ false);
 				GridIC->BindNativeAction(InputConfig, GameplayTags.InputTag_MouseCancel, ETriggerEvent::Started, this, &ThisClass::Input_MouseCancel, /*bLogIfNotFound=*/ false);
+				GridIC->BindNativeAction(InputConfig, GameplayTags.InputTag_TileBaseCameraRotate, ETriggerEvent::Triggered, this, &ThisClass::Input_CameraRotate, /*bLogIfNotFound=*/ false);
 			}
 		}
 	}
@@ -284,24 +285,36 @@ void UMasterInputComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 void UMasterInputComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
 	APawn* Pawn = GetPawn<APawn>();
-	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
 
-	if (Controller)
+	check(Pawn);
+
+	const FVector2D Value = InputActionValue.Get<FVector2D>();
+	const FRotator MovementRotation(0.0f, Pawn->GetActorRotation().Yaw, 0.0f);
+
+	if (Value.X != 0.0f)
 	{
-		const FVector2D Value = InputActionValue.Get<FVector2D>();
-		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+		const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+		Pawn->AddMovementInput(MovementDirection, Value.X);
+	}
 
-		if (Value.X != 0.0f)
-		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
-			Pawn->AddMovementInput(MovementDirection, Value.X);
-		}
+	if (Value.Y != 0.0f)
+	{
+		const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+		Pawn->AddMovementInput(MovementDirection, Value.Y);
+	}
+}
 
-		if (Value.Y != 0.0f)
-		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-			Pawn->AddMovementInput(MovementDirection, Value.Y);
-		}
+void UMasterInputComponent::Input_CameraRotate(const FInputActionValue& InputActionValue)
+{
+	const float Value = InputActionValue.Get<float>();
+
+	if (Value != 0.0f)
+	{
+		APawn* Pawn= GetPawn<APawn>();
+		check(Pawn);
+
+		const FRotator Rotator = Pawn->GetActorRotation();
+		Pawn->SetActorRotation(FRotator(Rotator.Pitch, Rotator.Yaw + (Value * CameraRotateSpeed), Rotator.Roll));
 	}
 }
 

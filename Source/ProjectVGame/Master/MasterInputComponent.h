@@ -31,6 +31,10 @@ class PROJECTVGAME_API UMasterInputComponent : public UPawnComponent, public IGa
 	// 默认的输入配置
 	UPROPERTY(EditAnywhere)
 	TArray<FMappableConfigPair> DefaultInputConfigs;
+
+	// 相机旋转速度
+	UPROPERTY(EditAnywhere)
+	float CameraRotateSpeed = 3.0f;
 	
 protected:
 	virtual void OnRegister() override;
@@ -66,6 +70,7 @@ private:
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
 	void Input_Move(const FInputActionValue& InputActionValue);
+	void Input_CameraRotate(const FInputActionValue& InputActionValue);
 	void Input_MouseConfirm(const FInputActionValue& InputActionValue);
 	void Input_MouseCancel(const FInputActionValue& InputActionValue);
 	//~ Begin 按键操作函数

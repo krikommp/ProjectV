@@ -32,7 +32,7 @@ protected:
 public:
 	// 绘制寻路贴画
 	UFUNCTION(BlueprintCallable)
-	void DisplayPathfindingDecal(TArray<int32> Indexes, UMaterialInterface* Material);
+	void DisplayPathfindingDecal(TArray<int32> Indexes);
 
 	UFUNCTION(BlueprintCallable)
 	// 清理所有缓存的贴花

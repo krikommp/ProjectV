@@ -35,6 +35,7 @@ void ATilemap3DActor::SetupTilemapAsset(const UTilemapAsset* InTilemapAsset)
 
 	ProceduralMeshComponent->SetMaterial(0, TilemapAsset->TileSet->Material);
 	ProceduralMeshComponent->SetCollisionResponseToChannel(PathTrace, ECR_Block);
+	ProceduralMeshComponent->SetCollisionResponseToChannel(MouseClickTrace, ECR_Block);
 	ProceduralMeshComponent->CreateMeshSection(
 		0,
 		TilemapAsset->MeshData.Vertices,

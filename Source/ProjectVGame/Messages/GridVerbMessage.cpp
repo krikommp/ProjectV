@@ -13,6 +13,13 @@ FString FGridVerbMessage::ToString() const
 	return HumanReadableMessage;
 }
 
+FString FGridMouseMessage::ToString() const
+{
+	FString HumanReadableMessage;
+	FGridMouseMessage::StaticStruct()->ExportText(/*out*/ HumanReadableMessage, this, /*Defaults=*/ nullptr, /*OwnerObject=*/ nullptr, PPF_None, /*ExportRootScope=*/ nullptr);
+	return HumanReadableMessage;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 

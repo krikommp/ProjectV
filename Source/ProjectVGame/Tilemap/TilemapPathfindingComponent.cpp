@@ -153,7 +153,7 @@ TArray<int32> UTilemapPathfindingComponent::Pathfinding(int32 StartIndex, int32 
 		{
 			break;
 		}
-		if (PathFindingCached.CurrentSearchStep <= PathfindingMove)
+		if (PathFindingCached.CurrentSearchStep >= PathfindingMove)
 		{
 			break;
 		}

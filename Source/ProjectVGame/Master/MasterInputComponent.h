@@ -66,5 +66,7 @@ private:
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
 	void Input_Move(const FInputActionValue& InputActionValue);
+	void Input_MouseConfirm(const FInputActionValue& InputActionValue);
+	void Input_MouseCancel(const FInputActionValue& InputActionValue);
 	//~ Begin 按键操作函数
 };

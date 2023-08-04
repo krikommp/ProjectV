@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GridGameplayTags.h"
 #include "GridLogChannel.h"
+#include "GridTraceChannel.h"
 #include "Character/GridPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "Input/GridInputComponent.h"
@@ -14,6 +15,8 @@
 #include "Player/GridPlayerController.h"
 #include "Player/GridPlayerState.h"
 #include "PlayerMappableInputConfig.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
+#include "System/GridGameInstance.h"
 #if WITH_EDITOR
 #include "Misc/UObjectToken.h"
 #endif	// WITH_EDITOR
@@ -236,6 +239,8 @@ void UMasterInputComponent::InitializePlayerInput(UInputComponent* PlayerInputCo
 				TArray<uint32> BindHandles;
 				GridIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
 				GridIC->BindNativeAction(InputConfig, GameplayTags.InputTag_TileBaseCameraMove, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
+				GridIC->BindNativeAction(InputConfig, GameplayTags.InputTag_MouseConfirm, ETriggerEvent::Started, this, &ThisClass::Input_MouseConfirm, /*bLogIfNotFound=*/ false);
+				GridIC->BindNativeAction(InputConfig, GameplayTags.InputTag_MouseCancel, ETriggerEvent::Started, this, &ThisClass::Input_MouseCancel, /*bLogIfNotFound=*/ false);
 			}
 		}
 	}
@@ -298,4 +303,30 @@ void UMasterInputComponent::Input_Move(const FInputActionValue& InputActionValue
 			Pawn->AddMovementInput(MovementDirection, Value.Y);
 		}
 	}
+}
+
+void UMasterInputComponent::Input_MouseConfirm(const FInputActionValue& InputActionValue)
+{
+	FHitResult HitResult;
+	APlayerController* PlayerController = GetGameInstance<UGridGameInstance>()->GetFirstLocalPlayerController();
+	PlayerController->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(MouseClickTrace), false, HitResult);
+	if (!HitResult.IsValidBlockingHit())
+		return;
+
+	FGridGameplayTags GameplayTags = FGridGameplayTags::Get();
+
+	FGridMouseMessage Message;
+	Message.EventTag = GameplayTags.InputTag_MouseConfirm;
+	Message.HitTarget = HitResult.GetActor();
+	Message.Location = HitResult.Location;
+
+	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+	MessageSubsystem.BroadcastMessage(Message.EventTag, Message);
+
+	// print hit object's name and location
+	UE_LOG(LogTemp, Warning, TEXT("Hit: %s, Location: %s"), *HitResult.GetActor()->GetName(), *HitResult.Location.ToString());
+}
+
+void UMasterInputComponent::Input_MouseCancel(const FInputActionValue& InputActionValue)
+{
 }

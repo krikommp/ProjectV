@@ -19,7 +19,7 @@ void UTilemapVisibleComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UTilemapVisibleComponent::DisplayPathfindingDecal(TArray<int32> Indexes, UMaterialInterface* Material)
+void UTilemapVisibleComponent::DisplayPathfindingDecal(TArray<int32> Indexes)
 {
 	const APawn* Pawn = GetPawnChecked<APawn>();
 
@@ -30,7 +30,7 @@ void UTilemapVisibleComponent::DisplayPathfindingDecal(TArray<int32> Indexes, UM
 	for (const int32 Index : Indexes)
 	{
 		const FVector DecalLocation = TilemapExtensionComponent->GetTilemap()->GetPathfindingBlockLocation(Index);
-		UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), Material, DecalSize, DecalLocation, {90.0f, 0.0f, 0.0f});
+		UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), TilemapExtensionComponent->GetTilemap()->GetTilemap()->MoveRangeMat, DecalSize, DecalLocation, {90.0f, 0.0f, 0.0f});
 
 		DecalComponents.Add(DecalComponent);
 	}

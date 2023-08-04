@@ -6,6 +6,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GridChessExtensionComponent.h"
+#include "GridTraceChannel.h"
 #include "Tilemap/TilemapExtensionComponent.h"
 
 
@@ -14,6 +15,7 @@ AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
 {
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
 	CapsuleComponent->InitCapsuleSize(50.0f, 80.0f);
+	CapsuleComponent->SetCollisionResponseToChannel(MouseClickTrace, ECR_Block);
 	RootComponent = CapsuleComponent;
 
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
@@ -32,7 +34,6 @@ AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
 void AGridChessBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AGridChessBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

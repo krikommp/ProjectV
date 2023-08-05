@@ -83,6 +83,11 @@ const TArray<int32>& UTilemapPathfindingComponent::FindPathToIndex(int32 EndInde
 	}
 }
 
+void UTilemapPathfindingComponent::ClearFindPath()
+{
+	PathFindingCached.PathIndexArray.Empty();
+}
+
 TArray<int32> UTilemapPathfindingComponent::Pathfinding(int32 StartIndex, int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,
                                                         bool bContinueFromLastPathfinding, bool bShowStartIndex)
 {

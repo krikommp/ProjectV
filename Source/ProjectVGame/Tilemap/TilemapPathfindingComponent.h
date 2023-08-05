@@ -68,6 +68,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	const TArray<int32>& FindPathToIndex(int32 EndIndex, int32 StopFromTarget, bool& bUpdate);
 
+	// 清空寻路缓存
+	UFUNCTION(BlueprintCallable)
+	void ClearFindPath();
+
 private:
 	FPathFindingCached PathFindingCached;
 };

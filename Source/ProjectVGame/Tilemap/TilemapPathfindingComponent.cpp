@@ -45,10 +45,17 @@ bool UTilemapPathfindingComponent::CheckWithinPathfinding(int32 Index)
 	return PathFindingCached.CanMoveToArray.IsValidIndex(Index) && PathFindingCached.CanMoveToArray[Index].Cost != INDEX_NONE;
 }
 
-const TArray<int32>& UTilemapPathfindingComponent::FindPathToIndex(int32 EndIndex, int32 StopFromTarget)
+const TArray<int32>& UTilemapPathfindingComponent::FindPathToIndex(int32 EndIndex, int32 StopFromTarget, bool& bUpdate)
 {
+	if (PathFindingCached.PathIndexArray.Num() > 0 && PathFindingCached.PathIndexArray[0] == EndIndex)
+	{
+		bUpdate = false;
+		return PathFindingCached.PathIndexArray;
+	}
+	
 	PathFindingCached.PathIndexArray.Empty();
-
+	bUpdate = true;
+	
 	int32 PathHolderTemp = EndIndex;
 	int32 LocalDebugCounter = 0;
 	int32 TempStopFromTarget = StopFromTarget;

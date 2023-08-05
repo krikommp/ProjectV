@@ -122,6 +122,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="Path Finding")
 	int32 TraceForWallsHeight = 100;
 
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	bool bDiagonalMovement = false;
+
 	UPROPERTY(EditAnywhere, Category="Tile Values")
 	TObjectPtr<class UTileSet3DAsset> TileSet;
 

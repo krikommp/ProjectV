@@ -76,7 +76,4 @@ public:
 
 	UPROPERTY(Transient)
 	TMap<FName, FGridHeroData> ChessMap;
-
-	UPROPERTY(EditAnywhere)
-	bool bDiagonalMovement = false;
 };

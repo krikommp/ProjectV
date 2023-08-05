@@ -14,10 +14,10 @@ void FTilemap3DPathfindingGenerator::Setup(const UObject* WorldContextObject, UT
 	for (int32 Index = 0; Index < Count; ++Index)
 	{
 		InTilemapAsset->PathFindingBlocks[Index].Location = InTilemapAsset->IndexToVector(Index);
-		PopulateEdgeTileAndCost(InTilemapAsset, Index, InTileSetAsset->bDiagonalMovement);
+		PopulateEdgeTileAndCost(InTilemapAsset, Index, InTilemapAsset->bDiagonalMovement);
 		ComputeTilemapSurfaceHeight(WorldContextObject, InTilemapAsset, Index);
 	}
-	CreateMultiLevelGrids(InTilemapAsset, InTileSetAsset->bDiagonalMovement);
+	CreateMultiLevelGrids(InTilemapAsset, InTilemapAsset->bDiagonalMovement);
 	CreateWallsOnGridEdges(InTilemapAsset);
 	CalculateCostByHeight(InTilemapAsset);
 	TraceForWalls(WorldContextObject, InTilemapAsset);

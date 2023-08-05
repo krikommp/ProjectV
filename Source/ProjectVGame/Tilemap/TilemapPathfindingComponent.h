@@ -66,7 +66,7 @@ public:
 
 	// 计算从当前位置到目标位置的路径
 	UFUNCTION(BlueprintCallable)
-	const TArray<int32>& FindPathToIndex(int32 EndIndex, int32 StopFromTarget);
+	const TArray<int32>& FindPathToIndex(int32 EndIndex, int32 StopFromTarget, bool& bUpdate);
 
 private:
 	FPathFindingCached PathFindingCached;

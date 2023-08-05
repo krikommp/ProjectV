@@ -146,6 +146,12 @@ public:
 	UPROPERTY(EditAnywhere, Category="Path Finding")
 	TObjectPtr<UMaterialInterface> MoveRangeMat;
 
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	TObjectPtr<UStaticMesh> PathfindingRoadMesh;
+
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	TObjectPtr<UMaterialInterface> PathfindingRoadMat;
+
 	int32 GetMaxLevelHeight() const { return (Floors + 1) * GridSize; }
 	int32 GetMinLevelHeight() const { return 0; }
 	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const;

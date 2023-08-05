@@ -45,6 +45,14 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	FORCEINLINE int32 GetPathfindingIndex() const { return PathfindingIndex; }
 	// 获取寻路节点位置
 	FORCEINLINE FVector GetPathfindingLocation(int32 Index, float ZOffset) const;
+	// 获取寻路节点的位置
+	FORCEINLINE FVector GetPathfindingBlockLocation(int32 Index) const;
+	// 将位置转换为寻路索引
+	int32 LocationToPathfindingIndex(const FVector& Location) const;
+
+	// 获取鼠标点击地图位置和索引
+	UFUNCTION(BlueprintPure)
+	bool GetHitLocationAndIndex(ETraceTypeQuery TraceChannel, int32& OutIndex, FVector& OutLocation) const;
 
 protected:
 	virtual void OnRegister() override;
@@ -65,7 +73,7 @@ public:
 	//~ End IGameFrameworkInitStateInterface interface
 
 	void SetTilemap(const ATilemap3DActor* InTilemap, int32 InPathfindingIndex = INDEX_NONE);
-	const ATilemap3DActor* GetTilemap() const { return Tilemap3DActor.Get(); }
+	const UTilemapAsset* GetTilemap() const { return Tilemap3DActor->GetTilemap(); }
 	
 private:
 	// 弱引用场景中的Tilemap

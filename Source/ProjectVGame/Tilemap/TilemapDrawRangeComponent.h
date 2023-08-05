@@ -9,6 +9,8 @@
 #include "TilemapDrawRangeComponent.generated.h"
 
 class USplineComponent;
+class USplineMeshComponent;
+
 /**
  * UTilemapDrawRangeComponent
  *
@@ -36,6 +38,9 @@ class PROJECTVGAME_API UTilemapDrawRangeComponent : public UPawnComponent, publi
 	// 绘制寻路路径
 	UFUNCTION(BlueprintCallable)
 	void DisplayPathfindingSplinePath(const TArray<int32>& PathIndexArray);
+	// 清理所有缓存的路径
+	UFUNCTION(BlueprintCallable)
+	void ClearAllSplinePath();
 protected:
 	virtual void OnRegister() override;
 	virtual void BeginPlay() override;
@@ -60,6 +65,9 @@ private:
 	// 用于显示寻路路径的组件
 	UPROPERTY(Transient)
 	TObjectPtr<USplineComponent> DisplaySplineComponent;
+	// 记录显示路径点
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<USplineMeshComponent>> DisplayRoadMeshComponents;
 	// 贴画大小
 	const FVector DecalSize = { 95.0f, 45.0f, 45.0f };
 	// 模块名称

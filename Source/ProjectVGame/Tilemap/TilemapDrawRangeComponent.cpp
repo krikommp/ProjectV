@@ -146,8 +146,8 @@ void UTilemapDrawRangeComponent::DisplayPathfindingDecal(TArray<int32> Indexes)
 
 	for (const int32 Index : Indexes)
 	{
-		const FVector DecalLocation = TilemapExtensionComponent->GetTilemap()->GetPathfindingBlockLocation(Index);
-		UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), TilemapExtensionComponent->GetTilemap()->GetTilemap()->MoveRangeMat, DecalSize, DecalLocation, {90.0f, 0.0f, 0.0f});
+		const FVector DecalLocation = TilemapExtensionComponent->GetPathfindingBlockLocation(Index);
+		UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), TilemapExtensionComponent->GetTilemap()->MoveRangeMat, DecalSize, DecalLocation, {90.0f, 0.0f, 0.0f});
 
 		DecalComponents.Add(DecalComponent);
 	}
@@ -164,11 +164,18 @@ void UTilemapDrawRangeComponent::ClearAllDecalComponents()
 
 void UTilemapDrawRangeComponent::DisplayPathfindingSplinePath(const TArray<int32>& PathIndexArray)
 {
-	APawn* Pawn = GetPawnChecked<APawn>();
+	// 首先进行清理
+	ClearAllSplinePath();
 	
 	if (DisplaySplineComponent == nullptr)
 		return;
 
+	APawn* Pawn = GetPawnChecked<APawn>();
+
+	const UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Pawn);
+	if (TilemapExtensionComponent == nullptr)
+		return;
+	
  	const TArray<FVector> PathVectors = CreateSplinePath(PathIndexArray);
 	DisplaySplineComponent->SetSplinePoints(PathVectors, ESplineCoordinateSpace::World, true);
 	for (int32 Index = 0; Index < PathVectors.Num(); ++Index)
@@ -184,8 +191,8 @@ void UTilemapDrawRangeComponent::DisplayPathfindingSplinePath(const TArray<int32
 		auto SplineMesh = Cast<USplineMeshComponent>(
 			Pawn->AddComponentByClass(USplineMeshComponent::StaticClass(), true, SplineTransform, false));
 		SplineMesh->SetMobility(EComponentMobility::Movable);
-		SplineMesh->SetStaticMesh(SplinePathMesh);
-		SplineMesh->SetMaterial(0, PathMaterial);
+		SplineMesh->SetStaticMesh(TilemapExtensionComponent->GetTilemap()->PathfindingRoadMesh);
+		SplineMesh->SetMaterial(0, TilemapExtensionComponent->GetTilemap()->PathfindingRoadMat);
 		SplineMesh->SetStartAndEnd(
 			DisplaySplineComponent->GetLocationAtDistanceAlongSpline(Index * SplineMeshLength, ESplineCoordinateSpace::World),
 			DisplaySplineComponent->GetDirectionAtDistanceAlongSpline(Index * SplineMeshLength, ESplineCoordinateSpace::World) *
@@ -196,7 +203,20 @@ void UTilemapDrawRangeComponent::DisplayPathfindingSplinePath(const TArray<int32
 															 ESplineCoordinateSpace::World) * SplineMeshLength,
 			true
 		);
-		SplineMeshArray.Add(SplineMesh);
+		DisplayRoadMeshComponents.Add(SplineMesh);
 	}
+}
+
+void UTilemapDrawRangeComponent::ClearAllSplinePath()
+{
+	if (DisplaySplineComponent == nullptr)
+		return;
+	
+	DisplaySplineComponent->ClearSplinePoints();
+	for (const auto& PathComp : DisplayRoadMeshComponents)
+	{
+		PathComp->DestroyComponent();
+	}
+	DisplayRoadMeshComponents.Empty();
 }
 

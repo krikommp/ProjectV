@@ -22,10 +22,6 @@ class PROJECTVGAME_API ATilemap3DActor : public AModularPawn
 	// 设置该对象的TilemapAsset
 	void SetupTilemapAsset(const UTilemapAsset* InTilemapAsset);
 	const UTilemapAsset* GetTilemap() const { return TilemapAsset.Get(); }
-	// 获取寻路数组总大小
-	int32 GetPathfindingArrayNum() const;
-	// 获取寻路节点的位置
-	FVector GetPathfindingBlockLocation(int32 Index) const;
 
 protected:
 	virtual void BeginPlay() override;

@@ -60,6 +60,10 @@ public:
 	TArray<int32> PathfindingSelf(int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,
 							  bool bContinueFromLastPathfinding, bool bShowStartIndex = false);
 
+	// 判断传入的位置是否在寻路范围内
+	UFUNCTION(BlueprintPure)
+	bool CheckWithinPathfinding(int32 Index);
+
 	// 计算从当前位置到目标位置的路径
 	UFUNCTION(BlueprintCallable)
 	const TArray<int32>& FindPathToIndex(int32 EndIndex, int32 StopFromTarget);

@@ -40,6 +40,11 @@ TArray<int32> UTilemapPathfindingComponent::PathfindingSelf(int32 MoveRange, int
 	return Pathfinding(TilemapExtensionComponent->GetPathfindingIndex(), MoveRange, MaxMoveRange, bExcludeFriendly, bContinueFromLastPathfinding, bShowStartIndex);
 }
 
+bool UTilemapPathfindingComponent::CheckWithinPathfinding(int32 Index)
+{
+	return PathFindingCached.CanMoveToArray.IsValidIndex(Index) && PathFindingCached.CanMoveToArray[Index].Cost != INDEX_NONE;
+}
+
 const TArray<int32>& UTilemapPathfindingComponent::FindPathToIndex(int32 EndIndex, int32 StopFromTarget)
 {
 	PathFindingCached.PathIndexArray.Empty();

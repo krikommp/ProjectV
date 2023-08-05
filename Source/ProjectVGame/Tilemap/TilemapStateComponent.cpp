@@ -80,15 +80,16 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 	TilemapActor->SetupTilemapAsset(TilemapAsset);
 
 	// 设置 Tilemap 数据到主相机
-	if (UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Character))
+	UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Character);
+	if (TilemapExtensionComponent)
 	{
 		TilemapExtensionComponent->SetTilemap(TilemapActor);
 	}
 
-	if (TilemapActor)
+	if (TilemapActor && TilemapExtensionComponent)
 	{
 		TilemapActor->ChessArray.Empty();
-		TilemapActor->ChessArray.SetNumZeroed(TilemapActor->GetPathfindingArrayNum());
+		TilemapActor->ChessArray.SetNumZeroed(TilemapExtensionComponent->GetPathfindingArrayNum());
 	}
 
 	// 放置棋子

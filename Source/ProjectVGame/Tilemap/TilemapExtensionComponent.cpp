@@ -4,11 +4,14 @@
 #include "TilemapExtensionComponent.h"
 
 #include "GridGameplayTags.h"
+#include "GridTraceChannel.h"
 #include "Character/GridPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "TilemapAsset.h"
 #include "TilemapStateComponent.h"
 #include "Chess/GridChessBase.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "System/GridGameInstance.h"
 
 const FName UTilemapExtensionComponent::NAME_ActorFeatureName("TilemapExtension");
 
@@ -41,7 +44,7 @@ bool UTilemapExtensionComponent::CheckChessExist(int32 Index) const
 
 int32 UTilemapExtensionComponent::GetPathfindingArrayNum() const
 {
-	return Tilemap3DActor->GetPathfindingArrayNum();
+	return GetTilemap()->LevelSizeX * GetTilemap()->LevelSizeY * GetTilemap()->LevelSizeZ;
 }
 
 const FTilemapPathFindingBlock& UTilemapExtensionComponent::GetPathfindingBlock(int32 Index) const
@@ -54,6 +57,62 @@ const FTilemapPathFindingBlock& UTilemapExtensionComponent::GetPathfindingBlock(
 FVector UTilemapExtensionComponent::GetPathfindingLocation(int32 Index, float ZOffset) const
 {
 	return Tilemap3DActor->GetActorLocation() + Tilemap3DActor->GetTilemap()->PathFindingBlocks[Index].Location + FVector::UpVector * ZOffset;
+}
+
+FVector UTilemapExtensionComponent::GetPathfindingBlockLocation(int32 Index) const
+{
+	if (!GetTilemap()->PathFindingBlocks.IsValidIndex(Index))
+		return FVector::Zero();
+
+	return Tilemap3DActor->GetActorLocation() + GetTilemap()->PathFindingBlocks[Index].Location;
+}
+
+int32 UTilemapExtensionComponent::LocationToPathfindingIndex(const FVector& Location) const
+{
+	const float PivotX = 50.0f + Location.X;
+	const float PivotY = 50.0f + Location.Y;
+
+	const float ModX = FMath::Floor(FMath::Fmod(PivotX, 100.0f));
+	const float ModY = FMath::Floor(FMath::Fmod(PivotY, 100.0f));
+
+	const int AddX = ModX ? 1 : 0;
+	const int AddY = ModY ? 1 : 0;
+
+	const int X = FMath::Floor(((PivotX + AddX) - Tilemap3DActor->GetActorLocation().X) / 100.0f);
+	const int Y = FMath::Floor(((PivotY + AddY) - Tilemap3DActor->GetActorLocation().Y) / 100.0f) * GetTilemap()->LevelSizeX;
+
+	const int32 Result = X + Y;
+
+	for (int32 Index = 0; Index <= GetTilemap()->LevelSizeZ - 1; ++Index)
+	{
+		if (GetTilemap()->PathFindingBlocks.IsValidIndex(Index * (GetTilemap()->LevelSizeX * GetTilemap()->LevelSizeY) + Result))
+		{
+			if (UKismetMathLibrary::NearlyEqual_FloatFloat(
+				GetTilemap()->PathFindingBlocks[Index * (GetTilemap()->LevelSizeX * GetTilemap()->LevelSizeY) +
+					Result].Location.Z,
+				Location.Z - Tilemap3DActor->GetActorLocation().Z, GetTilemap()->HeightBetweenLevel / 2.0f))
+			{
+				return (Index * (GetTilemap()->LevelSizeX * GetTilemap()->LevelSizeY) + Result);
+			}
+		}
+	}
+
+	return Result;
+}
+
+bool UTilemapExtensionComponent::GetHitLocationAndIndex(ETraceTypeQuery TraceChannel, int32& OutIndex, FVector& OutLocation) const
+{
+	FHitResult HitResult;
+	const APlayerController* PlayerController = GetGameInstance<UGridGameInstance>()->GetFirstLocalPlayerController();
+	PlayerController->GetHitResultUnderCursorByChannel(TraceChannel, false, HitResult);
+
+	if (HitResult.IsValidBlockingHit())
+	{
+		OutIndex = LocationToPathfindingIndex(HitResult.Location);
+		OutLocation = HitResult.Location;
+	}
+
+	return HitResult.IsValidBlockingHit();
 }
 
 void UTilemapExtensionComponent::OnRegister()

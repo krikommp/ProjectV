@@ -3,6 +3,7 @@
 
 #include "TilemapPathfindingComponent.h"
 
+#include "GridLogChannel.h"
 #include "TilemapExtensionComponent.h"
 
 UTilemapPathfindingComponent::UTilemapPathfindingComponent(const FObjectInitializer& ObjectInitializer)
@@ -18,6 +19,7 @@ FPathFindingCached::FPathFindingCached()
 {
 	CanMoveToArray.Empty();
 	DelayedSpiltPathfindingList.Empty();
+	PathIndexArray.Empty();
 }
 
 void UTilemapPathfindingComponent::BeginPlay()
@@ -36,6 +38,37 @@ TArray<int32> UTilemapPathfindingComponent::PathfindingSelf(int32 MoveRange, int
 	}
 
 	return Pathfinding(TilemapExtensionComponent->GetPathfindingIndex(), MoveRange, MaxMoveRange, bExcludeFriendly, bContinueFromLastPathfinding, bShowStartIndex);
+}
+
+const TArray<int32>& UTilemapPathfindingComponent::FindPathToIndex(int32 EndIndex, int32 StopFromTarget)
+{
+	PathFindingCached.PathIndexArray.Empty();
+
+	int32 PathHolderTemp = EndIndex;
+	int32 LocalDebugCounter = 0;
+	int32 TempStopFromTarget = StopFromTarget;
+	if (TempStopFromTarget == 0)
+		PathFindingCached.PathIndexArray.Add(PathHolderTemp);
+	else
+		--TempStopFromTarget;
+	while (true)
+	{
+		if ((++LocalDebugCounter) > 1000)
+		{
+			UE_LOG(LogGrid, Error, TEXT("[AGridMapManager::FindPathToIndex]: Path Too Long!!"));
+			return PathFindingCached.PathIndexArray;
+		}
+		const auto& ParentTile = PathFindingCached.CanMoveToArray[PathHolderTemp];
+		if (ParentTile.Cost == 0)
+		{
+			return PathFindingCached.PathIndexArray;
+		}
+		PathHolderTemp = ParentTile.Parent;
+		if (TempStopFromTarget != 0)
+			--TempStopFromTarget;
+		else
+			PathFindingCached.PathIndexArray.Add(PathHolderTemp);
+	}
 }
 
 TArray<int32> UTilemapPathfindingComponent::Pathfinding(int32 StartIndex, int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,

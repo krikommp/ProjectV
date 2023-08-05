@@ -43,6 +43,8 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	FORCEINLINE const FTilemapPathFindingBlock& GetPathfindingBlock(int32 Index) const;
 	// 获取寻路索引
 	FORCEINLINE int32 GetPathfindingIndex() const { return PathfindingIndex; }
+	// 获取寻路节点位置
+	FORCEINLINE FVector GetPathfindingLocation(int32 Index, float ZOffset) const;
 
 protected:
 	virtual void OnRegister() override;

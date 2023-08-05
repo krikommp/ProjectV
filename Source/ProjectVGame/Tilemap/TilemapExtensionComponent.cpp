@@ -8,7 +8,6 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "TilemapAsset.h"
 #include "TilemapStateComponent.h"
-#include "Player/GridPlayerState.h"
 #include "Chess/GridChessBase.h"
 
 const FName UTilemapExtensionComponent::NAME_ActorFeatureName("TilemapExtension");
@@ -50,6 +49,11 @@ const FTilemapPathFindingBlock& UTilemapExtensionComponent::GetPathfindingBlock(
 	ensureAlwaysMsgf(Tilemap3DActor->GetTilemap()->PathFindingBlocks.IsValidIndex(Index), TEXT("InValid pathfinding Block Index: [%d]!"), Index);
 
 	return Tilemap3DActor->GetTilemap()->PathFindingBlocks[Index];
+}
+
+FVector UTilemapExtensionComponent::GetPathfindingLocation(int32 Index, float ZOffset) const
+{
+	return Tilemap3DActor->GetActorLocation() + Tilemap3DActor->GetTilemap()->PathFindingBlocks[Index].Location + FVector::UpVector * ZOffset;
 }
 
 void UTilemapExtensionComponent::OnRegister()
@@ -125,12 +129,10 @@ bool UTilemapExtensionComponent::CanChangeInitState(UGameFrameworkComponentManag
 	}
 	else if (CurrentState == InitTags.InitState_DataAvailable && DesiredState == InitTags.InitState_DataInitialized)
 	{
-		AGridPlayerState* GridPS = GetPlayerState<AGridPlayerState>();
-
 		// 这里是判断 PawnExtComp 的数据是否准备完毕
 		// 注意 PawnExtComp 将会首先进入 InitState_DataInitialized 状态，然后该 Feature 再进
 		// 默认可控制对象上面都会挂载一个 PawnExtComp
-		return GridPS && Manager->HasFeatureReachedInitState(Pawn, UGridPawnExtensionComponent::NAME_ActorFeatureName,
+		return Manager->HasFeatureReachedInitState(Pawn, UGridPawnExtensionComponent::NAME_ActorFeatureName,
 		                                                     InitTags.InitState_DataInitialized);
 	}
 	else if (CurrentState == InitTags.InitState_DataInitialized && DesiredState == InitTags.InitState_GameplayReady)

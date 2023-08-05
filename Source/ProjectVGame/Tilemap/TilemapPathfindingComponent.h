@@ -22,6 +22,8 @@ struct FPathFindingCached
 	int32 CurrentSearchStep = 0;
 	// 需要等待下一次再执行的寻路
 	TArray<FTilemapPathFinding> DelayedSpiltPathfindingList;
+	// 路径点
+	TArray<int32> PathIndexArray;
 
 	FPathFindingCached();
 };
@@ -57,6 +59,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<int32> PathfindingSelf(int32 MoveRange, int32 MaxMoveRange, bool bExcludeFriendly,
 							  bool bContinueFromLastPathfinding, bool bShowStartIndex = false);
+
+	// 计算从当前位置到目标位置的路径
+	UFUNCTION(BlueprintCallable)
+	const TArray<int32>& FindPathToIndex(int32 EndIndex, int32 StopFromTarget);
 
 private:
 	FPathFindingCached PathFindingCached;

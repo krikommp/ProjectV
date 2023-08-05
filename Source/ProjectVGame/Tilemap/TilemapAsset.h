@@ -147,10 +147,13 @@ public:
 	TObjectPtr<UMaterialInterface> MoveRangeMat;
 
 	UPROPERTY(EditAnywhere, Category="Path Finding")
-	TObjectPtr<UStaticMesh> PathfindingRoadMesh;
+	FLinearColor MoveDecalColor;
 
 	UPROPERTY(EditAnywhere, Category="Path Finding")
-	TObjectPtr<UMaterialInterface> PathfindingRoadMat;
+	FLinearColor MoveRoadDecalColor;
+
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	FLinearColor MoveTargetDecalColor;
 
 	int32 GetMaxLevelHeight() const { return (Floors + 1) * GridSize; }
 	int32 GetMinLevelHeight() const { return 0; }

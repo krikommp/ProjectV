@@ -85,9 +85,7 @@ void UTilemapDrawRangeComponent::HandleChangeInitState(UGameFrameworkComponentMa
 	if (CurrentState == FGridGameplayTags::Get().InitState_DataAvailable && DesiredState == FGridGameplayTags::Get().
 		InitState_DataInitialized)
 	{
-		APawn* Pawn = GetPawn<APawn>();
-
-		DisplaySplineComponent = Cast<USplineComponent>(Pawn->AddComponentByClass(USplineComponent::StaticClass(), false, FTransform::Identity, false));
+		// todo...
 	}
 }
 
@@ -146,16 +144,21 @@ void UTilemapDrawRangeComponent::DisplayPathfindingDecal(TArray<int32> Indexes)
 
 	for (const int32 Index : Indexes)
 	{
+		// 创建动态材质实例
+		UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(TilemapExtensionComponent->GetTilemap()->MoveRangeMat, nullptr);
+		if (DynamicMaterial == nullptr)
+			continue;
 		const FVector DecalLocation = TilemapExtensionComponent->GetPathfindingBlockLocation(Index);
-		UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), TilemapExtensionComponent->GetTilemap()->MoveRangeMat, DecalSize, DecalLocation, {90.0f, 0.0f, 0.0f});
+		DynamicMaterial->SetVectorParameterValue("Color", TilemapExtensionComponent->GetTilemap()->MoveDecalColor);
+		UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), DynamicMaterial, DecalSize, DecalLocation, {90.0f, 0.0f, 0.0f});
 
-		DecalComponents.Add(DecalComponent);
+		DecalComponents.Add(Index, DecalComponent);
 	}
 }
 
 void UTilemapDrawRangeComponent::ClearAllDecalComponents()
 {
-	for (const auto& DecalComp : DecalComponents)
+	for (const auto& [Index, DecalComp] : DecalComponents)
 	{
 		DecalComp->DestroyComponent();
 	}
@@ -164,59 +167,42 @@ void UTilemapDrawRangeComponent::ClearAllDecalComponents()
 
 void UTilemapDrawRangeComponent::DisplayPathfindingSplinePath(const TArray<int32>& PathIndexArray)
 {
-	// 首先进行清理
-	ClearAllSplinePath();
+	ClearPathfindingSplinePath();
 	
-	if (DisplaySplineComponent == nullptr)
-		return;
-
 	APawn* Pawn = GetPawnChecked<APawn>();
 
 	const UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Pawn);
 	if (TilemapExtensionComponent == nullptr)
 		return;
 	
- 	const TArray<FVector> PathVectors = CreateSplinePath(PathIndexArray);
-	DisplaySplineComponent->SetSplinePoints(PathVectors, ESplineCoordinateSpace::World, true);
-	for (int32 Index = 0; Index < PathVectors.Num(); ++Index)
+	for (const int32 Index : PathIndexArray)
 	{
-		DisplaySplineComponent->SetSplinePointType(Index, ESplinePointType::Linear, true);
-	}
-	double Remainder = 0.0f;
-	constexpr float SplineMeshLength = 100.0f;
-	const int32 EndPoint = UKismetMathLibrary::FMod64(DisplaySplineComponent->GetSplineLength(), SplineMeshLength, Remainder);
-	for (int32 Index = 0; Index < EndPoint; ++Index)
-	{
-		FTransform SplineTransform;
-		auto SplineMesh = Cast<USplineMeshComponent>(
-			Pawn->AddComponentByClass(USplineMeshComponent::StaticClass(), true, SplineTransform, false));
-		SplineMesh->SetMobility(EComponentMobility::Movable);
-		SplineMesh->SetStaticMesh(TilemapExtensionComponent->GetTilemap()->PathfindingRoadMesh);
-		SplineMesh->SetMaterial(0, TilemapExtensionComponent->GetTilemap()->PathfindingRoadMat);
-		SplineMesh->SetStartAndEnd(
-			DisplaySplineComponent->GetLocationAtDistanceAlongSpline(Index * SplineMeshLength, ESplineCoordinateSpace::World),
-			DisplaySplineComponent->GetDirectionAtDistanceAlongSpline(Index * SplineMeshLength, ESplineCoordinateSpace::World) *
-			SplineMeshLength,
-			DisplaySplineComponent->GetLocationAtDistanceAlongSpline(Index * SplineMeshLength + SplineMeshLength,
-															ESplineCoordinateSpace::World),
-			DisplaySplineComponent->GetDirectionAtDistanceAlongSpline(Index * SplineMeshLength + SplineMeshLength,
-															 ESplineCoordinateSpace::World) * SplineMeshLength,
-			true
-		);
-		DisplayRoadMeshComponents.Add(SplineMesh);
+		UDecalComponent* DecalComponent = DecalComponents.FindRef(Index);
+		if (DecalComponent == nullptr)
+			continue;
+		
+		UMaterialInstanceDynamic* DynamicMaterial = Cast<UMaterialInstanceDynamic>(DecalComponent->GetDecalMaterial());
+		if (DynamicMaterial == nullptr)
+			continue;
+
+		CachedColors.Add(Index, DynamicMaterial->K2_GetVectorParameterValue("Color"));
+		DynamicMaterial->SetVectorParameterValue("Color", Index == PathIndexArray[0] ? TilemapExtensionComponent->GetTilemap()->MoveTargetDecalColor : TilemapExtensionComponent->GetTilemap()->MoveRoadDecalColor);
 	}
 }
 
-void UTilemapDrawRangeComponent::ClearAllSplinePath()
+void UTilemapDrawRangeComponent::ClearPathfindingSplinePath()
 {
-	if (DisplaySplineComponent == nullptr)
-		return;
-	
-	DisplaySplineComponent->ClearSplinePoints();
-	for (const auto& PathComp : DisplayRoadMeshComponents)
+	for (const auto& [Index, Color] : CachedColors)
 	{
-		PathComp->DestroyComponent();
-	}
-	DisplayRoadMeshComponents.Empty();
-}
+		UDecalComponent* DecalComponent = DecalComponents.FindRef(Index);
+		if (DecalComponent == nullptr)
+			continue;
 
+		UMaterialInstanceDynamic* DynamicMaterial = Cast<UMaterialInstanceDynamic>(DecalComponent->GetDecalMaterial());
+		if (DynamicMaterial == nullptr)
+			continue;
+
+		DynamicMaterial->SetVectorParameterValue("Color", Color);
+	}
+	CachedColors.Empty();
+}

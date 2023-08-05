@@ -38,9 +38,9 @@ class PROJECTVGAME_API UTilemapDrawRangeComponent : public UPawnComponent, publi
 	// 绘制寻路路径
 	UFUNCTION(BlueprintCallable)
 	void DisplayPathfindingSplinePath(const TArray<int32>& PathIndexArray);
-	// 清理所有缓存的路径
+	// 清空路径绘制
 	UFUNCTION(BlueprintCallable)
-	void ClearAllSplinePath();
+	void ClearPathfindingSplinePath();
 protected:
 	virtual void OnRegister() override;
 	virtual void BeginPlay() override;
@@ -61,15 +61,10 @@ public:
 private:
 	// 记录生成的贴画组件
 	UPROPERTY(Transient)
-	TArray<TObjectPtr<UDecalComponent>> DecalComponents;
-	// 用于显示寻路路径的组件
-	UPROPERTY(Transient)
-	TObjectPtr<USplineComponent> DisplaySplineComponent;
-	// 记录显示路径点
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<USplineMeshComponent>> DisplayRoadMeshComponents;
+	TMap<int32, TObjectPtr<UDecalComponent>> DecalComponents;
 	// 贴画大小
 	const FVector DecalSize = { 95.0f, 45.0f, 45.0f };
 	// 模块名称
 	static const FName NAME_ActorFeatureName;
+	TMap<int32, FLinearColor> CachedColors;
 };

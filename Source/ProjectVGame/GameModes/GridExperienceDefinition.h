@@ -9,6 +9,7 @@
 class UGridPawnData;
 class UGameFeatureAction;
 class UGridExperienceActionSet;
+class UTilemapAsset;
 
 /**
  * UGridExperienceDefinition
@@ -52,4 +53,7 @@ public:
 	// 定义一组额外的 Action sets
 	UPROPERTY(EditDefaultsOnly, Category=Gameplay)
 	TArray<TObjectPtr<UGridExperienceActionSet>> ActionSets;
+
+	UPROPERTY(EditDefaultsOnly, Category=Gameplay)
+	TObjectPtr<const UTilemapAsset> TilemapAsset;
 };

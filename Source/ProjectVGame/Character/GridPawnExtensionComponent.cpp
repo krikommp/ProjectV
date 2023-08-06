@@ -249,7 +249,9 @@ bool UGridPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentMana
 	}
 	else if (CurrentState == InitTags.InitState_DataAvailable && DesiredState == InitTags.InitState_DataInitialized)
 	{
-		// Transition to initialize if all features have their data available
+		// 检测这个Pawn下的其他Feature是否到达 InitState_DataAvailable
+		// 如果都到达了 InitState_DataAvailable 那么 PawnExtComp 才会完成全部的初始化流程
+		// 进入 InitState_GameplayReady
 		return Manager->HaveAllFeaturesReachedInitState(Pawn, InitTags.InitState_DataAvailable);
 	}
 	else if (CurrentState == InitTags.InitState_DataInitialized && DesiredState == InitTags.InitState_GameplayReady)

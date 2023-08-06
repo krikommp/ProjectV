@@ -3,26 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ModularPawn.h"
+#include "TilemapAsset.h"
 #include "GameFramework/Actor.h"
 #include "Tilemap3DActor.generated.h"
 
+class AGridChessBase;
 class UProceduralMeshComponent;
 class UTilemapAsset;
 
 UCLASS()
-class PROJECTVGAME_API ATilemap3DActor : public AActor
+class PROJECTVGAME_API ATilemap3DActor : public AModularPawn
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
+	friend class UTilemapStateComponent;
+	friend class UTilemapExtensionComponent;
 
-public:
-	ATilemap3DActor();
+	// 设置该对象的TilemapAsset
+	void SetupTilemapAsset(const UTilemapAsset* InTilemapAsset);
+	const UTilemapAsset* GetTilemap() const { return TilemapAsset.Get(); }
 
-	virtual void OnConstruction(const FTransform& Transform) override;
+protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
-	TObjectPtr<UTilemapAsset> TilemapAsset;
+	TWeakObjectPtr<const UTilemapAsset> TilemapAsset;
+
+	TArray<TWeakObjectPtr<const AGridChessBase>> ChessArray;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UProceduralMeshComponent> ProceduralMeshComponent;

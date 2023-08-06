@@ -77,14 +77,10 @@ void AGridGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	FPrimaryAssetId ExperienceId;
 	FString ExperienceIdSource;
 
-	// todo...
-	// 加载顺序
-	// 1. 命令行
-	// 2. World Setting
-	// 3. Default Experience
-
 	UWorld* World = GetWorld();
 
+	// 从配置中加载
+	// 通常采用这种方式加载，需要定义 UserFacingExperienceDefinition 并指定额外参数
 	if (!ExperienceId.IsValid() && UGameplayStatics::HasOption(OptionsString, TEXT("Experience")))
 	{
 		const FString ExperienceFromOptions = UGameplayStatics::ParseOption(OptionsString, TEXT("Experience"));
@@ -123,6 +119,7 @@ void AGridGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	}
 
 	// fallback experience
+	// 当没有进行任何 Experience 的配置时，调用 B_GridDefaultExperience
 	if (!ExperienceId.IsValid())
 	{
 		ExperienceId = FPrimaryAssetId(FPrimaryAssetType("GridExperienceDefinition"), FName("B_GridDefaultExperience"));
@@ -304,7 +301,7 @@ void AGridGameMode::InitGameState()
 
 	UGridExperienceManagerComponent* ExperienceManagerComponent = GameState->FindComponentByClass<UGridExperienceManagerComponent>();
 	check(ExperienceManagerComponent);
-	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded_HighPriority(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 }
 
 void AGridGameMode::PostLogin(APlayerController* NewPlayer)

@@ -16,7 +16,7 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 	.Value(EditMode.Get()) // InitialValue
 	.OnValueChanged_Lambda([this](int32 InValue)
 	                                                      {
-		                                                      EditMode = static_cast<ETilemap3DEditMode>(InValue);
+		                                                      EditMode = InValue;
 		                                                      // ReSharper disable once CppExpressionWithoutSideEffects
 		                                                      OnEditModeChanged.ExecuteIfBound(EditMode.Get());
 	                                                      })
@@ -96,6 +96,9 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 			+ SSegmentedControl<int32>::Slot(ETilemap3DEditMode::EEM_Chess)
 			  .Icon(FAppStyle::Get().GetBrush("ModelingToolsManagerCommands.BeginAddBoxPrimitiveTool"))
 			  .Text(LOCTEXT("Chess", "Edit Chess"))
+			+ SSegmentedControl<int32>::Slot(ETilemap3DEditMode::EEM_Player)
+			  .Icon(FAppStyle::Get().GetBrush("ModelingToolsManagerCommands.BeginAddBoxPrimitiveTool"))
+			  .Text(LOCTEXT("Chess", "Edit Player"))
 		]
 		+ SVerticalBox::Slot()
 		.AutoHeight()

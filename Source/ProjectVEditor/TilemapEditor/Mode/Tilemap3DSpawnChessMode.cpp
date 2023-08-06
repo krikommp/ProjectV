@@ -2,7 +2,7 @@
 
 #include "GridTraceChannel.h"
 #include "ProjectVEditor.h"
-#include "ChessPieces/GridChessPieceData.h"
+#include "Chess/GridChessData.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
 #include "TilemapEditor/Preview/Tilemap3DPreviewChess.h"
@@ -62,8 +62,8 @@ void FTilemap3DSpawnChessMode::InputKey(const FInputKeyEventArgs& EventArgs)
 			ChessPiece->SetCollisionResponseToChannel(TilemapChessTrace, ECR_Block);
 			ChessPiece->SetActorTransform(Transform);
 
-			Block->ChessData = NewObject<UGridChessPieceData>(Block);
-			Block->ChessData->PieceID = ViewportClient.Pin()->GetTileChess()->HeroID;
+			Block->ChessData = NewObject<UGridChessData>(Block);
+			Block->ChessData->ChessID = ViewportClient.Pin()->GetTileChess()->HeroID;
 			Block->ChessData->ChessTransform = Transform;
 			Block->ChessInEditor = ChessPiece;
 			BlockIndex = Index;

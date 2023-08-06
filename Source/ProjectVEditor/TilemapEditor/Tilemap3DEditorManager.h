@@ -23,10 +23,13 @@ enum ETilemap3DEditMode : uint8
 	EEM_Mesh_End,
 
 	EEM_Chess,
+	EEM_Chess_Select,
 	EEM_Chess_Spawn,
 	EEM_Chess_Remove,
-	EEM_Chess_Select,
 	EEM_Chess_End,
+
+	EEM_Player,
+	EEM_PlayerStart,
 	
 	UNKNOWN
 };

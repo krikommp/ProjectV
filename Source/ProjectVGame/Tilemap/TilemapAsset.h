@@ -7,7 +7,7 @@
 
 #include "TilemapAsset.generated.h"
 
-class UGridChessPieceData;
+class UGridChessData;
 /**
  * EBlock
  *
@@ -63,7 +63,7 @@ public:
 	TObjectPtr<AActor> ChessInEditor;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UGridChessPieceData> ChessData;
+	TObjectPtr<UGridChessData> ChessData;
 };
 
 USTRUCT(BlueprintType)
@@ -122,6 +122,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="Path Finding")
 	int32 TraceForWallsHeight = 100;
 
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	bool bDiagonalMovement = false;
+
 	UPROPERTY(EditAnywhere, Category="Tile Values")
 	TObjectPtr<class UTileSet3DAsset> TileSet;
 
@@ -134,6 +137,27 @@ public:
 	UPROPERTY()
 	FTilemap3DTerrainMeshData MeshData;
 
+	UPROPERTY(VisibleAnywhere, Category="Level Values")
+	FTransform PlayerStart;
+
+	UPROPERTY(VisibleAnywhere, Category="Level Values")
+	float PlayerStartHeight = 100.0f;
+
+	UPROPERTY(VisibleAnywhere, Category="Level Values")
+	float MapBoundOffset = 50.0f;
+
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	TObjectPtr<UMaterialInterface> MoveRangeMat;
+
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	FLinearColor MoveDecalColor;
+
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	FLinearColor MoveRoadDecalColor;
+
+	UPROPERTY(EditAnywhere, Category="Path Finding")
+	FLinearColor MoveTargetDecalColor;
+
 	int32 GetMaxLevelHeight() const { return (Floors + 1) * GridSize; }
 	int32 GetMinLevelHeight() const { return 0; }
 	int32 GetBlockIndex(const int32 X, const int32 Y, const int32 Z) const;
@@ -141,6 +165,7 @@ public:
 	int32 VectorToIndex(const FVector& Location, int32 Floor) const;
 	int32 VectorToIndex(const FVector& Location) const;
 	int32 PathFindingBlockToBlock(int32 Index) const;
+	int32 PathFindingBlockToBlock(const FTilemapPathFindingBlock& PathFindingBlock) const;
 
 	FVector IndexToVector(int32 Index) const;
 

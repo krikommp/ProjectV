@@ -42,3 +42,28 @@ public:
 
 	PROJECTVGAME_API FString ToString() const;
 };
+
+/**
+ * FGridMouseMessage
+ *
+ * 鼠标事件消息
+ */
+USTRUCT(BlueprintType)
+struct FGridMouseMessage
+{
+	GENERATED_BODY()
+
+	// 事件类型
+	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
+	FGameplayTag EventTag;
+
+	// 点击对象
+	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
+	TObjectPtr<UObject> HitTarget = nullptr;
+
+	// 点击位置
+	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
+	FVector Location;
+
+	PROJECTVGAME_API FString ToString() const;
+};

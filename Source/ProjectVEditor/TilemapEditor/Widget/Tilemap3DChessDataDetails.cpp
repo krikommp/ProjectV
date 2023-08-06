@@ -4,8 +4,8 @@
 #include "Tilemap3DChessDataDetails.h"
 
 #include "SlateOptMacros.h"
-#include "ChessPieces/GridChessPieceData.h"
 #include "TilemapEditor/Tilemap3DEditorToolkit.h"
+#include "Chess/GridChessData.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 

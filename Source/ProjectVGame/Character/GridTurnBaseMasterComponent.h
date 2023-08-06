@@ -65,9 +65,9 @@ private:
 	// 相机手动移动
 	void CameraControllerMove();
 	
-	void OnGridMapInitialized(AGridMapManager* InGridMapManager);
-	// 判断是否超出地图边界
-	FVector CheckOuterBounds(const FVector& InLocation) const;
+	// void OnGridMapInitialized(AGridMapManager* InGridMapManager);
+	// // 判断是否超出地图边界
+	// FVector CheckOuterBounds(const FVector& InLocation) const;
 
 public:
 
@@ -81,8 +81,6 @@ public:
 	FGridOnMouseCancelButtonDown OnMouseCancelButtonDown;
 	
 private:
-	TObjectPtr<AGridMapManager> GridMapManager;
-
 	bool bEdgeScrolling = false;
 
 	bool bCanPan = false;

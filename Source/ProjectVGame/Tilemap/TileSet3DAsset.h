@@ -8,6 +8,7 @@
 #include "Heros/GridHeroData.h"
 #include "TileSet3DAsset.generated.h"
 
+class UGridChessData;
 class UDataTable;
 
 USTRUCT(BlueprintType)
@@ -75,10 +76,4 @@ public:
 
 	UPROPERTY(Transient)
 	TMap<FName, FGridHeroData> ChessMap;
-
-	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UGridChessPieceData> DefaultChessData;
-
-	UPROPERTY(EditAnywhere)
-	bool bDiagonalMovement = false;
 };

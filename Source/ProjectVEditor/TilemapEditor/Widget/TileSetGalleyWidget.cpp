@@ -61,17 +61,17 @@ void STileSetGalleyWidget::Construct(const FArguments& InArgs)
 	}
 
 	// chess thumbnail
-	for (auto [ID, HeroData] : TileSet->ChessMap)
+	for (const auto& [ID, HeroData] : TileSet->ChessMap)
 	{
 		TileChessBox->AddSlot()
 		            .AutoWidth()
 		            .Padding(10.0f)
 		[
 			SNew(SSingleTileChessWidget, HeroData)
-			.OnTileSetClicked_Lambda([this](const FName& ID)
+			.OnTileSetClicked_Lambda([this](const FName& ClickedID)
 			{
 				// ReSharper disable once CppExpressionWithoutSideEffects
-				OnClicked_Lambda.ExecuteIfBound(ID);
+				OnClicked_Lambda.ExecuteIfBound(ClickedID);
 			})
 		];
 	}

@@ -3,34 +3,51 @@
 
 #include "GridChessMovementComponent.h"
 
+#include "GridComponents.h"
+#include "Tilemap/TilemapExtensionComponent.h"
 
-// Sets default values for this component's properties
-UGridChessMovementComponent::UGridChessMovementComponent()
+class UTilemapExtensionComponent;
+
+UGridChessMovementComponent::UGridChessMovementComponent(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
+void UGridChessMovementComponent::SetMoveTarget(const FVector& Target)
+{
+	APawn* Pawn = GetPawn<APawn>();
 
-// Called when the game starts
+	Pawn->SetActorLocation(Target);
+
+	OnChessMovementFinished.Broadcast();
+	OnChessMovementFinished.Clear();
+}
+
+void UGridChessMovementComponent::MoveToPathfinding(int32 Index)
+{
+	const APawn* Pawn = GetPawn<APawn>();
+
+	UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, Pawn);
+	if (TilemapExtensionComponent == nullptr)
+	{
+		return;
+	}
+
+	TilemapExtensionComponent->SetPathfindingIndex(Index);
+
+	const FVector Target = TilemapExtensionComponent->GetPathfindingBlockLocation(Index);
+	
+	SetMoveTarget(Target);
+}
+
 void UGridChessMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
-
-// Called every frame
-void UGridChessMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                                FActorComponentTickFunction* ThisTickFunction)
+void UGridChessMovementComponent::Register_OnChessMovementFinished(FOnChessMovementFinished::FDelegate&& Delegate)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	OnChessMovementFinished.Add(Delegate);
 }
-

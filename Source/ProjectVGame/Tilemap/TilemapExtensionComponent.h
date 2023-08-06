@@ -43,11 +43,14 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	FORCEINLINE const FTilemapPathFindingBlock& GetPathfindingBlock(int32 Index) const;
 	// 获取寻路索引
 	FORCEINLINE int32 GetPathfindingIndex() const { return PathfindingIndex; }
+	// 设置寻路索引
+ 	void SetPathfindingIndex(int32 Index);
 	// 获取寻路节点位置
 	FORCEINLINE FVector GetPathfindingLocation(int32 Index, float ZOffset) const;
 	// 获取寻路节点的位置
 	FORCEINLINE FVector GetPathfindingBlockLocation(int32 Index) const;
 	// 将位置转换为寻路索引
+	UFUNCTION(BlueprintPure)
 	int32 LocationToPathfindingIndex(const FVector& Location) const;
 
 	// 获取鼠标点击地图位置和索引
@@ -72,12 +75,12 @@ public:
 	virtual void CheckDefaultInitialization() override;
 	//~ End IGameFrameworkInitStateInterface interface
 
-	void SetTilemap(const ATilemap3DActor* InTilemap, int32 InPathfindingIndex = INDEX_NONE);
+	void SetTilemap(ATilemap3DActor* InTilemap, int32 InPathfindingIndex = INDEX_NONE);
 	const UTilemapAsset* GetTilemap() const { return Tilemap3DActor->GetTilemap(); }
 	
 private:
 	// 弱引用场景中的Tilemap
-	TWeakObjectPtr<const ATilemap3DActor> Tilemap3DActor;
+	TWeakObjectPtr<ATilemap3DActor> Tilemap3DActor;
 	// 当前位置寻路索引
 	int32 PathfindingIndex = INDEX_NONE;
 };

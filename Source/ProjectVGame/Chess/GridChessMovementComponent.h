@@ -4,24 +4,39 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/PawnComponent.h"
 #include "GridChessMovementComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnChessMovementFinished)
 
+/**
+ * UGridChessMovementComponent
+ *
+ * 棋子移动组件，挂载到需要执行移动的Pawn上
+ */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECTVGAME_API UGridChessMovementComponent : public UActorComponent
+class PROJECTVGAME_API UGridChessMovementComponent : public UPawnComponent
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 
-public:
-	// Sets default values for this component's properties
-	UGridChessMovementComponent();
+	UFUNCTION(BlueprintPure)
+	static UGridChessMovementComponent* FindGridChessMovementComponent(const AActor* Actor)
+	{
+		return (Actor ? Actor->FindComponentByClass<UGridChessMovementComponent>() : nullptr);
+	}
 
+	UFUNCTION(BlueprintCallable)
+	void SetMoveTarget(const FVector& Target);
+
+	UFUNCTION(BlueprintCallable)
+	void MoveToPathfinding(int32 Index);
+	
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	void Register_OnChessMovementFinished(FOnChessMovementFinished::FDelegate&& Delegate);
+
+private:
+	FOnChessMovementFinished OnChessMovementFinished;
 };

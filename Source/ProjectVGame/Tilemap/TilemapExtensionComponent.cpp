@@ -54,6 +54,13 @@ const FTilemapPathFindingBlock& UTilemapExtensionComponent::GetPathfindingBlock(
 	return Tilemap3DActor->GetTilemap()->PathFindingBlocks[Index];
 }
 
+void UTilemapExtensionComponent::SetPathfindingIndex(int32 Index)
+{
+	Tilemap3DActor->ChessArray[PathfindingIndex].Reset();
+	PathfindingIndex = Index;
+	Tilemap3DActor->ChessArray[PathfindingIndex] = GetPawn<AGridChessBase>();
+}
+
 FVector UTilemapExtensionComponent::GetPathfindingLocation(int32 Index, float ZOffset) const
 {
 	return Tilemap3DActor->GetActorLocation() + Tilemap3DActor->GetTilemap()->PathFindingBlocks[Index].Location + FVector::UpVector * ZOffset;
@@ -234,7 +241,7 @@ void UTilemapExtensionComponent::CheckDefaultInitialization()
 	ContinueInitStateChain(StateChain);
 }
 
-void UTilemapExtensionComponent::SetTilemap(const ATilemap3DActor* InTilemap, int32 InPathfindingIndex)
+void UTilemapExtensionComponent::SetTilemap(ATilemap3DActor* InTilemap, int32 InPathfindingIndex)
 {
 	check(InTilemap);
 

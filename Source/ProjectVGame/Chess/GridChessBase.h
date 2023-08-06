@@ -36,8 +36,4 @@ protected:
 	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
 	UPROPERTY(VisibleAnywhere,Category="Grid|Components")
 	TObjectPtr<UArrowComponent> ArrowComponent;
-	UPROPERTY(VisibleAnywhere,Category="Grid|Components")
-	TObjectPtr<UGridChessExtensionComponent> ChessExtensionComponent;
-	UPROPERTY(VisibleAnywhere,Category="Grid|Components")
-	TObjectPtr<UTilemapExtensionComponent> TilemapExtensionComponent;
 };

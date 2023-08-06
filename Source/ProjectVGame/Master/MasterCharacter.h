@@ -41,8 +41,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category="Gird|Components")
 	TObjectPtr<UGridPawnExtensionComponent> ExtensionComponent;
 	UPROPERTY(VisibleAnywhere, Category="Gird|Components")
-	TObjectPtr<UTilemapExtensionComponent> TilemapExtensionComponent;
-	UPROPERTY(VisibleAnywhere, Category="Gird|Components")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY(VisibleAnywhere, Category="Gird|Components")
 	TObjectPtr<UCameraComponent> CameraComponent;

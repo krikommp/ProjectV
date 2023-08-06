@@ -25,9 +25,6 @@ AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
 	ArrowComponent->SetupAttachment(RootComponent);
 
-	ChessExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UGridChessExtensionComponent>(this, TEXT("ChessExtensionComponent"));
-	TilemapExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UTilemapExtensionComponent>(this, TEXT("TilemapExtensionComponent"));
-	
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 }

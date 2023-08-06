@@ -28,7 +28,6 @@ AMasterCharacter::AMasterCharacter(const FObjectInitializer& ObjectInitializer)
 	
 	ExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UGridPawnExtensionComponent>(this, TEXT("ExtensionComponent"));
 	MovementComponent = ObjectInitializer.CreateDefaultSubobject<UMasterMovementComponent>(this, TEXT("MovementComponent"));
-	TilemapExtensionComponent = ObjectInitializer.CreateDefaultSubobject<UTilemapExtensionComponent>(this, TEXT("TilemapExtensionComponent"));
 	
 	PrimaryActorTick.bCanEverTick = true;
 }

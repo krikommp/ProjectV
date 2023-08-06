@@ -7,8 +7,6 @@
 #include "GameFramework/Pawn.h"
 #include "MasterCharacter.generated.h"
 
-
-class UTilemapExtensionComponent;
 class UMasterMovementComponent;
 class UCameraComponent;
 class USpringArmComponent;

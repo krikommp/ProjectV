@@ -9,7 +9,6 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MasterMovementComponent.h"
-#include "Tilemap/TilemapExtensionComponent.h"
 
 AMasterCharacter::AMasterCharacter(const FObjectInitializer& ObjectInitializer)
 {

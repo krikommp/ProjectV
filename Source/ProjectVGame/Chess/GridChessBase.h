@@ -7,8 +7,6 @@
 #include "GameFramework/Pawn.h"
 #include "GridChessBase.generated.h"
 
-class UTilemapExtensionComponent;
-class UGridChessExtensionComponent;
 class UCapsuleComponent;
 class UArrowComponent;
 /**

@@ -5,10 +5,7 @@
 
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "GridChessExtensionComponent.h"
 #include "GridTraceChannel.h"
-#include "Tilemap/TilemapExtensionComponent.h"
-
 
 AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)

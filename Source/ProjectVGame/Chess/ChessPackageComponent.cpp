@@ -21,6 +21,28 @@ UChessPackageComponent::UChessPackageComponent(const FObjectInitializer& ObjectI
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
+UChessPackageComponent* UChessPackageComponent::FindChessPackageComponent(const ULocalPlayer* LocalPlayer)
+{
+	const APlayerState* PlayerState = LocalPlayer->PlayerController->PlayerState;
+	return PlayerState ? PlayerState->FindComponentByClass<UChessPackageComponent>() : nullptr;
+}
+
+UChessPackageInfo* UChessPackageComponent::GetChessPackageInfo() const
+{
+	if (ChessPackageInfo == nullptr)
+		return nullptr;
+	return ChessPackageInfo;
+}
+
+UGridHeroInfo* UChessPackageComponent::GetChessInfo(const FName& ChessID) const
+{
+	if (ChessInfoMap.Contains(ChessID))
+	{
+		return ChessInfoMap[ChessID];
+	}
+	return nullptr;
+}
+
 void UChessPackageComponent::OnRegister()
 {
 	Super::OnRegister();

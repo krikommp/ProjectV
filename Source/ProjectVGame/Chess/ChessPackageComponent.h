@@ -24,6 +24,13 @@ class PROJECTVGAME_API UChessPackageComponent : public UPlayerStateComponent, pu
 {
 	GENERATED_UCLASS_BODY()
 
+	UFUNCTION(BlueprintCallable, Category=ChessPackage)
+	static UChessPackageComponent* FindChessPackageComponent(const ULocalPlayer* LocalPlayer);
+
+	UFUNCTION(BlueprintCallable, Category=ChessPackage)
+ 	UChessPackageInfo* GetChessPackageInfo() const;
+	UFUNCTION(BlueprintCallable, Category=ChessPackage)
+	UGridHeroInfo* GetChessInfo(const FName& ChessID) const;
 	
 protected:
 	// ~Begin UActorComponent Interface
@@ -45,8 +52,10 @@ public:
 	
 private:
 	// 棋子存档
+	UPROPERTY(Transient)
 	TObjectPtr<UChessPackageInfo> ChessPackageInfo;
-	TMap<const FName, TObjectPtr<UGridHeroInfo>> ChessInfoMap;
+	UPROPERTY(Transient)
+	TMap<FName, TObjectPtr<UGridHeroInfo>> ChessInfoMap;
 
 	// 加载完毕标志位
 	uint8 bChessInfoLoaded : 1;

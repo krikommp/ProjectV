@@ -17,6 +17,11 @@ void UChessTurnComponent::OnRegister()
 {
 	Super::OnRegister();
 
+	// print game state is valid
+	if (AGridGameState* GameState = Cast<AGridGameState>(GetWorld()->GetGameState()))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Game State is valid"));
+	}
 	if (UTilemapStateComponent* TilemapStateComponent = FIND_STATE_COMP_IN_STATE(AGridGameState, TilemapStateComponent))
 	{
 		TilemapStateComponent->CallOrRegister_OnSpawnFinished(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnTilemapLoaded));

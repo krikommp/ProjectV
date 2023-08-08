@@ -7,6 +7,7 @@
 #include "Tilemap3DActor.h"
 #include "TilemapAsset.h"
 #include "TilemapExtensionComponent.h"
+#include "Chess/ChessBlueprintLibrary.h"
 #include "Chess/GridChessBase.h"
 #include "Chess/GridChessData.h"
 #include "Chess/GridChessExtensionComponent.h"
@@ -14,6 +15,7 @@
 #include "GameModes/GridExperienceManagerComponent.h"
 #include "GameModes/GridGameState.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/GridAssetManager.h"
 
 UTilemapStateComponent::UTilemapStateComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer), TilemapActor(nullptr), bLoadTilemapFinished(false)
@@ -93,7 +95,6 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 	}
 
 	// 放置棋子
-	CachedSpawnParameters.Empty();
 	for (int32 PathfindingIndex = 0; PathfindingIndex < TilemapAsset->PathFindingBlocks.Num(); ++PathfindingIndex)
 	{
 		const int32 Index = TilemapAsset->PathFindingBlockToBlock(PathfindingIndex);
@@ -102,27 +103,15 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 		
 		const auto& Block = TilemapAsset->Blocks[Index];
 		if (Block->ChessData == nullptr)
-			continue;;
+			continue;
 
-		const FActorSpawnParameters Parameters;
-		AGridChessBase* Chess = GetWorld()->SpawnActor<AGridChessBase>(Block->ChessData->ChessClass, Block->ChessData->ChessTransform, Parameters);
+		// 创建棋子数据
+		const UGridAssetManager& AssetManager = UGridAssetManager::Get();
+		UGridHeroInfo* ChessInfo = UGridHeroInfo::CreateHeroInfo(AssetManager.GetHeroData(Block->ChessData->ChessID));
+		AGridChessBase* Chess = UChessBlueprintLibrary::SpawnChessOnTilemap(GetWorld(), PathfindingIndex, Block->ChessData, ChessInfo, TilemapActor);
 
 		TilemapActor->ChessArray[PathfindingIndex] = Chess;
-
-		FTilemapSpawnParameters SpawnParameters;
-		SpawnParameters.Chess = Chess;
-		SpawnParameters.Tilemap = TilemapActor;
-		SpawnParameters.ChessData = Block->ChessData;
-		SpawnParameters.PathfindingIndex = PathfindingIndex;
-
-		CachedSpawnParameters.Add(SpawnParameters);
-
-		if (OnTilemapSpawnChess.IsBound())
-		{
-			OnTilemapSpawnChess.Broadcast(SpawnParameters);
-		}
 	}
-	OnTilemapSpawnChess.Clear();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step2));
 }
 
@@ -132,20 +121,6 @@ void UTilemapStateComponent::LoadTilemapFinished_Step2()
 		OnTilemapSpawnFinished.Broadcast();
 	OnTilemapSpawnFinished.Clear();
 	bLoadTilemapFinished = true;
-}
-
-void UTilemapStateComponent::CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate&& Delegate)
-{
-	if (bLoadTilemapFinished)
-	{
-		for (const auto& Parameter : CachedSpawnParameters)
-		{
-			Delegate.Execute(Parameter);
-		}
-	}else
-	{
-		OnTilemapSpawnChess.Add(Delegate);
-	}
 }
 
 void UTilemapStateComponent::CallOrRegister_OnSpawnFinished(FSimpleMulticastDelegate::FDelegate&& Delegate)

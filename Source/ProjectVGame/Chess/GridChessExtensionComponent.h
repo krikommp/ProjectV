@@ -6,6 +6,7 @@
 #include "GridComponents.h"
 #include "Components/PawnComponent.h"
 #include "Components/GameFrameworkInitStateInterface.h"
+#include "Heros/GridHeroInfo.h"
 #include "GridChessExtensionComponent.generated.h"
 
 struct FTilemapSpawnParameters;
@@ -31,8 +32,7 @@ class PROJECTVGAME_API UGridChessExtensionComponent : public UPawnComponent, pub
 	
 	static const FName NAME_ActorFeatureName;
 
-	void SetChessData(const UGridChessData* InData);
-	const UGridChessData* GetChessData() const { return ChessData; }
+	
 
 protected:
 	virtual void OnRegister() override;
@@ -50,10 +50,9 @@ public:
 	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) override;
 	virtual void CheckDefaultInitialization() override;
 	// ~ IGameFrameworkInitStateInterface interface
-
+	
+	void SetChessInfo(const UGridHeroInfo* InChessInfo);
 private:
-	UPROPERTY(VisibleAnywhere, Category=Gameplay)
-	TObjectPtr<const UGridChessData> ChessData;
 	UPROPERTY(VisibleAnywhere, Category=Gameplay)
 	TObjectPtr<const UGridHeroInfo> ChessInfo;
 };

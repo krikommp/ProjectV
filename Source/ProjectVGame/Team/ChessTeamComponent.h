@@ -27,8 +27,6 @@ protected:
 	virtual void OnRegister() override;
 	//~ Begin UActorComponent Interface.
 
-	void OnChessSpawn(const FTilemapSpawnParameters& Parameters);
-
 public:
 
 	// 添加队伍成员

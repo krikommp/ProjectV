@@ -6,7 +6,6 @@
 #include "LoadingProcessInterface.h"
 #include "Components/GameStateComponent.h"
 #include "UObject/Object.h"
-#include "TilemapSpawnParameters.h"
 #include "TilemapStateComponent.generated.h"
 
 class AGridChessBase;
@@ -46,19 +45,10 @@ private:
 	bool bLoadTilemapFinished = false;
 	
 public:
-	// 注册或调用棋子放置的委托
-	void CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate&& Delegate);
-
 	// 注册或调用地图放置完成委托
 	void CallOrRegister_OnSpawnFinished(FSimpleMulticastDelegate::FDelegate&& Delegate);
 
 private:
-	// 当放置棋子时调用的委托
-	FOnTilemapSpawnChess OnTilemapSpawnChess;
-
-	// 缓存的放置信息
-	TArray<FTilemapSpawnParameters> CachedSpawnParameters;
-
 	// 地图准备完成
 	FSimpleMulticastDelegate OnTilemapSpawnFinished;
 };

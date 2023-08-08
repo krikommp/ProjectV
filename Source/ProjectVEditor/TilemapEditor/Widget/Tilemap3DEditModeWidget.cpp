@@ -66,6 +66,22 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
 		  .Text(LOCTEXT("Remove", "Remove Chess"));
 
+	SAssignNew(PlayerPanelControl, SSegmentedControl<int32>)
+	.OnValueChanged_Lambda([this](int32 InValue)
+	                                                        {
+		                                                        EditMode = static_cast<ETilemap3DEditMode>(InValue);
+		                                                        // ReSharper disable once CppExpressionWithoutSideEffects
+		                                                        OnEditModeChanged.ExecuteIfBound(EditMode.Get());
+	                                                        })
+	.Value_Lambda([this] { return static_cast<int32>(EditMode.Get()); }) // Bound
+		+ SSegmentedControl<int32>::Slot(EEM_Player_Start)
+		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
+		  .Text(LOCTEXT("PlayerStart", "Set PlayerStart"))
+		+ SSegmentedControl<int32>::Slot(EEM_Player_Chess)
+		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
+		  .Text(LOCTEXT("PlayerChess", "Spawn PlayerChess"));
+
+	
 	ChildSlot
 	[
 		SNew(SVerticalBox)
@@ -137,6 +153,19 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 			             })
 			[
 				ChessPanelControl.ToSharedRef()
+			]
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SBorder)
+			.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+			.Visibility_Lambda([this]()
+						 {
+							 return BaseEditMode.Get() == EEM_Player ? EVisibility::Visible : EVisibility::Collapsed;
+						 })
+			[
+				PlayerPanelControl.ToSharedRef()
 			]
 		]
 	];

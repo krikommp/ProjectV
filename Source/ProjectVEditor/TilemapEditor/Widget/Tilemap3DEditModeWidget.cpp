@@ -23,10 +23,10 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 	.Value_Lambda([this] { return static_cast<int32>(EditMode.Get()); }) // Bound
 		+ SSegmentedControl<int32>::Slot(EEM_Cube_Append)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
-		  .Text(LOCTEXT("Append", "Append Cube"))
+		  .Text(LOCTEXT("AppendCube", "Append Cube"))
 		+ SSegmentedControl<int32>::Slot(EEM_Cube_Remove)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.DeleteComponentTool"))
-		  .Text(LOCTEXT("Remove", "Remove Cube"));
+		  .Text(LOCTEXT("RemoveCube", "Remove Cube"));
 
 	SAssignNew(MeshPanelControl, SSegmentedControl<int32>)
 	.Value(EditMode.Get()) // InitialValue
@@ -39,13 +39,13 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 	.Value_Lambda([this] { return static_cast<int32>(EditMode.Get()); }) // Bound
 		+ SSegmentedControl<int32>::Slot(EEM_Mesh_Select)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
-		  .Text(LOCTEXT("Select", "Select Mesh"))
+		  .Text(LOCTEXT("SelectMesh", "Select Mesh"))
 		+ SSegmentedControl<int32>::Slot(EEM_Mesh_Append)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
-		  .Text(LOCTEXT("Append", "Append Mesh"))
+		  .Text(LOCTEXT("AppendMesh", "Append Mesh"))
 		+ SSegmentedControl<int32>::Slot(EEM_Mesh_Remove)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.DeleteComponentTool"))
-		  .Text(LOCTEXT("Remove", "Remove Mesh"));
+		  .Text(LOCTEXT("RemoveMesh", "Remove Mesh"));
 
 	SAssignNew(ChessPanelControl, SSegmentedControl<int32>)
 	.Value(EditMode.Get()) // InitialValue
@@ -58,13 +58,13 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
     .Value_Lambda([this] { return static_cast<int32>(EditMode.Get()); }) // Bound
 		+ SSegmentedControl<int32>::Slot(EEM_Chess_Select)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
-		  .Text(LOCTEXT("Select", "Select Chess"))
+		  .Text(LOCTEXT("SelectChess", "Select Chess"))
 		+ SSegmentedControl<int32>::Slot(EEM_Chess_Spawn)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
-		  .Text(LOCTEXT("Spawn", "Spawn Chess"))
+		  .Text(LOCTEXT("SpawnChess", "Spawn Chess"))
 		+ SSegmentedControl<int32>::Slot(EEM_Chess_Remove)
 		  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.AddComponentTool"))
-		  .Text(LOCTEXT("Remove", "Remove Chess"));
+		  .Text(LOCTEXT("RemoveChess", "Remove Chess"));
 
 	SAssignNew(PlayerPanelControl, SSegmentedControl<int32>)
 	.OnValueChanged_Lambda([this](int32 InValue)
@@ -102,19 +102,19 @@ void STilemap3DEditModeWidget::Construct(const FArguments& InArgs)
 			.Value_Lambda([this] { return static_cast<int32>(BaseEditMode.Get()); })
 			+ SSegmentedControl<int32>::Slot(ETilemap3DEditMode::EEM_View)
 			  .Icon(FAppStyle::Get().GetBrush("LandscapeEditor.SelectComponentTool"))
-			  .Text(LOCTEXT("View", "View Mode"))
+			  .Text(LOCTEXT("ViewMode", "View Mode"))
 			+ SSegmentedControl<int32>::Slot(ETilemap3DEditMode::EEM_Cube)
 			  .Icon(FAppStyle::Get().GetBrush("ModelingToolsManagerCommands.BeginAddBoxPrimitiveTool"))
-			  .Text(LOCTEXT("Cube", "Edit Cube"))
+			  .Text(LOCTEXT("CubeMode", "Edit Cube"))
 			+ SSegmentedControl<int32>::Slot(ETilemap3DEditMode::EEM_Mesh)
 			  .Icon(FAppStyle::Get().GetBrush("ModelingToolsManagerCommands.BeginAddBoxPrimitiveTool"))
-			  .Text(LOCTEXT("Mesh", "Edit Mesh"))
+			  .Text(LOCTEXT("MeshMode", "Edit Mesh"))
 			+ SSegmentedControl<int32>::Slot(ETilemap3DEditMode::EEM_Chess)
 			  .Icon(FAppStyle::Get().GetBrush("ModelingToolsManagerCommands.BeginAddBoxPrimitiveTool"))
-			  .Text(LOCTEXT("Chess", "Edit Chess"))
+			  .Text(LOCTEXT("ChessMode", "Edit Chess"))
 			+ SSegmentedControl<int32>::Slot(ETilemap3DEditMode::EEM_Player)
 			  .Icon(FAppStyle::Get().GetBrush("ModelingToolsManagerCommands.BeginAddBoxPrimitiveTool"))
-			  .Text(LOCTEXT("Chess", "Edit Player"))
+			  .Text(LOCTEXT("PlayerMode", "Edit Player"))
 		]
 		+ SVerticalBox::Slot()
 		.AutoHeight()

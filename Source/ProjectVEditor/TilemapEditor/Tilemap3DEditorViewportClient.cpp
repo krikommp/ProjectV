@@ -12,6 +12,7 @@
 #include "Components/TextRenderComponent.h"
 #include "Generator/Tilemap3DChessGenerator.h"
 #include "Generator/Tilemap3DPathfindingGenerator.h"
+#include "Generator/Tilemap3DPlayerChessStartGenerator.h"
 #include "Generator/Tilemap3DTerrainGenerator.h"
 #include "Generator/Tilemap3DTileMeshGenerator.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -135,6 +136,7 @@ void FTilemap3DEditorViewportClient::OnConstruction()
 	FTilemap3DTerrainGenerator::Setup(GetTilemapAsset(), TerrainMesh, TerrainMat, this);
 	FTilemap3DTileMeshGenerator::Setup(GetTilemapAsset(), MeshSet, PreviewScene, GetTileSet());
 	FTilemap3DChessGenerator::Setup(this, GetTilemapAsset(), GetTileSet());
+	FTilemap3DPlayerChessStartGenerator::Setup(this, GetTilemapAsset());
 	
 	Clear();
 }

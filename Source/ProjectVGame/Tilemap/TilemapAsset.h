@@ -64,6 +64,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UGridChessData> ChessData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bPlayerChessStart = false;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UDecalComponent> PlayerStartDecal;
 };
 
 USTRUCT(BlueprintType)

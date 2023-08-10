@@ -51,6 +51,8 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	FORCEINLINE FVector GetPathfindingBlockLocation(int32 Index) const;
 	// 根据寻路节点获取block信息
 	UBlock* GetBlockFromPathfindingIndex(int32 Index) const;
+	// 根据寻路索引判断该位置是否可以放置玩家棋子
+	bool CheckIndexInPlayerStartRange(int32 InPathfindingIndex) const;
 	
 	// 将位置转换为寻路索引
 	UFUNCTION(BlueprintPure)

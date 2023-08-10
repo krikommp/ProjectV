@@ -25,6 +25,10 @@ public:
 	// 在鼠标位置放置一个棋子
 	UFUNCTION(BlueprintCallable, Category=Chess, meta=(WorldContext = "WorldContextObject"))
 	static AGridChessBase* SpawnChessOnTilemapByCursor(const UObject* WorldContextObject, ETraceTypeQuery TraceChannel, UGridHeroInfo* ChessInfo);
+
+	// 判断该索引位置上是否可以放置一个玩家棋子
+	UFUNCTION(BlueprintCallable, Category=Chess, meta=(WorldContext = "WorldContextObject"))
+	static bool CheckIndexInPlayerStartRange(const UObject* WorldContextObject, const int32 PathfindingIndex);
 	
 	static AGridChessBase* SpawnChessOnTilemap(const UObject* WorldContextObject, int32 PathfindingIndex, UGridChessData* ChessData,
 	                                           UGridHeroInfo* ChessInfo, ATilemap3DActor* Tilemap3DActor);

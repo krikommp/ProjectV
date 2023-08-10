@@ -30,6 +30,9 @@ AGridChessBase* UChessBlueprintLibrary::SpawnChessOnTilemapByCursor(const UObjec
 	if (!TilemapExtensionComponent->GetTilemap()->PathFindingBlocks.IsValidIndex(PathfindingIndex))
 		return nullptr;
 
+	if (CheckIndexInPlayerStartRange(WorldContextObject, PathfindingIndex))
+		return nullptr;
+
 	const auto& PathfindingBlock = TilemapExtensionComponent->GetTilemap()->PathFindingBlocks[PathfindingIndex];
 	UGridChessData* NewChessData = NewObject<UGridChessData>();
 	NewChessData->ChessClass = AGridChessBase::StaticClass();
@@ -40,6 +43,18 @@ AGridChessBase* UChessBlueprintLibrary::SpawnChessOnTilemapByCursor(const UObjec
 
 	return SpawnChessOnTilemap(WorldContextObject, PathfindingIndex, NewChessData, ChessInfo,
 	                           TilemapExtensionComponent->GetTilemapActor());
+}
+
+bool UChessBlueprintLibrary::CheckIndexInPlayerStartRange(const UObject* WorldContextObject, const int32 PathfindingIndex)
+{
+	const APlayerController* PlayerController = WorldContextObject->GetWorld()->GetFirstPlayerController();
+
+	const UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(
+		TilemapExtensionComponent, PlayerController->GetPawn());
+	if (TilemapExtensionComponent == nullptr)
+		return false;
+	
+	return TilemapExtensionComponent->CheckIndexInPlayerStartRange(PathfindingIndex);
 }
 
 AGridChessBase* UChessBlueprintLibrary::SpawnChessOnTilemap(const UObject* WorldContextObject, int32 PathfindingIndex,

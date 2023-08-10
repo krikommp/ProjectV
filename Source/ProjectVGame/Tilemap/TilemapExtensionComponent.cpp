@@ -87,6 +87,14 @@ UBlock* UTilemapExtensionComponent::GetBlockFromPathfindingIndex(int32 Index) co
 	return GetTilemap()->Blocks[BlockIndex];
 }
 
+bool UTilemapExtensionComponent::CheckIndexInPlayerStartRange(int32 InPathfindingIndex) const
+{
+	const UBlock* Block = GetBlockFromPathfindingIndex(InPathfindingIndex);
+	if (!Block)
+		return false;
+	return Block->bPlayerChessStart;
+}
+
 int32 UTilemapExtensionComponent::LocationToPathfindingIndex(const FVector& Location) const
 {
 	const float PivotX = 50.0f + Location.X;

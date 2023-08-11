@@ -55,6 +55,13 @@ const FTilemapPathFindingBlock& UTilemapExtensionComponent::GetPathfindingBlock(
 	return Tilemap3DActor->GetTilemap()->PathFindingBlocks[Index];
 }
 
+const FTilemapPathFindingBlock& UTilemapExtensionComponent::GetPathfindingBlockSelf() const
+{
+	ensureAlwaysMsgf(Tilemap3DActor->GetTilemap()->PathFindingBlocks.IsValidIndex(PathfindingIndex), TEXT("InValid pathfinding Block Index: [%d]!"), PathfindingIndex);
+
+	return Tilemap3DActor->GetTilemap()->PathFindingBlocks[PathfindingIndex];
+}
+
 void UTilemapExtensionComponent::SetPathfindingIndex(int32 Index)
 {
 	Tilemap3DActor->ChessArray[PathfindingIndex].Reset();

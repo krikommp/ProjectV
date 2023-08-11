@@ -331,6 +331,7 @@ void UMasterInputComponent::Input_MouseConfirm(const FInputActionValue& InputAct
 	FGridMouseMessage Message;
 	Message.EventTag = GameplayTags.InputTag_MouseConfirm;
 	Message.HitTarget = HitResult.GetActor();
+	Message.HitComponent = HitResult.GetComponent();
 	Message.Location = HitResult.Location;
 
 	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());

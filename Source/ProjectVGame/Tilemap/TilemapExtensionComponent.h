@@ -41,6 +41,7 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	FORCEINLINE int32 GetPathfindingArrayNum() const;
 	// 获取寻路方块
 	FORCEINLINE const FTilemapPathFindingBlock& GetPathfindingBlock(int32 Index) const;
+	FORCEINLINE const FTilemapPathFindingBlock& GetPathfindingBlockSelf() const;
 	// 获取寻路索引
 	FORCEINLINE int32 GetPathfindingIndex() const { return PathfindingIndex; }
 	// 设置寻路索引

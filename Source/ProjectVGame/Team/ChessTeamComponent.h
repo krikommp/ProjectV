@@ -30,9 +30,14 @@ protected:
 public:
 
 	// 添加队伍成员
+	UFUNCTION(BlueprintCallable, Category=Team)
 	void AddTeamMember(const ETeamType Team, AGridChessBase* Member);
 	void AddTeamMember(const ETeamType Team, const TArray<AGridChessBase*>& Members);
 
+	// 检测棋子是否在队伍中
+	UFUNCTION(BlueprintCallable, Category=Team)
+	bool CheckChessInTeam(const ETeamType Team, const FName ChessID)const;
+	
 	// 获取队伍长度
 	UFUNCTION(BlueprintCallable, Category=Team)
 	FORCEINLINE int32 GetTeamLength(const ETeamType Team) const { return Teams[Team].Num(); }

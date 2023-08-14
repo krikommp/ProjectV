@@ -6,6 +6,7 @@
 #include "GridComponents.h"
 #include "Chess/GridChessBase.h"
 #include "Chess/GridChessData.h"
+#include "Chess/GridChessExtensionComponent.h"
 #include "GameModes/GridGameState.h"
 #include "Tilemap/TilemapStateComponent.h"
 
@@ -35,4 +36,21 @@ void UChessTeamComponent::AddTeamMember(const ETeamType Team, const TArray<AGrid
 	{
 		AddTeamMember(Team, Member);
 	}
+}
+
+bool UChessTeamComponent::CheckChessInTeam(const ETeamType Team, const FName ChessID) const
+{
+	if (!Teams.Contains(Team))
+		return false;
+
+	for (auto& Chess : Teams[Team])
+	{
+		if (const UGridChessExtensionComponent* Extension = Chess->FindComponentByClass<UGridChessExtensionComponent>())
+		{
+			if (Extension->GetChessID() == ChessID)
+				return true;
+		}
+	}
+
+	return false;
 }

@@ -19,8 +19,7 @@ AGridChessBase* UChessBlueprintLibrary::SpawnChessOnTilemapByCursor(const UObjec
 {
 	const APlayerController* PlayerController = WorldContextObject->GetWorld()->GetFirstPlayerController();
 
-	const UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(
-		TilemapExtensionComponent, PlayerController->GetPawn());
+	const UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(TilemapExtensionComponent, PlayerController->GetPawn());
 	if (TilemapExtensionComponent == nullptr)
 		return nullptr;
 
@@ -31,14 +30,13 @@ AGridChessBase* UChessBlueprintLibrary::SpawnChessOnTilemapByCursor(const UObjec
 	if (!TilemapExtensionComponent->GetTilemap()->PathFindingBlocks.IsValidIndex(PathfindingIndex))
 		return nullptr;
 
-	if (CheckIndexInPlayerStartRange(WorldContextObject, PathfindingIndex))
+	if (!CheckIndexInPlayerStartRange(WorldContextObject, PathfindingIndex))
 		return nullptr;
 
 	const auto& PathfindingBlock = TilemapExtensionComponent->GetTilemap()->PathFindingBlocks[PathfindingIndex];
 	UGridChessData* NewChessData = NewObject<UGridChessData>();
-	NewChessData->ChessClass = AGridChessBase::StaticClass();
 	NewChessData->ChessTransform = FTransform(PathfindingBlock.Location);
-	NewChessData->PlayerIndex = 0;
+	NewChessData->PlayerIndex = 0; 
 	NewChessData->ChessID = ChessInfo->HeroData.HeroID;
 	NewChessData->Team = ETeamType::Player;
 
@@ -106,7 +104,7 @@ AGridChessBase* UChessBlueprintLibrary::SpawnChessOnTilemap(const UObject* World
 {
 	const FActorSpawnParameters Parameters;
 	AGridChessBase* Chess = WorldContextObject->GetWorld()->SpawnActor<AGridChessBase>(
-		ChessData->ChessClass, ChessData->ChessTransform, Parameters);
+		ChessInfo->HeroData.ChessClass, ChessData->ChessTransform, Parameters);
 	if (Chess == nullptr)
 		return nullptr;
 

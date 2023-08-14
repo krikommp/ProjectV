@@ -79,8 +79,9 @@ void UChessDirectionComponent::SetLookAtIndex(int32 Index)
 	const FVector SelfLocation = Pawn->GetActorLocation();
 	FVector Direction = LookAtLocation - SelfLocation;
 	Direction.Z = 0.f;
-	const FRotator NewRotation = Direction.Rotation();
-
+	FRotator NewRotation = Direction.Rotation();
+	NewRotation.Yaw -= 90.0f;
+	
 	Pawn->SetActorRotation(NewRotation);
 
 	LookAtIndex = Index;
@@ -110,6 +111,7 @@ void UChessDirectionComponent::ShowAllDirectionArrows()
 		DirectionArrows[Index]->SetActorRotation(NewRotation);
 		DirectionArrows[Index]->SetTargetIndex(EdgeIndex);
 		DirectionArrows[Index]->SetActorHiddenInGame(false);
+		DirectionArrows[Index]->EnableCollision(true);
 
 		++Index;
 	}
@@ -119,6 +121,7 @@ void UChessDirectionComponent::HideAllDirectionArrows()
 {
 	for (const auto& ArrowComp : DirectionArrows)
 	{
+		ArrowComp->EnableCollision(false);
 		ArrowComp->SetActorHiddenInGame(true);
 	}
 }

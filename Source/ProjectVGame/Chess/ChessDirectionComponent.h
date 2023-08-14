@@ -36,7 +36,10 @@ class PROJECTVGAME_API UChessDirectionComponent : public UPawnComponent, public 
 	FORCEINLINE int32 GetLookAtIndex() const { return LookAtIndex; }
 
 	// 显示所有方向箭头
+	UFUNCTION(BlueprintCallable)
 	void ShowAllDirectionArrows();
+
+	UFUNCTION(BlueprintCallable)
 	void HideAllDirectionArrows();
 
 	static const FName NAME_ActorFeatureName;

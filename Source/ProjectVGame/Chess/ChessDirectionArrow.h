@@ -27,6 +27,7 @@ class PROJECTVGAME_API AChessDirectionArrow : public AModularPawn, public ICurso
 
 	void InitializeArrow(const FChessArrowInitParams& Params);
 	void SetTargetIndex(int32 NewTargetIndex) { TargetIndex = NewTargetIndex; }
+	void EnableCollision(bool bEnable) const;
 
 protected:
 	// Called when the game starts or when spawned

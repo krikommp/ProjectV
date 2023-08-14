@@ -11,6 +11,7 @@ AChessDirectionArrow::AChessDirectionArrow(const FObjectInitializer& ObjectIniti
 	:Super(ObjectInitializer), TargetIndex(INDEX_NONE)
 {
 	ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowMesh"));
+	ArrowMesh->SetReceivesDecals(false);
 	RootComponent = ArrowMesh;
 
 	CursorEventComponent = ObjectInitializer.CreateDefaultSubobject<UCursorEventComponent>(this, TEXT("CursorEventComponent"));
@@ -24,10 +25,20 @@ void AChessDirectionArrow::InitializeArrow(const FChessArrowInitParams& Params)
 	OwnerPawn = Params.OwnerPawn;
 	
 	ArrowMesh->SetStaticMesh(Params.ArrowMesh);
-	ArrowMesh->SetCollisionResponseToChannel(MouseHoverTrace, ECR_Block);
-	ArrowMesh->SetCollisionResponseToChannel(MouseClickTrace, ECR_Block);
-	
 	ArrowMesh->SetMaterial(0, Params.ArrowMaterial);
+}
+
+void AChessDirectionArrow::EnableCollision(bool bEnable) const
+{
+	if (bEnable)
+	{
+		ArrowMesh->SetCollisionResponseToChannel(MouseHoverTrace, ECR_Block);
+		ArrowMesh->SetCollisionResponseToChannel(MouseClickTrace, ECR_Block);
+	}else
+	{
+		ArrowMesh->SetCollisionResponseToChannel(MouseHoverTrace, ECR_Ignore);
+		ArrowMesh->SetCollisionResponseToChannel(MouseClickTrace, ECR_Ignore);
+	}
 }
 
 void AChessDirectionArrow::BeginPlay()

@@ -32,7 +32,8 @@ class PROJECTVGAME_API UGridChessExtensionComponent : public UPawnComponent, pub
 	
 	static const FName NAME_ActorFeatureName;
 
-	
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE FName GetChessID() const { return ChessInfo->HeroID; }
 
 protected:
 	virtual void OnRegister() override;

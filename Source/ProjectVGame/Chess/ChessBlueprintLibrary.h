@@ -10,6 +10,7 @@ class UGridHeroInfo;
 class ATilemap3DActor;
 class AGridChessBase;
 class UGridChessData;
+struct FTilemapPathFindingBlock;
 
 /**
  * UChessBlueprintLibrary
@@ -29,6 +30,14 @@ public:
 	// 判断该索引位置上是否可以放置一个玩家棋子
 	UFUNCTION(BlueprintCallable, Category=Chess, meta=(WorldContext = "WorldContextObject"))
 	static bool CheckIndexInPlayerStartRange(const UObject* WorldContextObject, const int32 PathfindingIndex);
+
+	// 获取玩家放置棋子范围
+	UFUNCTION(BlueprintCallable, Category=Chess, meta=(WorldContext = "WorldContextObject"))
+	static TArray<FTilemapPathFindingBlock> GetPlayerStartLocations(const UObject* WorldContextObject);
+
+	// 场景中放置Decl
+	UFUNCTION(BlueprintCallable, Category=Chess, meta=(WorldContext = "WorldContextObject"))
+	static UDecalComponent* SpawnDecalOnTilemap(const UObject* WorldContextObject, const FVector& Location, UMaterialInterface* Mat, const FLinearColor& Color);
 	
 	static AGridChessBase* SpawnChessOnTilemap(const UObject* WorldContextObject, int32 PathfindingIndex, UGridChessData* ChessData,
 	                                           UGridHeroInfo* ChessInfo, ATilemap3DActor* Tilemap3DActor);

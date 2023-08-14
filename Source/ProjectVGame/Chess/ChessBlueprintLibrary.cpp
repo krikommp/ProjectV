@@ -7,6 +7,7 @@
 #include "GridChessData.h"
 #include "Heros/GridHeroData.h"
 #include "Heros/GridHeroInfo.h"
+#include "Kismet/GameplayStatics.h"
 #include "Tilemap/TilemapExtensionComponent.h"
 #include "Tilemap/TilemapSpawnParameters.h"
 
@@ -45,7 +46,8 @@ AGridChessBase* UChessBlueprintLibrary::SpawnChessOnTilemapByCursor(const UObjec
 	                           TilemapExtensionComponent->GetTilemapActor());
 }
 
-bool UChessBlueprintLibrary::CheckIndexInPlayerStartRange(const UObject* WorldContextObject, const int32 PathfindingIndex)
+bool UChessBlueprintLibrary::CheckIndexInPlayerStartRange(const UObject* WorldContextObject,
+                                                          const int32 PathfindingIndex)
 {
 	const APlayerController* PlayerController = WorldContextObject->GetWorld()->GetFirstPlayerController();
 
@@ -53,8 +55,49 @@ bool UChessBlueprintLibrary::CheckIndexInPlayerStartRange(const UObject* WorldCo
 		TilemapExtensionComponent, PlayerController->GetPawn());
 	if (TilemapExtensionComponent == nullptr)
 		return false;
-	
+
 	return TilemapExtensionComponent->CheckIndexInPlayerStartRange(PathfindingIndex);
+}
+
+TArray<FTilemapPathFindingBlock> UChessBlueprintLibrary::GetPlayerStartLocations(const UObject* WorldContextObject)
+{
+	const APlayerController* PlayerController = WorldContextObject->GetWorld()->GetFirstPlayerController();
+
+	const UTilemapExtensionComponent* TilemapExtensionComponent = FIND_PAWN_COMP(
+		TilemapExtensionComponent, PlayerController->GetPawn());
+	if (TilemapExtensionComponent == nullptr)
+		return {};
+
+	TArray<FTilemapPathFindingBlock> Locations;
+
+	for (int32 PathfindingBlockIndex = 0; PathfindingBlockIndex < TilemapExtensionComponent->GetTilemap()->
+	     PathFindingBlocks.Num(); ++PathfindingBlockIndex)
+	{
+		UBlock* Block = TilemapExtensionComponent->GetBlockFromPathfindingIndex(PathfindingBlockIndex);
+		if (Block == nullptr)
+			continue;
+		if (Block->bPlayerChessStart == false)
+			continue;
+
+		Locations.Add(TilemapExtensionComponent->GetTilemap()->PathFindingBlocks[PathfindingBlockIndex]);
+	}
+
+	return Locations;
+}
+
+UDecalComponent* UChessBlueprintLibrary::SpawnDecalOnTilemap(const UObject* WorldContextObject, const FVector& Location,
+                                                             UMaterialInterface* Mat, const FLinearColor& Color)
+{
+	UMaterialInstanceDynamic* DynamicMat = UMaterialInstanceDynamic::Create(Mat, WorldContextObject->GetWorld());
+	if (DynamicMat == nullptr)
+		return nullptr;
+	DynamicMat->SetVectorParameterValue("Color", Color);
+	static FVector DecalSize = {95.0f, 45.0f, 45.0f};
+	static FRotator DecalRotator = {90.0f, 0.0f, 0.0f};
+	UDecalComponent* DecalComponent = UGameplayStatics::SpawnDecalAtLocation(WorldContextObject, DynamicMat,
+	                                                                         DecalSize, Location, DecalRotator);
+
+	return DecalComponent;
 }
 
 AGridChessBase* UChessBlueprintLibrary::SpawnChessOnTilemap(const UObject* WorldContextObject, int32 PathfindingIndex,

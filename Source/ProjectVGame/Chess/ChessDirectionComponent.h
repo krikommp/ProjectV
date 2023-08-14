@@ -8,6 +8,7 @@
 #include "Components/PawnComponent.h"
 #include "ChessDirectionComponent.generated.h"
 
+class AChessDirectionArrow;
 struct FTilemapPathFindingBlock;
 
 /**
@@ -20,6 +21,12 @@ class PROJECTVGAME_API UChessDirectionComponent : public UPawnComponent, public 
 {
 	GENERATED_UCLASS_BODY()
 
+	UFUNCTION(BlueprintPure)
+	static UChessDirectionComponent* FindChessDirectionComponent(const AActor* Actor)
+	{
+		return (Actor ? Actor->FindComponentByClass<UChessDirectionComponent>() : nullptr);
+	}
+
 	// 获取所有相邻块的索引
 	TArray<int32> GetNeighborIndexes() const;
  	const FTilemapPathFindingBlock& GetNeighborPathfindingBlock(int32 EdgeIndex) const;
@@ -29,7 +36,8 @@ class PROJECTVGAME_API UChessDirectionComponent : public UPawnComponent, public 
 	FORCEINLINE int32 GetLookAtIndex() const { return LookAtIndex; }
 
 	// 显示所有方向箭头
-	void ShowAllDirectionArrows(bool bShow);
+	void ShowAllDirectionArrows();
+	void HideAllDirectionArrows();
 
 	static const FName NAME_ActorFeatureName;
 
@@ -56,7 +64,7 @@ private:
 	
 	// 可视化棋子方向的箭头
 	UPROPERTY(Transient)
-	TArray<TObjectPtr<UStaticMeshComponent>> DirectionArrows;
+	TArray<TObjectPtr<AChessDirectionArrow>> DirectionArrows;
 
 	// 箭头模型
 	UPROPERTY(EditAnywhere, Category=Chess, meta=(AllowPrivateAccess))

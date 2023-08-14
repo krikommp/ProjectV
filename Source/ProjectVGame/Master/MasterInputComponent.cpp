@@ -86,6 +86,8 @@ void UMasterInputComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                           FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	CheckMouseHoverActor();
 }
 
 bool UMasterInputComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
@@ -340,4 +342,24 @@ void UMasterInputComponent::Input_MouseConfirm(const FInputActionValue& InputAct
 
 void UMasterInputComponent::Input_MouseCancel(const FInputActionValue& InputActionValue)
 {
+}
+
+void UMasterInputComponent::CheckMouseHoverActor() const
+{
+	FHitResult HitResult;
+	APlayerController* PlayerController = GetGameInstance<UGridGameInstance>()->GetFirstLocalPlayerController();
+	PlayerController->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(MouseHoverTrace), false, HitResult);
+	if (!HitResult.IsValidBlockingHit())
+		return;
+	
+	FGridGameplayTags GameplayTags = FGridGameplayTags::Get();
+
+	FGridMouseMessage Message;
+	Message.EventTag = GameplayTags.InputTag_MouseHover;
+	Message.HitTarget = HitResult.GetActor();
+	Message.HitComponent = HitResult.GetComponent();
+	Message.Location = HitResult.Location;
+
+	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+	MessageSubsystem.BroadcastMessage(Message.EventTag, Message);
 }

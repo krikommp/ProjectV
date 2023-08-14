@@ -54,6 +54,7 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	UBlock* GetBlockFromPathfindingIndex(int32 Index) const;
 	// 根据寻路索引判断该位置是否可以放置玩家棋子
 	bool CheckIndexInPlayerStartRange(int32 InPathfindingIndex) const;
+	FORCEINLINE bool IsValid() const { return Tilemap3DActor != nullptr; }
 	
 	// 将位置转换为寻路索引
 	UFUNCTION(BlueprintPure)

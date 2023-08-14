@@ -191,7 +191,7 @@ void UTilemapExtensionComponent::OnChessSpawn(const FTilemapSpawnParameters& Par
 	if (Parameters.Chess != GetPawn<AGridChessBase>())
 		return;
 
-	SetTilemap(Parameters.Tilemap);
+	SetTilemap(Parameters.Tilemap, Parameters.PathfindingIndex);
 	GOnTilemapSpawnChess.RemoveAll(this);
 }
 

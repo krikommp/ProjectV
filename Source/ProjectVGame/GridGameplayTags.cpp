@@ -62,6 +62,7 @@ void FGridGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 
 	AddTag(InputTag_Move, "InputTag.Move", "Move Input");
 	AddTag(InputTag_MouseConfirm, "InputTag.Mouse.Confirm", "鼠标点击确认");
+	AddTag(InputTag_MouseHover, "InputTag.Mouse.Hover", "鼠标悬停");
 	AddTag(InputTag_MouseCancel, "InputTag.Mouse.Cancel", "鼠标点击取消");
 	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "Look (mouse) input.");
 	AddTag(InputTag_Look_Stick, "InputTag.Look.Stick", "Look (stick) input.");

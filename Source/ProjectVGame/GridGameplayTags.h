@@ -34,6 +34,7 @@ public:
 
 	FGameplayTag InputTag_Move;
 	FGameplayTag InputTag_MouseConfirm;
+	FGameplayTag InputTag_MouseHover;
 	FGameplayTag InputTag_MouseCancel;
 	FGameplayTag InputTag_Look_Mouse;
 	FGameplayTag InputTag_Look_Stick;

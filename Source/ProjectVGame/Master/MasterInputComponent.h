@@ -74,4 +74,7 @@ private:
 	void Input_MouseConfirm(const FInputActionValue& InputActionValue);
 	void Input_MouseCancel(const FInputActionValue& InputActionValue);
 	//~ Begin 按键操作函数
+
+	// 检测鼠标悬停的Actor是否有效
+	void CheckMouseHoverActor() const;
 };

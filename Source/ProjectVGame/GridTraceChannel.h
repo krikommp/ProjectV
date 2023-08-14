@@ -5,3 +5,4 @@
 #define RangeTrace ECC_GameTraceChannel3
 #define ChessPieceTrace ECC_GameTraceChannel5
 #define MouseClickTrace ECC_GameTraceChannel8
+#define MouseHoverTrace ECC_GameTraceChannel9

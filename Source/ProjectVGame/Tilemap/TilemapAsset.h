@@ -128,6 +128,7 @@ public:
 	UPROPERTY(EditAnywhere, Category="Path Finding")
 	int32 TraceForWallsHeight = 100;
 
+	// true = 8, false = 4
 	UPROPERTY(EditAnywhere, Category="Path Finding")
 	bool bDiagonalMovement = false;
 

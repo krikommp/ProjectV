@@ -10,14 +10,15 @@
 AGridChessBase::AGridChessBase(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
+	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	SkeletalMeshComponent->SetupAttachment(RootComponent);
+	SkeletalMeshComponent->SetReceivesDecals(false);
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
 	CapsuleComponent->InitCapsuleSize(50.0f, 80.0f);
+	CapsuleComponent->SetRelativeLocation(FVector::UpVector * 50.0f);
 	CapsuleComponent->SetCollisionResponseToChannel(MouseClickTrace, ECR_Block);
-	RootComponent = CapsuleComponent;
-
-	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
-	SkeletalMeshComponent->SetReceivesDecals(false);
-	SkeletalMeshComponent->SetupAttachment(RootComponent);
+	CapsuleComponent->SetupAttachment(RootComponent);
 
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
 	ArrowComponent->SetupAttachment(RootComponent);

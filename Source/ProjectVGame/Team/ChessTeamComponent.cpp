@@ -38,6 +38,15 @@ void UChessTeamComponent::AddTeamMember(const ETeamType Team, const TArray<AGrid
 	}
 }
 
+void UChessTeamComponent::RemoveTeamMember(const ETeamType Team, AGridChessBase* Member)
+{
+	if (!Teams.Contains(Team))
+	{
+		return;
+	}
+	Teams[Team].Remove(Member);
+}
+
 bool UChessTeamComponent::CheckChessInTeam(const ETeamType Team, const FName ChessID) const
 {
 	if (!Teams.Contains(Team))

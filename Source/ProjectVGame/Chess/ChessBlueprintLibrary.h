@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Team/TeamType.h"
 #include "ChessBlueprintLibrary.generated.h"
 
 class UGridHeroInfo;
@@ -27,6 +28,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category=Chess, meta=(WorldContext = "WorldContextObject"))
 	static AGridChessBase* SpawnChessOnTilemapByCursor(const UObject* WorldContextObject, ETraceTypeQuery TraceChannel, UGridHeroInfo* ChessInfo);
 
+	// 将一个棋盘上的棋子移除
+	UFUNCTION(BlueprintCallable, Category=Chess, meta=(WorldContext = "WorldContextObject"))
+	static void DestroyChessOnTilemap(const UObject* WorldContextObject, AGridChessBase* Chess, const ETeamType TeamType);
+	
 	// 判断该索引位置上是否可以放置一个玩家棋子
 	UFUNCTION(BlueprintCallable, Category=Chess, meta=(WorldContext = "WorldContextObject"))
 	static bool CheckIndexInPlayerStartRange(const UObject* WorldContextObject, const int32 PathfindingIndex);

@@ -34,6 +34,9 @@ public:
 	void AddTeamMember(const ETeamType Team, AGridChessBase* Member);
 	void AddTeamMember(const ETeamType Team, const TArray<AGridChessBase*>& Members);
 
+	UFUNCTION(BlueprintCallable, Category=Team)
+	void RemoveTeamMember(const ETeamType Team, AGridChessBase* Member);
+
 	// 检测棋子是否在队伍中
 	UFUNCTION(BlueprintCallable, Category=Team)
 	bool CheckChessInTeam(const ETeamType Team, const FName ChessID)const;

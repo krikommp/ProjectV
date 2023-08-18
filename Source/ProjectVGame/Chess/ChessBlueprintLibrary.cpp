@@ -8,6 +8,7 @@
 #include "Heros/GridHeroData.h"
 #include "Heros/GridHeroInfo.h"
 #include "Kismet/GameplayStatics.h"
+#include "Team/ChessTeamComponent.h"
 #include "Tilemap/TilemapExtensionComponent.h"
 #include "Tilemap/TilemapSpawnParameters.h"
 
@@ -42,6 +43,19 @@ AGridChessBase* UChessBlueprintLibrary::SpawnChessOnTilemapByCursor(const UObjec
 
 	return SpawnChessOnTilemap(WorldContextObject, PathfindingIndex, NewChessData, ChessInfo,
 	                           TilemapExtensionComponent->GetTilemapActor());
+}
+
+void UChessBlueprintLibrary::DestroyChessOnTilemap(const UObject* WorldContextObject, AGridChessBase* Chess,
+	const ETeamType TeamType)
+{
+	if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		if (UChessTeamComponent* TeamComponent = World->GetGameState()->FindComponentByClass<UChessTeamComponent>())
+		{
+			TeamComponent->RemoveTeamMember(TeamType, Chess);
+		}
+		World->DestroyActor(Chess);
+	}
 }
 
 bool UChessBlueprintLibrary::CheckIndexInPlayerStartRange(const UObject* WorldContextObject,

@@ -14,7 +14,7 @@ UAsyncAction_ExperienceReady::UAsyncAction_ExperienceReady(const FObjectInitiali
 }
 
 
-UAsyncAction_ExperienceReady* UAsyncAction_ExperienceReady::WaitForExperienceReady(UObject* InWorldContextObject)
+UAsyncAction_ExperienceReady* UAsyncAction_ExperienceReady::WaitForExperienceReady(UObject* InWorldContextObject, const EExperienceLoadPriority ExperienceLoadPriority)
 {
 	UAsyncAction_ExperienceReady* Action = nullptr;
 
@@ -22,6 +22,7 @@ UAsyncAction_ExperienceReady* UAsyncAction_ExperienceReady::WaitForExperienceRea
 	{
 		Action = NewObject<UAsyncAction_ExperienceReady>();
 		Action->WorldPtr = World;
+		Action->LoadPriority = ExperienceLoadPriority;
 		Action->RegisterWithGameInstance(World);
 	}
 
@@ -77,7 +78,19 @@ void UAsyncAction_ExperienceReady::Step2_ListenToExperienceLoading(AGameStateBas
 	}
 	else
 	{
-		ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::Step3_HandleExperienceLoaded));
+		switch (LoadPriority)
+		{
+		case EExperienceLoadPriority::EEP_Low:
+			ExperienceComponent->CallOrRegister_OnExperienceLoaded_LowPriority(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::Step3_HandleExperienceLoaded));
+			break;
+		case EExperienceLoadPriority::EEP_Normal:
+			ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::Step3_HandleExperienceLoaded));
+			break;
+		case EExperienceLoadPriority::EEP_High:
+			ExperienceComponent->CallOrRegister_OnExperienceLoaded_HighPriority(FOnGridExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::Step3_HandleExperienceLoaded));
+			break;
+		default: ;
+		}
 	}
 }
 

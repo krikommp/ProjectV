@@ -4,6 +4,8 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TilemapEditor/Tilemap3DEditorViewportClient.h"
+#include "TilemapEditor/Generator/Tilemap3DChessGenerator.h"
+#include "TilemapEditor/Generator/Tilemap3DPlayerChessStartGenerator.h"
 #include "TilemapEditor/Generator/Tilemap3DTerrainGenerator.h"
 #include "TilemapEditor/Generator/Tilemap3DTileMeshGenerator.h"
 
@@ -43,6 +45,9 @@ void FTilemap3DRemoveCubeMode::InputKey(const FInputKeyEventArgs& EventArgs)
 													ViewportClient.Pin().Get());
 			const int32 Index = ViewportClient.Pin()->GetTilemapAsset()->VectorToIndex(HitResult.Location, ViewportClient.Pin()->GetCurrentFloor());
 			FTilemap3DTileMeshGenerator::RemoveTileMesh(ViewportClient.Pin()->GetTilemapAsset(), ViewportClient.Pin()->GetTileMeshMap(), Index);
+			FTilemap3DChessGenerator::Remove(ViewportClient.Pin()->GetTilemapAsset(), Index);
+			FTilemap3DPlayerChessStartGenerator::Remove(ViewportClient.Pin()->GetTilemapAsset(), Index);
+			ViewportClient.Pin()->GetTilemapAsset()->Blocks[Index]->bPlayerChessStart = false;
 		}
 	}
 }

@@ -37,3 +37,13 @@ void FTilemap3DPlayerChessStartGenerator::Setup(FTilemap3DEditorViewportClient* 
 		Block->PlayerStartDecal = DecalComponent;
 	}
 }
+
+void FTilemap3DPlayerChessStartGenerator::Remove(UTilemapAsset* InTilemapAsset, const int32 Index)
+{
+	UBlock* Block = InTilemapAsset->Blocks[Index];
+	if (const auto Decal = Block->PlayerStartDecal)
+	{
+		Decal->DestroyComponent();
+	}
+	Block->PlayerStartDecal = nullptr;
+}

@@ -1,7 +1,11 @@
 waiting...
-listen on pickup chess -> spawn chess -> waiting...
-listen on finish button -> turn start
+listen on pickup chess  -> waiting...
+listen on finish button -> finish spawn
 listen on select chess -> edit chess
 listen on remove chess -> remove chess
 
+finish spawn...
+[close spawn ui,play somet ui anim]
+-> jump to turn start
 
+turn start..

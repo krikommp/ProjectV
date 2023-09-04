@@ -24,7 +24,6 @@ class PROJECTVGAME_API UChessTurnComponent : public UGameStateComponent
 	void CallOrRegister_OnTurnReady(FSimpleMulticastDelegate::FDelegate&& Delegate);
 
 	bool IsReady() const { return bReadyToStartTurn; }
-
 private:
 	void OnTilemapLoaded();
 
@@ -39,6 +38,9 @@ public:
 	// 判断当前是否为玩家回合
 	UFUNCTION(BlueprintPure, Category=Turn)
 	bool CheckIsPlayerTurn() const;
+	// 获取当前回合数
+	UFUNCTION(BlueprintPure, Category=Turn)
+	int32 GetTurnCount() const { return TurnCount; }
 
 private:
 	// 是否可以开始第一轮回合

@@ -16,6 +16,7 @@
 #include "GameModes/GridGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/GridAssetManager.h"
+#include "Team/ChessTeamComponent.h"
 
 UTilemapStateComponent::UTilemapStateComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer), TilemapActor(nullptr), bLoadTilemapFinished(false)
@@ -109,6 +110,12 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 		const UGridAssetManager& AssetManager = UGridAssetManager::Get();
 		UGridHeroInfo* ChessInfo = UGridHeroInfo::CreateHeroInfo(AssetManager.GetHeroData(Block->ChessData->ChessID));
 		AGridChessBase* Chess = UChessBlueprintLibrary::SpawnChessOnTilemap(GetWorld(), PathfindingIndex, Block->ChessData, ChessInfo, TilemapActor);
+
+		// todo... 在这里创建的棋子都认为是敌对
+		if (UChessTeamComponent* TeamComponent = FIND_STATE_COMP_IN_STATE(AGridGameState, ChessTeamComponent))
+		{
+			TeamComponent->AddTeamMember(ETeamType::Enemy, Chess);
+		}
 
 		TilemapActor->ChessArray[PathfindingIndex] = Chess;
 	}

@@ -6,6 +6,23 @@ listen on remove chess -> remove chess
 
 finish spawn...
 [close spawn ui,play somet ui anim]
--> jump to turn start
+jump to turn start
 
 turn start..
+execute in the order of from player to enemy (only include those two part in this version)
+
+enemy ai system...
+AI behavior rating system
+attack mode & defense mode
+for attack:
+1. 与所有敌人的距离总和. 距离可以是欧几里得距离, 也可以是更具体的考虑地图移动性的'实际距离'.
+2. AI做出该决策后所处位置将有能力攻击到的敌人.
+3. 如果该决策是攻击, 那么考虑对攻击对象产生的伤害, 并量化该伤害对敌方总体产生的削弱影响.
+for defense:
+1. 与所有敌人的距离. 同上.
+2. AI做出该决策后所处位置将有可能被攻击到的敌人.
+3. 如果该决策是攻击, 且攻击有可能无法杀死敌人, 考虑被反击造成的伤害对我方总体产生的削弱影响.
+Scorei=fs,a(Ai)+fs,d(Di)
+
+for example attack:
+Scorei=0.8∗Ai−0.2∗Di

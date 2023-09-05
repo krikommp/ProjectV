@@ -63,7 +63,7 @@ void UTilemapStateComponent::OnExperienceLoaded(const UGridExperienceDefinition*
 		TilemapActor = GetWorld()->SpawnActor<ATilemap3DActor>();
 		TilemapActor->SetActorTransform(FTransform::Identity);
 	}
-	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step1));
+	LoadTilemapFinished_Step1();
 }
 
 void UTilemapStateComponent::LoadTilemapFinished_Step1()
@@ -119,7 +119,7 @@ void UTilemapStateComponent::LoadTilemapFinished_Step1()
 
 		TilemapActor->ChessArray[PathfindingIndex] = Chess;
 	}
-	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UTilemapStateComponent::LoadTilemapFinished_Step2));
+	LoadTilemapFinished_Step2();
 }
 
 void UTilemapStateComponent::LoadTilemapFinished_Step2()

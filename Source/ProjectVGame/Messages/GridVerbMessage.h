@@ -61,6 +61,9 @@ struct FGridMouseMessage
 	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
 	TObjectPtr<UObject> HitTarget = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
+	TObjectPtr<UActorComponent> HitComponent = nullptr;
+
 	// 点击位置
 	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
 	FVector Location;

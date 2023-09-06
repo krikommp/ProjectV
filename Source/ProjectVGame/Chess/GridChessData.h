@@ -31,10 +31,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Chess)
 	FTransform ChessTransform;
 
-	// 需要被实例化的棋子
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Chess)
-	TSubclassOf<AGridChessBase> ChessClass;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Chess)
 	ETeamType Team;
 };

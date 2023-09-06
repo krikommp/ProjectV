@@ -41,6 +41,7 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	FORCEINLINE int32 GetPathfindingArrayNum() const;
 	// 获取寻路方块
 	FORCEINLINE const FTilemapPathFindingBlock& GetPathfindingBlock(int32 Index) const;
+	FORCEINLINE const FTilemapPathFindingBlock& GetPathfindingBlockSelf() const;
 	// 获取寻路索引
 	FORCEINLINE int32 GetPathfindingIndex() const { return PathfindingIndex; }
 	// 设置寻路索引
@@ -49,10 +50,15 @@ class PROJECTVGAME_API UTilemapExtensionComponent : public UPawnComponent, publi
 	FORCEINLINE FVector GetPathfindingLocation(int32 Index, float ZOffset) const;
 	// 获取寻路节点的位置
 	FORCEINLINE FVector GetPathfindingBlockLocation(int32 Index) const;
+	// 根据寻路节点获取block信息
+	UBlock* GetBlockFromPathfindingIndex(int32 Index) const;
+	// 根据寻路索引判断该位置是否可以放置玩家棋子
+	bool CheckIndexInPlayerStartRange(int32 InPathfindingIndex) const;
+	FORCEINLINE bool IsValid() const { return Tilemap3DActor != nullptr; }
+	
 	// 将位置转换为寻路索引
 	UFUNCTION(BlueprintPure)
 	int32 LocationToPathfindingIndex(const FVector& Location) const;
-
 	// 获取鼠标点击地图位置和索引
 	UFUNCTION(BlueprintPure)
 	bool GetHitLocationAndIndex(ETraceTypeQuery TraceChannel, int32& OutIndex, FVector& OutLocation) const;
@@ -77,6 +83,7 @@ public:
 
 	void SetTilemap(ATilemap3DActor* InTilemap, int32 InPathfindingIndex = INDEX_NONE);
 	const UTilemapAsset* GetTilemap() const { return Tilemap3DActor->GetTilemap(); }
+	ATilemap3DActor* GetTilemapActor() const { return Tilemap3DActor.Get(); }
 	
 private:
 	// 弱引用场景中的Tilemap

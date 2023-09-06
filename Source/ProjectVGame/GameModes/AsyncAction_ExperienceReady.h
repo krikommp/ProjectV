@@ -12,6 +12,13 @@ class UGridExperienceDefinition;
 class UWorld;
 struct FFrame;
 
+UENUM(BlueprintType)
+enum class EExperienceLoadPriority : uint8
+{
+	EEP_Low,
+	EEP_Normal,
+	EEP_High,
+};
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FExperienceReadyAsyncDelegate);
 
 /**
@@ -27,7 +34,7 @@ class PROJECTVGAME_API UAsyncAction_ExperienceReady : public UBlueprintAsyncActi
 public:
 
 	UFUNCTION(BlueprintCallable, meta=(WorldContext = "WorldContextObject", BlueprintInternalUseOnly="true"))
-	static UAsyncAction_ExperienceReady* WaitForExperienceReady(UObject* WorldContextObject);
+	static UAsyncAction_ExperienceReady* WaitForExperienceReady(UObject* WorldContextObject, const EExperienceLoadPriority ExperienceLoadPriority);
 
 	virtual void Activate() override;
 
@@ -44,4 +51,5 @@ private:
 	void Step4_BroadcastReady();
 
 	TWeakObjectPtr<UWorld> WorldPtr;
+	EExperienceLoadPriority LoadPriority = EExperienceLoadPriority::EEP_Normal;
 };

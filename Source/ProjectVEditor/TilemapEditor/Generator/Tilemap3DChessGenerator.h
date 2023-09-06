@@ -8,4 +8,6 @@ class FTilemap3DChessGenerator
 {
 public:
 	static void Setup(FTilemap3DEditorViewportClient* ViewportClient, UTilemapAsset* InTilemapAsset, const UTileSet3DAsset* InTileSetAsset);
+
+	static void Remove(UTilemapAsset* InTilemapAsset, const int32 Index);
 };

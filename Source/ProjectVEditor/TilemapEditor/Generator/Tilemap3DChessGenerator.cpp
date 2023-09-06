@@ -29,3 +29,14 @@ void FTilemap3DChessGenerator::Setup(FTilemap3DEditorViewportClient* ViewportCli
 		Block->ChessInEditor = ChessPiece;
 	}
 }
+
+void FTilemap3DChessGenerator::Remove(UTilemapAsset* InTilemapAsset, const int32 Index)
+{
+	UBlock* Block = InTilemapAsset->Blocks[Index];
+	if (const auto Chess = Block->ChessInEditor)
+	{
+		Chess->Destroy();
+	}
+	Block->ChessInEditor = nullptr;
+	Block->ChessData = nullptr;
+}

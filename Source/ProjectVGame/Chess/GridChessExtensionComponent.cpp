@@ -13,6 +13,7 @@
 #include "Player/GridLocalPlayer.h"
 #include "System/GridAssetManager.h"
 #include "System/GridGameInstance.h"
+#include "Tilemap/TilemapSpawnParameters.h"
 #include "Tilemap/TilemapStateComponent.h"
 
 const FName UGridChessExtensionComponent::NAME_ActorFeatureName("PawnExtension");
@@ -20,27 +21,18 @@ const FName UGridChessExtensionComponent::NAME_ActorFeatureName("PawnExtension")
 UGridChessExtensionComponent::UGridChessExtensionComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	ChessData = nullptr;
-	
 	PrimaryComponentTick.bCanEverTick = false;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
-
-void UGridChessExtensionComponent::SetChessData(const UGridChessData* InData)
+void UGridChessExtensionComponent::SetChessInfo(const UGridHeroInfo* InChessInfo)
 {
-	check(InData);
+	check(InChessInfo);
+	ChessInfo = InChessInfo;
 
-	if (ChessData)
-	{
-		APawn* Pawn = GetPawnChecked<APawn>();
-		UE_LOG(LogGrid, Error, TEXT("Trying to set ChessData [%s] on pawn [%s] that already has valid ChessData [%s]."), *GetNameSafe(InData), *GetNameSafe(Pawn), *GetNameSafe(ChessData));
-		return;
-	}
-
-	ChessData = InData;
-
-	CheckDefaultInitialization();
+	const AGridChessBase* Chess = GetPawnChecked<AGridChessBase>();
+	Chess->SetupSkeletalMeshAsset(ChessInfo->HeroData.SkeletalMesh);
+	Chess->SetupAnimInstanceClass(ChessInfo->HeroData.AnimBlueprint);
 }
 
 void UGridChessExtensionComponent::OnRegister()
@@ -56,10 +48,7 @@ void UGridChessExtensionComponent::OnRegister()
 
 	RegisterInitStateFeature();
 
-	if (UTilemapStateComponent* TilemapStateComponent = GetWorld()->GetGameState()->FindComponentByClass<UTilemapStateComponent>())
-	{
-		TilemapStateComponent->CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate::CreateUObject(this, &ThisClass::OnChessSpawn));
-	}
+	GOnTilemapSpawnChess.Add(FOnTilemapSpawnChess::FDelegate::CreateUObject(this, &UGridChessExtensionComponent::OnChessSpawn));
 }
 
 void UGridChessExtensionComponent::BeginPlay()
@@ -83,7 +72,9 @@ void UGridChessExtensionComponent::OnChessSpawn(const FTilemapSpawnParameters& P
 {
 	if (Parameters.Chess != GetPawn<AGridChessBase>())
 		return;
-	SetChessData(Parameters.ChessData);
+	
+	SetChessInfo(Parameters.ChessInfo);
+	GOnTilemapSpawnChess.RemoveAll(this);
 }
 
 bool UGridChessExtensionComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager,
@@ -102,7 +93,7 @@ bool UGridChessExtensionComponent::CanChangeInitState(UGameFrameworkComponentMan
 		}
 	}else if (CurrentState == InitTags.InitState_Spawned && DesiredState == InitTags.InitState_DataAvailable)
 	{
-		if (!ChessData)
+		if (!ChessInfo)
 		{
 			return false;
 		}
@@ -123,22 +114,6 @@ void UGridChessExtensionComponent::HandleChangeInitState(UGameFrameworkComponent
 	if (DesiredState == FGridGameplayTags::Get().InitState_DataInitialized)
 	{
 		// todo...
-		check(ChessData);
-
-		// todo... 临时方法，通过Data上的Team来判断是否是玩家可控制对象
-		if (ChessData->Team == ETeamType::Player)
-		{
-			const auto LocalPlayer = Cast<UGridLocalPlayer>(GetGameInstance<UGridGameInstance>()->GetFirstGamePlayer());
-			ChessInfo = LocalPlayer->GetHeroInfo(ChessData->ChessID);
-		}else
-		{
-			const UGridAssetManager& AssetManager = UGridAssetManager::Get();
-			ChessInfo = UGridHeroInfo::CreateHeroInfo(AssetManager.GetHeroData(ChessData->ChessID));
-		}
-		
-		const AGridChessBase* Chess = GetPawnChecked<AGridChessBase>();
-		Chess->SetupSkeletalMeshAsset(ChessInfo->HeroData.SkeletalMesh);
-		Chess->SetupAnimInstanceClass(ChessInfo->HeroData.AnimBlueprint);
 	}
 }
 

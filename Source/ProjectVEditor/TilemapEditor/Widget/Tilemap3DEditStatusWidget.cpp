@@ -18,9 +18,6 @@ void STilemap3DEditStatusWidget::Construct(const FArguments& InArgs, bool InDefa
 		.OnClicked_Lambda([this]()
 		{
 			bEdit = !bEdit;
-			StatusText->SetText(bEdit
-				                    ? LOCTEXT("STilemap3DEditStatusWidget", "Stop Edit")
-				                    : LOCTEXT("STilemap3DEditStatusWidget", "Start Edit"));
 			// ReSharper disable once CppExpressionWithoutSideEffects
 			OnEditStatusChanged.ExecuteIfBound(bEdit);
 			return FReply::Handled();
@@ -28,9 +25,12 @@ void STilemap3DEditStatusWidget::Construct(const FArguments& InArgs, bool InDefa
 		[
 			SAssignNew(StatusText, STextBlock)
 			.Justification(ETextJustify::Center)
-			.Text(bEdit
-				      ? LOCTEXT("STilemap3DEditStatusWidget", "Stop Edit")
-				      : LOCTEXT("STilemap3DEditStatusWidget", "Start Edit"))
+			.Text_Lambda([this]()
+			{
+				return bEdit
+					  ? LOCTEXT("EditStatus_Stop", "Stop Edit")
+					  : LOCTEXT("EditStatus_Start", "Start Edit");
+			})
 		]
 	];
 }

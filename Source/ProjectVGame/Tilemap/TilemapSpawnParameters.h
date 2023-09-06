@@ -3,6 +3,7 @@
 class ATilemap3DActor;
 class AGridChessBase;
 class UGridChessData;
+class UGridHeroInfo;
 
 struct PROJECTVGAME_API FTilemapSpawnParameters
 {
@@ -10,6 +11,8 @@ struct PROJECTVGAME_API FTilemapSpawnParameters
 	AGridChessBase* Chess;
 	// Chess 数据
 	UGridChessData* ChessData;
+	// Chess 信息
+	UGridHeroInfo* ChessInfo;
 	// Tilemap 数据
 	ATilemap3DActor* Tilemap;
 	// 寻路索引
@@ -17,3 +20,4 @@ struct PROJECTVGAME_API FTilemapSpawnParameters
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTilemapSpawnChess, const FTilemapSpawnParameters& /* SpawnParameters */)
+extern FOnTilemapSpawnChess GOnTilemapSpawnChess;

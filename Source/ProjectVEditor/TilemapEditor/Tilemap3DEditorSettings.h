@@ -32,4 +32,10 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category="TileSet")
 	TSoftObjectPtr<UTileSet3DAsset> DefaultTileSet;
+
+	UPROPERTY(Config, EditAnywhere, Category="TileSet")
+	TSoftObjectPtr<UMaterialInterface> DefaultPlayerChessRangeMat;
+
+	UPROPERTY(Config, EditAnywhere, Category="TileSet")
+	FLinearColor DefaultPlayerChessRangeColor;
 };

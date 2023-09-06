@@ -64,6 +64,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UGridChessData> ChessData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bPlayerChessStart = false;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UDecalComponent> PlayerStartDecal;
 };
 
 USTRUCT(BlueprintType)
@@ -122,6 +128,7 @@ public:
 	UPROPERTY(EditAnywhere, Category="Path Finding")
 	int32 TraceForWallsHeight = 100;
 
+	// true = 8, false = 4
 	UPROPERTY(EditAnywhere, Category="Path Finding")
 	bool bDiagonalMovement = false;
 

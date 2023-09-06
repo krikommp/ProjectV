@@ -8,6 +8,7 @@
 #include "Character/GridPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "TilemapAsset.h"
+#include "TilemapSpawnParameters.h"
 #include "TilemapStateComponent.h"
 #include "Chess/GridChessBase.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -54,6 +55,13 @@ const FTilemapPathFindingBlock& UTilemapExtensionComponent::GetPathfindingBlock(
 	return Tilemap3DActor->GetTilemap()->PathFindingBlocks[Index];
 }
 
+const FTilemapPathFindingBlock& UTilemapExtensionComponent::GetPathfindingBlockSelf() const
+{
+	ensureAlwaysMsgf(Tilemap3DActor->GetTilemap()->PathFindingBlocks.IsValidIndex(PathfindingIndex), TEXT("InValid pathfinding Block Index: [%d]!"), PathfindingIndex);
+
+	return Tilemap3DActor->GetTilemap()->PathFindingBlocks[PathfindingIndex];
+}
+
 void UTilemapExtensionComponent::SetPathfindingIndex(int32 Index)
 {
 	Tilemap3DActor->ChessArray[PathfindingIndex].Reset();
@@ -72,6 +80,26 @@ FVector UTilemapExtensionComponent::GetPathfindingBlockLocation(int32 Index) con
 		return FVector::Zero();
 
 	return Tilemap3DActor->GetActorLocation() + GetTilemap()->PathFindingBlocks[Index].Location;
+}
+
+UBlock* UTilemapExtensionComponent::GetBlockFromPathfindingIndex(int32 Index) const
+{
+	if (!GetTilemap()->PathFindingBlocks.IsValidIndex(Index))
+		return nullptr;
+
+	const int32 BlockIndex = GetTilemap()->PathFindingBlockToBlock(Index);
+	if (!GetTilemap()->Blocks.IsValidIndex(BlockIndex))
+		return nullptr;
+
+	return GetTilemap()->Blocks[BlockIndex];
+}
+
+bool UTilemapExtensionComponent::CheckIndexInPlayerStartRange(int32 InPathfindingIndex) const
+{
+	const UBlock* Block = GetBlockFromPathfindingIndex(InPathfindingIndex);
+	if (!Block)
+		return false;
+	return Block->bPlayerChessStart;
 }
 
 int32 UTilemapExtensionComponent::LocationToPathfindingIndex(const FVector& Location) const
@@ -137,10 +165,7 @@ void UTilemapExtensionComponent::OnRegister()
 
 	RegisterInitStateFeature();
 
-	if (UTilemapStateComponent* TilemapStateComponent = FIND_STATE_COMP_IN_PAWN(TilemapStateComponent))
-	{
-		TilemapStateComponent->CallOrRegister_OnChessSpawn(FOnTilemapSpawnChess::FDelegate::CreateUObject(this, &ThisClass::OnChessSpawn));
-	}
+	GOnTilemapSpawnChess.Add(FOnTilemapSpawnChess::FDelegate::CreateUObject(this, &UTilemapExtensionComponent::OnChessSpawn));
 }
 
 void UTilemapExtensionComponent::BeginPlay()
@@ -165,8 +190,9 @@ void UTilemapExtensionComponent::OnChessSpawn(const FTilemapSpawnParameters& Par
 {
 	if (Parameters.Chess != GetPawn<AGridChessBase>())
 		return;
-	
+
 	SetTilemap(Parameters.Tilemap, Parameters.PathfindingIndex);
+	GOnTilemapSpawnChess.RemoveAll(this);
 }
 
 bool UTilemapExtensionComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,

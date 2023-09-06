@@ -29,7 +29,8 @@ enum ETilemap3DEditMode : uint8
 	EEM_Chess_End,
 
 	EEM_Player,
-	EEM_PlayerStart,
+	EEM_Player_Start,
+	EEM_Player_Chess,
 	
 	UNKNOWN
 };

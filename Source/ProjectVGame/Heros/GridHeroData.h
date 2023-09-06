@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "GridHeroData.generated.h"
 
+class AGridChessBase;
 /**
  * 
  */
@@ -27,6 +28,10 @@ public:
 	// 英雄描述
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="GridHeroData")
 	FText Description;
+
+	// 棋子类
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="GridHeroData")
+	TSubclassOf<AGridChessBase> ChessClass;
 
 	// 蒙皮骨骼
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="GridHeroData")

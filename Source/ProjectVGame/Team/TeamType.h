@@ -8,8 +8,8 @@
 UENUM(BlueprintType)
 enum class ETeamType : uint8
 {
-	Player UMETA(DisplayName = "Player Team"),
-	Enemy UMETA(DisplayName = "Enemy Team"),
+	Player = 0 UMETA(DisplayName = "Player Team"),
+	Enemy = 1 UMETA(DisplayName = "Enemy Team"),
 
 	MAX,
 };

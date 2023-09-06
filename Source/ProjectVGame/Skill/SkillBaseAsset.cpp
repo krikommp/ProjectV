@@ -2,3 +2,9 @@
 
 
 #include "SkillBaseAsset.h"
+
+USkillBaseAsset::USkillBaseAsset(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
+{
+	
+}

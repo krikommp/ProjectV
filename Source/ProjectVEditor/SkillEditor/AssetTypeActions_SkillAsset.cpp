@@ -1,5 +1,6 @@
 ﻿#include "AssetTypeActions_SkillAsset.h"
 
+#include "SkillAssetEditorToolkit.h"
 #include "Skill/SkillBaseAsset.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
@@ -27,7 +28,17 @@ UClass* FAssetTypeActions_SkillAsset::GetSupportedClass() const
 void FAssetTypeActions_SkillAsset::OpenAssetEditor(const TArray<UObject*>& InObjects,
 	TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
-	FAssetTypeActions_Base::OpenAssetEditor(InObjects, EditWithinLevelEditor);
+	EToolkitMode::Type Mode = EToolkitMode::Standalone;
+
+	for (auto ObjIt = InObjects.CreateConstIterator(); ObjIt; ++ObjIt)
+	{
+		auto Asset = Cast<USkillBaseAsset>(*ObjIt);
+		if (Asset != NULL)
+		{
+			TSharedRef< FSkillAssetEditorToolkit > NewToolkit(new FSkillAssetEditorToolkit());
+			NewToolkit->Initialize(Mode, EditWithinLevelEditor, Asset);
+		}
+	}
 }
 
 uint32 FAssetTypeActions_SkillAsset::GetCategories()

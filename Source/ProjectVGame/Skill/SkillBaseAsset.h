@@ -15,5 +15,13 @@
 UCLASS(HideCategories = Input, Meta = (ShortTooltip = "The base gameplay ability class used by base skill asset."))
 class PROJECTVGAME_API USkillBaseAsset : public UGridGameplayAbility
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly, Category=Base)
+	FText Name;
+	UPROPERTY(BlueprintReadOnly, Category=Base)
+	FText Description;
+	UPROPERTY(BlueprintReadOnly, Category=Base)
+	TObjectPtr<UTexture2D> Icon;
 };

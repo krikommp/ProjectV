@@ -8,10 +8,10 @@
 /**
  * 
  */
-class PROJECTVEDITOR_API SSkillStartupWidget : public SCompoundWidget
+class PROJECTVEDITOR_API SSkillInfoWidget : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SSkillStartupWidget)
+	SLATE_BEGIN_ARGS(SSkillInfoWidget)
 		{
 		}
 
@@ -20,10 +20,7 @@ public:
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
 
-
 private:
-	TSharedPtr<STextBlock> ComboBoxTitleBlock;
-	TSharedPtr<STextBlock> AnimBoxTitleBlock;
-	TArray<TSharedPtr<FString>> ComboItems;
-	TArray<TSharedPtr<FString>> AnimationItems;
+	TArray<TSharedPtr<FString>> VoiceItems;
+	TSharedPtr<STextBlock> VoiceBoxTitleBlock;
 };

@@ -4,6 +4,7 @@
 #include "SkillEditWidget.h"
 
 #include "SkillBaseInfoWidget.h"
+#include "SkillInfoWidget.h"
 #include "SkillStartupWidget.h"
 #include "SlateOptMacros.h"
 
@@ -33,6 +34,13 @@ void SSkillEditWidget::Construct(const FArguments& InArgs)
 			.VAlign(VAlign_Top)
 			[
 				SNew(SSkillStartupWidget)
+			]
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			.Padding(0.0f, 10.0f)
+			.VAlign(VAlign_Top)
+			[
+				SNew(SSkillInfoWidget)
 			]
 		]
 	];

@@ -5,16 +5,18 @@
 
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
+#include "Widgets/Input/SSpinBox.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillStartupWidget"
 
 void SSkillStartupWidget::Construct(const FArguments& InArgs)
 {
-	TArray<TSharedPtr<FString>> ComboItems;
-	ComboItems.Add(MakeShareable(new FString(TEXT("无"))));
-	ComboItems.Add(MakeShareable(new FString(TEXT("物理攻击"))));
-	ComboItems.Add(MakeShareable(new FString(TEXT("魔法攻击"))));
+	ComboItems.Add(MakeShareable(new FString(LOCTEXT("SkillTypeTabel", "Magic Skill").ToString())));
+	ComboItems.Add(MakeShareable(new FString(LOCTEXT("SkillTypeTabel", "Physical Skill").ToString())));
+
+	AnimationItems.Add(MakeShareable(new FString(LOCTEXT("SkillAnimLabel", "Melee").ToString())));
+	AnimationItems.Add(MakeShareable(new FString(LOCTEXT("SkillAnimLabel", "Defense").ToString())));
 
 	ChildSlot
 	[
@@ -36,34 +38,139 @@ void SSkillStartupWidget::Construct(const FArguments& InArgs)
 			  .Padding(10, 10)
 			  .AutoHeight()
 			[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-				  .VAlign(VAlign_Top)
-				  .AutoHeight()
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				  .FillWidth(1.0f)
+				  .VAlign(VAlign_Center)
 				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("SkillHitType", "Hit Type:"))
-				]
-				+ SVerticalBox::Slot()
-				  .VAlign(VAlign_Top)
-				  .AutoHeight()
-				[
-					SNew(SComboBox<TSharedPtr<FString> >)
-			.OptionsSource(&ComboItems)
-			.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item)
-					                                     {
-						                                     return SNew(STextBlock).Text(FText::FromString(*Item));
-					                                     })
-			.OnSelectionChanged_Lambda([this](TSharedPtr<FString> InSelection, ESelectInfo::Type InSelectInfo)
-					                                     {
-						                                     if (InSelection.IsValid() && ComboBoxTitleBlock.IsValid())
-						                                     {
-							                                     ComboBoxTitleBlock->SetText(
-								                                     FText::FromString(*InSelection));
-						                                     }
-					                                     })
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					  .VAlign(VAlign_Top)
+					  .AutoHeight()
 					[
-						SAssignNew(ComboBoxTitleBlock, STextBlock).Text(LOCTEXT("ComboLabel", "Label"))
+						SNew(STextBlock)
+						.Text(LOCTEXT("SkillHitRate", "Hit Rate:"))
+					]
+					+ SVerticalBox::Slot()
+					  .VAlign(VAlign_Top)
+					  .AutoHeight()
+					[
+						SNew(SSpinBox<float>)
+						.MinValue(0.0f)
+						.MaxValue(100.0f)
+						.MinSliderValue(TAttribute<TOptional<float>>(0.0f))
+						.MaxSliderValue(TAttribute<TOptional<float>>(100.0f))
+						.Value(0)
+						.Delta(0.5f)
+					]
+				]
+				+ SHorizontalBox::Slot()
+				  .FillWidth(1.0f)
+				  .VAlign(VAlign_Center)
+				[
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					  .VAlign(VAlign_Top)
+					  .AutoHeight()
+					[
+						SNew(STextBlock)
+						.Text(LOCTEXT("SkillTechniquePoints", "TP:"))
+					]
+					+ SVerticalBox::Slot()
+					  .VAlign(VAlign_Top)
+					  .AutoHeight()
+					[
+						SNew(SSpinBox<float>)
+						.MinValue(0.0f)
+						.MaxValue(500.0f)
+						.MinSliderValue(TAttribute<TOptional<float>>(0.0f))
+						.MaxSliderValue(TAttribute<TOptional<float>>(500.0f))
+						.Value(0)
+						.Delta(0.5f)
+					]
+				]
+			]
+			+ SVerticalBox::Slot()
+			  .VAlign(VAlign_Top)
+			  .Padding(10, 10)
+			  .AutoHeight()
+			[
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				  .FillWidth(1.0f)
+				  .VAlign(VAlign_Center)
+				[
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					  .VAlign(VAlign_Top)
+					  .AutoHeight()
+					[
+						SNew(STextBlock)
+						.Text(LOCTEXT("SkillHitType", "Hit Type:"))
+					]
+					+ SVerticalBox::Slot()
+					  .VAlign(VAlign_Top)
+					  .AutoHeight()
+					[
+						SNew(SComboBox<TSharedPtr<FString> >)
+				.OptionsSource(&ComboItems)
+				.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item)
+						                                     {
+							                                     return SNew(STextBlock).Text(FText::FromString(*Item));
+						                                     })
+				.OnSelectionChanged_Lambda(
+							                                     [this](TSharedPtr<FString> InSelection,
+							                                            ESelectInfo::Type InSelectInfo)
+							                                     {
+								                                     if (InSelection.IsValid() && ComboBoxTitleBlock.
+									                                     IsValid())
+								                                     {
+									                                     ComboBoxTitleBlock->SetText(
+										                                     FText::FromString(*InSelection));
+								                                     }
+							                                     })
+						[
+							SAssignNew(ComboBoxTitleBlock, STextBlock).Text(LOCTEXT("SkillTypeLabel", "None"))
+						]
+					]
+				]
+				+ SHorizontalBox::Slot()
+				  .FillWidth(1.0f)
+				  .VAlign(VAlign_Center)
+				  .Padding(10.0f, 0.0f)
+				[
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					  .VAlign(VAlign_Top)
+					  .AutoHeight()
+					[
+						SNew(STextBlock)
+						.Text(LOCTEXT("SkillAnimAsset", "Animation:"))
+					]
+					+ SVerticalBox::Slot()
+					  .VAlign(VAlign_Top)
+					  .AutoHeight()
+					[
+						SNew(SComboBox<TSharedPtr<FString> >)
+				.OptionsSource(&AnimationItems)
+				.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item)
+						                                     {
+							                                     return SNew(STextBlock).Text(FText::FromString(*Item));
+						                                     })
+				.OnSelectionChanged_Lambda(
+							                                     [this](TSharedPtr<FString> InSelection,
+							                                            ESelectInfo::Type InSelectInfo)
+							                                     {
+								                                     if (InSelection.IsValid() && AnimBoxTitleBlock.
+									                                     IsValid())
+								                                     {
+									                                     AnimBoxTitleBlock->SetText(
+										                                     FText::FromString(*InSelection));
+								                                     }
+							                                     })
+						[
+							SAssignNew(AnimBoxTitleBlock, STextBlock).Text(LOCTEXT("SkillAnimLabel", "None"))
+						]
 					]
 				]
 			]

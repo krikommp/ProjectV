@@ -5,6 +5,7 @@
 
 #include "SkillBaseInfoWidget.h"
 #include "SkillInfoWidget.h"
+#include "SkillLimitWidget.h"
 #include "SkillStartupWidget.h"
 #include "SlateOptMacros.h"
 
@@ -23,24 +24,31 @@ void SSkillEditWidget::Construct(const FArguments& InArgs)
 		[
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.VAlign(VAlign_Top)
+			  .AutoHeight()
+			  .VAlign(VAlign_Top)
 			[
 				SNew(SSkillBaseInfoWidget)
 			]
 			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(0.0f, 10.0f)
-			.VAlign(VAlign_Top)
+			  .AutoHeight()
+			  .Padding(0.0f, 10.0f)
+			  .VAlign(VAlign_Top)
 			[
 				SNew(SSkillStartupWidget)
 			]
 			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(0.0f, 10.0f)
-			.VAlign(VAlign_Top)
+			  .AutoHeight()
+			  .Padding(0.0f, 10.0f)
+			  .VAlign(VAlign_Top)
 			[
 				SNew(SSkillInfoWidget)
+			]
+			+ SVerticalBox::Slot()
+			  .AutoHeight()
+			  .Padding(0.0f, 10.0f)
+			  .VAlign(VAlign_Top)
+			[
+				SNew(SSkillLimitWidget)
 			]
 		]
 	];

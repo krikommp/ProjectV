@@ -22,7 +22,6 @@ void SSkillInfoWidget::Construct(const FArguments& InArgs)
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
 			  .VAlign(VAlign_Top)
-			  .Padding(10, 10)
 			  .AutoHeight()
 			[
 				SNew(STextBlock)

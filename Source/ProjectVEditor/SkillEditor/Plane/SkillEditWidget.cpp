@@ -25,6 +25,7 @@ void SSkillEditWidget::Construct(const FArguments& InArgs)
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
 			  .AutoHeight()
+			  .Padding(0.0f, 10.0f)
 			  .VAlign(VAlign_Top)
 			[
 				SNew(SSkillBaseInfoWidget)

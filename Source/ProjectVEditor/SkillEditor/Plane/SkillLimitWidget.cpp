@@ -22,6 +22,7 @@ void SSkillLimitWidget::Construct(const FArguments& InArgs)
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
 			  .VAlign(VAlign_Top)
+			  .Padding(10, 10)
 			  .AutoHeight()
 			[
 				SNew(STextBlock)
@@ -30,12 +31,12 @@ void SSkillLimitWidget::Construct(const FArguments& InArgs)
 			]
 			+ SVerticalBox::Slot()
 			  .VAlign(VAlign_Top)
-			  .Padding(0.0, 10.0f)
+			  .Padding(10.0, 10.0f)
 			  .AutoHeight()
 			[
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
-				  .HAlign(HAlign_Center)
+				  .HAlign(HAlign_Fill)
 				  .FillWidth(1.0f)
 				[
 					SNew(SVerticalBox)
@@ -75,7 +76,7 @@ void SSkillLimitWidget::Construct(const FArguments& InArgs)
 					]
 				]
 				+ SHorizontalBox::Slot()
-				  .HAlign(HAlign_Center)
+				  .HAlign(HAlign_Fill)
 				  .Padding(10.0f, 0.0f)
 				  .FillWidth(1.0f)
 				[

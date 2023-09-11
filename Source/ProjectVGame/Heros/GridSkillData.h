@@ -23,7 +23,7 @@ struct PROJECTVGAME_API FGridSkillData : public FTableRowBase
 	FName ID;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 Level;
+	int32 Level = INDEX_NONE;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGridGameplayAbility_Card> Ability;

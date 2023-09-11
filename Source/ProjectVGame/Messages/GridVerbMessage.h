@@ -66,7 +66,7 @@ struct FGridMouseMessage
 
 	// 点击位置
 	UPROPERTY(BlueprintReadWrite, Category=Gameplay)
-	FVector Location;
+	FVector Location = FVector::Zero();
 
 	PROJECTVGAME_API FString ToString() const;
 };

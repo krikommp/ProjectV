@@ -9,6 +9,7 @@
 #include "SkillEditor/EditorInterface/Section/SkillPerformanceSection.h"
 #include "SkillEditor/EditorInterface/Section/SkillRequirementSection.h"
 #include "SkillEditor/EditorInterface/Section/SkillSpeechSection.h"
+#include "Widgets/Layout/SScrollBox.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillEditorLayout"
@@ -17,54 +18,58 @@ void SSkillEditorLayout::Construct(const FArguments& InArgs)
 {
 	ChildSlot
 	[
-		SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
-		  .HAlign(HAlign_Fill)
-		  .Padding(FMargin(10.0f, 10.0f))
-		  .FillWidth(1.0f)
+		SNew(SScrollBox)
+		+ SScrollBox::Slot()
 		[
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			  .AutoHeight()
-			  .Padding(0.0f, 10.0f)
-			  .VAlign(VAlign_Top)
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			  .HAlign(HAlign_Fill)
+			  .Padding(FMargin(10.0f, 10.0f))
+			  .FillWidth(1.0f)
 			[
-				SNew(SSkillCommonSettingSection)
+				SNew(SVerticalBox)
+				+ SVerticalBox::Slot()
+				  .AutoHeight()
+				  .Padding(0.0f, 10.0f)
+				  .VAlign(VAlign_Top)
+				[
+					SNew(SSkillCommonSettingSection)
+				]
+				+ SVerticalBox::Slot()
+				  .AutoHeight()
+				  .Padding(0.0f, 10.0f)
+				  .VAlign(VAlign_Top)
+				[
+					SNew(SSkillPerformanceSection)
+				]
+				+ SVerticalBox::Slot()
+				  .AutoHeight()
+				  .Padding(0.0f, 10.0f)
+				  .VAlign(VAlign_Top)
+				[
+					SNew(SSkillSpeechSection)
+				]
+				+ SVerticalBox::Slot()
+				  .AutoHeight()
+				  .Padding(0.0f, 10.0f)
+				  .VAlign(VAlign_Top)
+				[
+					SNew(SSkillRequirementSection)
+				]
 			]
-			+ SVerticalBox::Slot()
-			  .AutoHeight()
-			  .Padding(0.0f, 10.0f)
-			  .VAlign(VAlign_Top)
+			+ SHorizontalBox::Slot()
+			  .HAlign(HAlign_Fill)
+			  .Padding(FMargin(10.0f, 10.0f))
+			  .FillWidth(1.0f)
 			[
-				SNew(SSkillPerformanceSection)
-			]
-			+ SVerticalBox::Slot()
-			  .AutoHeight()
-			  .Padding(0.0f, 10.0f)
-			  .VAlign(VAlign_Top)
-			[
-				SNew(SSkillSpeechSection)
-			]
-			+ SVerticalBox::Slot()
-			  .AutoHeight()
-			  .Padding(0.0f, 10.0f)
-			  .VAlign(VAlign_Top)
-			[
-				SNew(SSkillRequirementSection)
-			]
-		]
-		+ SHorizontalBox::Slot()
-		  .HAlign(HAlign_Fill)
-		  .Padding(FMargin(10.0f, 10.0f))
-		  .FillWidth(1.0f)
-		[
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			  .AutoHeight()
-			  .Padding(0.0f, 10.0f)
-			  .VAlign(VAlign_Top)
-			[
-				SNew(SSkillDamageSection)
+				SNew(SVerticalBox)
+				+ SVerticalBox::Slot()
+				  .AutoHeight()
+				  .Padding(0.0f, 10.0f)
+				  .VAlign(VAlign_Top)
+				[
+					SNew(SSkillDamageSection)
+				]
 			]
 		]
 	];

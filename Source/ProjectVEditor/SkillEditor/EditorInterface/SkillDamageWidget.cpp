@@ -5,6 +5,7 @@
 
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
+#include "Layout/WidgetLayoutUtils.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillBaseInfoWidget"
@@ -21,79 +22,6 @@ void SSkillDamageWidget::Construct(const FArguments& InArgs)
 	DamageCriticalItems.Add(MakeShareable(new FString(LOCTEXT("SkillDamageCriticalItemLabel", "Yes").ToString())));
 	DamageCriticalItems.Add(MakeShareable(new FString(LOCTEXT("SkillDamageCriticalItemLabel", "No").ToString())));
 	
-	auto TitleSlot = [](TSharedPtr<SVerticalBox> VerticalBox, const FText& InLabel)
-	{
-		VerticalBox->AddSlot()
-		           .VAlign(VAlign_Top)
-		           .Padding(10.0f, 10.0f)
-		           .AutoHeight()
-		[
-			SNew(STextBlock)
-			.Font(FAppStyle::Get().GetFontStyle("NormalFontBold"))
-			.Text(InLabel)
-		];
-	};
-
-	auto NextVSlot = [](TSharedPtr<SVerticalBox> VerticalBox, const FText& InLabel = FText::GetEmpty())
-	{
-		TSharedRef<SVerticalBox> VBox = SNew(SVerticalBox);
-
-		VerticalBox->AddSlot()
-				   .VAlign(VAlign_Top)
-				   .Padding(10.0f, 10.0f)
-				   .AutoHeight()
-		[
-			VBox
-		];
-
-		if (!InLabel.IsEmpty())
-		{
-			VBox->AddSlot()
-				.VAlign(VAlign_Top)
-				.AutoHeight()
-			[
-				SNew(STextBlock)
-				.Text(InLabel)
-			];
-		}
-
-		SVerticalBox::FScopedWidgetSlotArguments NewSlot = VBox->AddSlot();
-		NewSlot.VAlign(VAlign_Top)
-			   .AutoHeight();
-		return MoveTemp(NewSlot);
-	};
-
-	auto NextHSlot = [](TSharedPtr<SHorizontalBox> HorizontalBox, const FText& InLabel = FText::GetEmpty(),
-						EHorizontalAlignment HAlign = HAlign_Fill)
-	{
-		TSharedRef<SVerticalBox> VBox = SNew(SVerticalBox);
-
-		HorizontalBox->AddSlot()
-					 .HAlign(HAlign)
-					 .FillWidth(1.0f)
-					 .Padding(HorizontalBox->NumSlots() == 0 ? 0.0f : 10.0f, 0.0f)
-		[
-			VBox
-		];
-
-
-		if (!InLabel.IsEmpty())
-		{
-			VBox->AddSlot()
-				.VAlign(VAlign_Top)
-				.AutoHeight()
-			[
-				SNew(STextBlock)
-				.Text(InLabel)
-			];
-		}
-
-		SVerticalBox::FScopedWidgetSlotArguments NewSlot = VBox->AddSlot();
-		NewSlot.VAlign(VAlign_Top)
-			   .AutoHeight();
-		return MoveTemp(NewSlot);
-	};
-
 	TSharedPtr<SVerticalBox> WidgetVerticalBox = SNew(SVerticalBox);
 	TSharedRef<SHorizontalBox> SkillDamageHBox_1 = SNew(SHorizontalBox);
 	

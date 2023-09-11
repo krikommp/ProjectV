@@ -1,22 +1,23 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SkillInfoWidget.h"
+#include "SkillSpeechSection.h"
 
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
-#include "Layout/WidgetLayoutUtils.h"
+#include "Widgets/Input/SSpinBox.h"
+#include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-#define LOCTEXT_NAMESPACE "SSkillInfoWidget"
+#define LOCTEXT_NAMESPACE "SSkillSpeechSection"
 
-void SSkillInfoWidget::Construct(const FArguments& InArgs)
+void SSkillSpeechSection::Construct(const FArguments& InArgs)
 {
 	VoiceItems.Add(MakeShareable(new FString(LOCTEXT("SkillUserVoiceLabel", "Do somethings...").ToString())));
 	VoiceItems.Add(MakeShareable(new FString(LOCTEXT("SkillUserVoiceLabel", "Do somethings...").ToString())));
 
 	TSharedPtr<SVerticalBox> WidgetVerticalBox = SNew(SVerticalBox);
-	
+
 	TitleSlot(WidgetVerticalBox, LOCTEXT("SkillMessageTitle", "Message Settings"));
 	NextVSlot(WidgetVerticalBox, LOCTEXT("SkillUseNameLabel", "(User name)"))
 	[
@@ -28,16 +29,16 @@ void SSkillInfoWidget::Construct(const FArguments& InArgs)
 		SNew(SComboBox<TSharedPtr<FString> >)
 		.OptionsSource(&VoiceItems)
 		.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item)
-			{
-				return SNew(STextBlock).Text(FText::FromString(*Item));
-			})
+		                                     {
+			                                     return SNew(STextBlock).Text(FText::FromString(*Item));
+		                                     })
 		.OnSelectionChanged_Lambda([this](TSharedPtr<FString> InSelection, ESelectInfo::Type InSelectInfo)
-			{
-				if (InSelection.IsValid() && VoiceBoxTitleBlock.IsValid())
-					{
-						VoiceBoxTitleBlock->SetText(FText::FromString(*InSelection));
-					}
-			})
+		                                     {
+			                                     if (InSelection.IsValid() && VoiceBoxTitleBlock.IsValid())
+			                                     {
+				                                     VoiceBoxTitleBlock->SetText(FText::FromString(*InSelection));
+			                                     }
+		                                     })
 		[
 			SAssignNew(VoiceBoxTitleBlock, STextBlock).Text(LOCTEXT("SkillVoiceLabel", "None"))
 		]

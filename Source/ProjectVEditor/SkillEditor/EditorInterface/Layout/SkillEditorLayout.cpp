@@ -3,12 +3,12 @@
 
 #include "SkillEditorLayout.h"
 
-#include "SkillEditor/EditorInterface/SkillBaseInfoWidget.h"
-#include "SkillEditor/EditorInterface/SkillDamageWidget.h"
-#include "SkillEditor/EditorInterface/SkillInfoWidget.h"
-#include "SkillEditor/EditorInterface/SkillLimitWidget.h"
-#include "SkillEditor/EditorInterface/SkillStartupWidget.h"
 #include "SlateOptMacros.h"
+#include "SkillEditor/EditorInterface/Section/SkillCommonSettingSection.h"
+#include "SkillEditor/EditorInterface/Section/SkillDamageSection.h"
+#include "SkillEditor/EditorInterface/Section/SkillPerformanceSection.h"
+#include "SkillEditor/EditorInterface/Section/SkillRequirementSection.h"
+#include "SkillEditor/EditorInterface/Section/SkillSpeechSection.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillEditorLayout"
@@ -29,28 +29,28 @@ void SSkillEditorLayout::Construct(const FArguments& InArgs)
 			  .Padding(0.0f, 10.0f)
 			  .VAlign(VAlign_Top)
 			[
-				SNew(SSkillBaseInfoWidget)
+				SNew(SSkillCommonSettingSection)
 			]
 			+ SVerticalBox::Slot()
 			  .AutoHeight()
 			  .Padding(0.0f, 10.0f)
 			  .VAlign(VAlign_Top)
 			[
-				SNew(SSkillStartupWidget)
+				SNew(SSkillPerformanceSection)
 			]
 			+ SVerticalBox::Slot()
 			  .AutoHeight()
 			  .Padding(0.0f, 10.0f)
 			  .VAlign(VAlign_Top)
 			[
-				SNew(SSkillInfoWidget)
+				SNew(SSkillSpeechSection)
 			]
 			+ SVerticalBox::Slot()
 			  .AutoHeight()
 			  .Padding(0.0f, 10.0f)
 			  .VAlign(VAlign_Top)
 			[
-				SNew(SSkillLimitWidget)
+				SNew(SSkillRequirementSection)
 			]
 		]
 		+ SHorizontalBox::Slot()
@@ -64,7 +64,7 @@ void SSkillEditorLayout::Construct(const FArguments& InArgs)
 			  .Padding(0.0f, 10.0f)
 			  .VAlign(VAlign_Top)
 			[
-				SNew(SSkillDamageWidget)
+				SNew(SSkillDamageSection)
 			]
 		]
 	];

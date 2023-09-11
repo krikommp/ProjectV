@@ -1,17 +1,17 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SkillStartupWidget.h"
+#include "SkillPerformanceSection.h"
 
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
 #include "Widgets/Input/SSpinBox.h"
-#include "Layout/WidgetLayoutUtils.h"
+#include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-#define LOCTEXT_NAMESPACE "SSkillStartupWidget"
+#define LOCTEXT_NAMESPACE "SSkillPerformanceSection"
 
-void SSkillStartupWidget::Construct(const FArguments& InArgs)
+void SSkillPerformanceSection::Construct(const FArguments& InArgs)
 {
 	ComboItems.Add(MakeShareable(new FString(LOCTEXT("SkillTypeTabel", "Magic Skill").ToString())));
 	ComboItems.Add(MakeShareable(new FString(LOCTEXT("SkillTypeTabel", "Physical Skill").ToString())));

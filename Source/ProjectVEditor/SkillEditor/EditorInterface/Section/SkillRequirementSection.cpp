@@ -1,16 +1,16 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SkillLimitWidget.h"
+#include "SkillRequirementSection.h"
 
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
-#include "Layout/WidgetLayoutUtils.h"
+#include "Widgets/Input/SSpinBox.h"
+#include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-#define LOCTEXT_NAMESPACE "SSkillInfoWidget"
-
-void SSkillLimitWidget::Construct(const FArguments& InArgs)
+#define LOCTEXT_NAMESPACE "SSkillRequirementSection"
+void SSkillRequirementSection::Construct(const FArguments& InArgs)
 {
 	WeaponTypeItems.Add(MakeShareable(new FString(LOCTEXT("SkillWeaponTypeLabel", "None").ToString())));
 	WeaponTypeItems.Add(MakeShareable(new FString(LOCTEXT("SkillWeaponTypeLabel", "Weapon Type 1").ToString())));

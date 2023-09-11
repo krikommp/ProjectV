@@ -54,7 +54,6 @@ SVerticalBox::FScopedWidgetSlotArguments NextHSlot(TSharedPtr<SHorizontalBox> Ho
 		VBox
 	];
 
-
 	if (!InLabel.IsEmpty())
 	{
 		VBox->AddSlot()

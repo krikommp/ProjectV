@@ -8,10 +8,10 @@
 /**
  * 
  */
-class PROJECTVEDITOR_API SSkillLimitWidget : public SCompoundWidget
+class PROJECTVEDITOR_API SSkillPerformanceSection : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SSkillLimitWidget)
+	SLATE_BEGIN_ARGS(SSkillPerformanceSection)
 		{
 		}
 
@@ -19,9 +19,9 @@ public:
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
-
 private:
-	TSharedPtr<STextBlock> WeaponTypeTitleBlock_1;
-	TSharedPtr<STextBlock> WeaponTypeTitleBlock_2;
-	TArray<TSharedPtr<FString>> WeaponTypeItems;
+	TSharedPtr<STextBlock> ComboBoxTitleBlock;
+	TSharedPtr<STextBlock> AnimBoxTitleBlock;
+	TArray<TSharedPtr<FString>> ComboItems;
+	TArray<TSharedPtr<FString>> AnimationItems;
 };

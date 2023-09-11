@@ -8,10 +8,10 @@
 /**
  * 
  */
-class PROJECTVEDITOR_API SSkillInfoWidget : public SCompoundWidget
+class PROJECTVEDITOR_API SSkillRequirementSection : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SSkillInfoWidget)
+	SLATE_BEGIN_ARGS(SSkillRequirementSection)
 		{
 		}
 
@@ -19,8 +19,8 @@ public:
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
-
 private:
-	TArray<TSharedPtr<FString>> VoiceItems;
-	TSharedPtr<STextBlock> VoiceBoxTitleBlock;
+	TSharedPtr<STextBlock> WeaponTypeTitleBlock_1;
+	TSharedPtr<STextBlock> WeaponTypeTitleBlock_2;
+	TArray<TSharedPtr<FString>> WeaponTypeItems;
 };

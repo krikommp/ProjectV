@@ -8,10 +8,10 @@
 /**
  * 
  */
-class PROJECTVEDITOR_API SSkillDamageWidget : public SCompoundWidget
+class PROJECTVEDITOR_API SSkillDamageSection : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SSkillDamageWidget)
+	SLATE_BEGIN_ARGS(SSkillDamageSection)
 		{
 		}
 
@@ -19,7 +19,6 @@ public:
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
-
 private:
 	TSharedPtr<STextBlock> DamageTypeBlock;
 	TSharedPtr<STextBlock> DamageAttributeBlock;

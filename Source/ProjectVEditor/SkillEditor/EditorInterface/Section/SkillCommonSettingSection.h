@@ -6,12 +6,14 @@
 #include "Widgets/SCompoundWidget.h"
 
 /**
- * 
+ * SSkillCommonSettingSection
+ *
+ * 技能通用设置
  */
-class PROJECTVEDITOR_API SSkillBaseInfoWidget : public SCompoundWidget
+class PROJECTVEDITOR_API SSkillCommonSettingSection : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SSkillBaseInfoWidget)
+	SLATE_BEGIN_ARGS(SSkillCommonSettingSection)
 		{
 		}
 

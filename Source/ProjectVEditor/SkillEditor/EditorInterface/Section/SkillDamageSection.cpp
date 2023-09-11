@@ -1,16 +1,16 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SkillDamageWidget.h"
+#include "SkillDamageSection.h"
 
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
-#include "Layout/WidgetLayoutUtils.h"
+#include "Widgets/Input/SSpinBox.h"
+#include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-#define LOCTEXT_NAMESPACE "SSkillBaseInfoWidget"
-
-void SSkillDamageWidget::Construct(const FArguments& InArgs)
+#define LOCTEXT_NAMESPACE "SSkillDamageSection"
+void SSkillDamageSection::Construct(const FArguments& InArgs)
 {
 	DamageTypeItems.Add(MakeShareable(new FString(LOCTEXT("SkillDamageTypeItemLabel", "None").ToString())));
 	DamageTypeItems.Add(MakeShareable(new FString(LOCTEXT("SkillDamageTypeItemLabel", "HP Damage").ToString())));

@@ -1,18 +1,17 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SkillBaseInfoWidget.h"
+#include "SkillCommonSettingSection.h"
 
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Input/SSpinBox.h"
-#include "Layout/WidgetLayoutUtils.h"
+#include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-#define LOCTEXT_NAMESPACE "SSkillBaseInfoWidget"
-
-void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
+#define LOCTEXT_NAMESPACE "SSkillCommonSettingSection"
+void SSkillCommonSettingSection::Construct(const FArguments& InArgs)
 {
 	TSharedPtr<SVerticalBox> WidgetVerticalBox = SNew(SVerticalBox);
 	TSharedPtr<SHorizontalBox> SkillInfoHBox_1 = SNew(SHorizontalBox);

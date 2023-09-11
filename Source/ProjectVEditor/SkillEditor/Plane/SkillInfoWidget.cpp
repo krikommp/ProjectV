@@ -14,81 +14,104 @@ void SSkillInfoWidget::Construct(const FArguments& InArgs)
 	VoiceItems.Add(MakeShareable(new FString(LOCTEXT("SkillUserVoiceLabel", "Do somethings...").ToString())));
 	VoiceItems.Add(MakeShareable(new FString(LOCTEXT("SkillUserVoiceLabel", "Do somethings...").ToString())));
 
+	auto TitleSlot = [](TSharedPtr<SVerticalBox> VerticalBox, const FText& InLabel)
+	{
+		VerticalBox->AddSlot()
+		           .VAlign(VAlign_Top)
+		           .Padding(10.0f, 10.0f)
+		           .AutoHeight()
+		[
+			SNew(STextBlock)
+			.Font(FAppStyle::Get().GetFontStyle("NormalFontBold"))
+			.Text(InLabel)
+		];
+	};
+
+	auto NextVSlot = [](TSharedPtr<SVerticalBox> VerticalBox, const FText& InLabel)
+	{
+		TSharedRef<SVerticalBox> VBox = SNew(SVerticalBox);
+
+		VerticalBox->AddSlot()
+		           .VAlign(VAlign_Top)
+		           .Padding(10.0f, 10.0f)
+		           .AutoHeight()
+		[
+			VBox
+		];
+
+		VBox->AddSlot()
+		    .VAlign(VAlign_Top)
+		    .AutoHeight()
+		[
+			SNew(STextBlock)
+			.Text(InLabel)
+		];
+
+		SVerticalBox::FScopedWidgetSlotArguments NewSlot = VBox->AddSlot();
+		NewSlot.VAlign(VAlign_Top)
+		       .AutoHeight();
+		return MoveTemp(NewSlot);
+	};
+
+	auto NextHSlot = [](TSharedPtr<SHorizontalBox> HorizontalBox, const FText& InLabel)
+	{
+		TSharedRef<SVerticalBox> VBox = SNew(SVerticalBox);
+		
+		HorizontalBox->AddSlot()
+		.HAlign(HAlign_Fill)
+		.FillWidth(1.0f)
+		[
+			VBox
+		];
+
+		VBox->AddSlot()
+			.VAlign(VAlign_Top)
+			.AutoHeight()
+		[
+			SNew(STextBlock)
+			.Text(InLabel)
+		];
+
+		SVerticalBox::FScopedWidgetSlotArguments NewSlot = VBox->AddSlot();
+		NewSlot.VAlign(VAlign_Top)
+			   .AutoHeight();
+		return MoveTemp(NewSlot);
+	};
+	
+	TSharedPtr<SVerticalBox> WidgetVerticalBox = SNew(SVerticalBox);
+	
+	TitleSlot(WidgetVerticalBox, LOCTEXT("SkillMessageTitle", "Message Settings"));
+	NextVSlot(WidgetVerticalBox, LOCTEXT("SkillUseNameLabel", "(User name)"))
+	[
+		SNew(SEditableTextBox)
+		.HintText(LOCTEXT("SkillUserSpeakLabel", "Type in user speak..."))
+	];
+	NextVSlot(WidgetVerticalBox, LOCTEXT("SkillVoiceLabel", "Voice:"))
+	[
+		SNew(SComboBox<TSharedPtr<FString> >)
+		.OptionsSource(&VoiceItems)
+		.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item)
+			{
+				return SNew(STextBlock).Text(FText::FromString(*Item));
+			})
+		.OnSelectionChanged_Lambda([this](TSharedPtr<FString> InSelection, ESelectInfo::Type InSelectInfo)
+			{
+				if (InSelection.IsValid() && VoiceBoxTitleBlock.IsValid())
+					{
+						VoiceBoxTitleBlock->SetText(FText::FromString(*InSelection));
+					}
+			})
+		[
+			SAssignNew(VoiceBoxTitleBlock, STextBlock).Text(LOCTEXT("SkillVoiceLabel", "None"))
+		]
+	];
+
 	ChildSlot
 	[
 		SNew(SBorder)
 		.BorderImage(new FSlateRoundedBoxBrush(FAppStyle::Get().GetSlateColor("Colors.Header"), 6.0f))
 		[
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			  .VAlign(VAlign_Top)
-			  .Padding(10, 10)
-			  .AutoHeight()
-			[
-				SNew(STextBlock)
-				.Font(FAppStyle::Get().GetFontStyle("NormalFontBold"))
-				.Text(LOCTEXT("SkillMessageTitle", "Message Settings"))
-			]
-			+ SVerticalBox::Slot()
-			  .VAlign(VAlign_Top)
-			  .Padding(10, 10)
-			  .AutoHeight()
-			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				  .VAlign(VAlign_Center)
-				  .FillWidth(0.3f)
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("SkillUseNameLabel", "(User name)"))
-				]
-				+ SHorizontalBox::Slot()
-				  .VAlign(VAlign_Center)
-				  .FillWidth(0.7f)
-				[
-					SNew(SEditableTextBox)
-					.HintText(LOCTEXT("SkillUserSpeakLabel", "Type in user speak..."))
-				]
-			]
-			+ SVerticalBox::Slot()
-			  .VAlign(VAlign_Top)
-			  .Padding(10, 10)
-			  .AutoHeight()
-			[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-				  .VAlign(VAlign_Top)
-				  .AutoHeight()
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("SkillVoiceLabel", "Voice:"))
-				]
-				+ SVerticalBox::Slot()
-				  .VAlign(VAlign_Top)
-				  .AutoHeight()
-				[
-					SNew(SComboBox<TSharedPtr<FString> >)
-					.OptionsSource(&VoiceItems)
-					.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item)
-					                                     {
-						                                     return SNew(STextBlock).Text(FText::FromString(*Item));
-					                                     })
-					.OnSelectionChanged_Lambda(
-						                                     [this](TSharedPtr<FString> InSelection,
-						                                            ESelectInfo::Type InSelectInfo)
-						                                     {
-							                                     if (InSelection.IsValid() && VoiceBoxTitleBlock.
-								                                     IsValid())
-							                                     {
-								                                     VoiceBoxTitleBlock->SetText(
-									                                     FText::FromString(*InSelection));
-							                                     }
-						                                     })
-					[
-						SAssignNew(VoiceBoxTitleBlock, STextBlock).Text(LOCTEXT("SkillVoiceLabel", "None"))
-					]
-				]
-			]
+			WidgetVerticalBox.ToSharedRef()
 		]
 	];
 }

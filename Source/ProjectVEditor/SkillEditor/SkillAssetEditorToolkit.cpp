@@ -1,6 +1,6 @@
 ﻿#include "SkillAssetEditorToolkit.h"
 
-#include "Plane/SkillEditWidget.h"
+#include "EditorInterface/Layout/SkillEditorLayout.h"
 #include "Skill/SkillBaseAsset.h"
 
 #define LOCTEXT_NAMESPACE "FSkillAssetEditorToolkit"
@@ -69,7 +69,7 @@ void FSkillAssetEditorToolkit::Initialize(const EToolkitMode::Type Mode,
 	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->CloseOtherEditors(Asset, this);
 	SkillBaseAsset = Asset;
 
-	SkillEditWidget = SNew(SSkillEditWidget);
+	SkillEditWidget = SNew(SSkillEditorLayout);
 
 	TSharedRef<FTabManager::FLayout> Layout = FTabManager::NewLayout("SkillAssetEditor_Layout")
 		->AddArea(

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class SSkillEditWidget;
+class SSkillEditorLayout;
 
 class FSkillAssetEditorToolkit final : public FAssetEditorToolkit, public FGCObject
 {
@@ -33,5 +33,5 @@ protected:
 
 public:
 	TObjectPtr<USkillBaseAsset> SkillBaseAsset;
-	TSharedPtr<SSkillEditWidget> SkillEditWidget;
+	TSharedPtr<SSkillEditorLayout> SkillEditWidget;
 };

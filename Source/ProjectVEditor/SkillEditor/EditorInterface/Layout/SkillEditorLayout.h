@@ -6,12 +6,14 @@
 #include "Widgets/SCompoundWidget.h"
 
 /**
- * 
+ * SSkillEditorLayout
+ *
+ * 技能编辑器基本布局
  */
-class PROJECTVEDITOR_API SSkillEditWidget : public SCompoundWidget
+class PROJECTVEDITOR_API SSkillEditorLayout : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SSkillEditWidget)
+	SLATE_BEGIN_ARGS(SSkillEditorLayout)
 		{
 		}
 

@@ -1,19 +1,19 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SkillEditWidget.h"
+#include "SkillEditorLayout.h"
 
-#include "SkillBaseInfoWidget.h"
-#include "SkillDamageWidget.h"
-#include "SkillInfoWidget.h"
-#include "SkillLimitWidget.h"
-#include "SkillStartupWidget.h"
+#include "SkillEditor/EditorInterface/SkillBaseInfoWidget.h"
+#include "SkillEditor/EditorInterface/SkillDamageWidget.h"
+#include "SkillEditor/EditorInterface/SkillInfoWidget.h"
+#include "SkillEditor/EditorInterface/SkillLimitWidget.h"
+#include "SkillEditor/EditorInterface/SkillStartupWidget.h"
 #include "SlateOptMacros.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-#define LOCTEXT_NAMESPACE "SSkillEditWidget"
+#define LOCTEXT_NAMESPACE "SSkillEditorLayout"
 
-void SSkillEditWidget::Construct(const FArguments& InArgs)
+void SSkillEditorLayout::Construct(const FArguments& InArgs)
 {
 	ChildSlot
 	[

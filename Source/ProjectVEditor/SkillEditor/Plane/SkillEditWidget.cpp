@@ -4,6 +4,7 @@
 #include "SkillEditWidget.h"
 
 #include "SkillBaseInfoWidget.h"
+#include "SkillDamageWidget.h"
 #include "SkillInfoWidget.h"
 #include "SkillLimitWidget.h"
 #include "SkillStartupWidget.h"
@@ -18,9 +19,9 @@ void SSkillEditWidget::Construct(const FArguments& InArgs)
 	[
 		SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
-		  .HAlign(HAlign_Center)
+		  .HAlign(HAlign_Fill)
 		  .Padding(FMargin(10.0f, 10.0f))
-		  .AutoWidth()
+		  .FillWidth(1.0f)
 		[
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
@@ -50,6 +51,20 @@ void SSkillEditWidget::Construct(const FArguments& InArgs)
 			  .VAlign(VAlign_Top)
 			[
 				SNew(SSkillLimitWidget)
+			]
+		]
+		+ SHorizontalBox::Slot()
+		  .HAlign(HAlign_Fill)
+		  .Padding(FMargin(10.0f, 10.0f))
+		  .FillWidth(1.0f)
+		[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			  .AutoHeight()
+			  .Padding(0.0f, 10.0f)
+			  .VAlign(VAlign_Top)
+			[
+				SNew(SSkillDamageWidget)
 			]
 		]
 	];

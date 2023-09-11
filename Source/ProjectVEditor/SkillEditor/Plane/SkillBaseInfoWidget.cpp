@@ -55,17 +55,19 @@ void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
 		return MoveTemp(NewSlot);
 	};
 
-	auto NextHSlot = [](TSharedPtr<SHorizontalBox> HorizontalBox, const FText& InLabel = FText::GetEmpty())
+	auto NextHSlot = [](TSharedPtr<SHorizontalBox> HorizontalBox, const FText& InLabel = FText::GetEmpty(),
+	                    EHorizontalAlignment HAlign = HAlign_Fill)
 	{
 		TSharedRef<SVerticalBox> VBox = SNew(SVerticalBox);
 
 		HorizontalBox->AddSlot()
-		             .HAlign(HAlign_Fill)
-		             .AutoWidth()
+		             .HAlign(HAlign)
+		             .FillWidth(1.0f)
 		             .Padding(HorizontalBox->NumSlots() == 0 ? 0.0f : 10.0f, 0.0f)
 		[
 			VBox
 		];
+
 
 		if (!InLabel.IsEmpty())
 		{
@@ -92,7 +94,7 @@ void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
 	TitleSlot(WidgetVerticalBox, LOCTEXT("BaseInfoTitle", "Base Settings"));
 	NextHSlot(SkillInfoHBox_1, LOCTEXT("SkillName", "Name:"))
 	[
-		SNew(SBox).MinDesiredHeight(20.f).MinDesiredWidth(400.f)
+		SNew(SBox)
 		[
 			SNew(SEditableTextBox)
 			.HintText(LOCTEXT("SkillNameEditBox", "Type in skill name..."))
@@ -100,13 +102,13 @@ void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
 	];
 	NextHSlot(SkillInfoHBox_1, LOCTEXT("SkillIcon", "Icon:"))
 	[
-		SNew(SBox).MinDesiredHeight(20.f).MinDesiredWidth(400.f)
+		SNew(SBox)
 		[
 			SNew(SEditableTextBox)
 			.HintText(LOCTEXT("SkillIconEditBox", "Type in skill icon..."))
 		]
 	];
-	NextHSlot(SkillInfoHBox_1)
+	NextHSlot(SkillInfoHBox_1, FText::GetEmpty(), HAlign_Left)
 	[
 		SNew(SBox).HeightOverride(64.f).WidthOverride(64.f)
 		[
@@ -118,7 +120,7 @@ void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
 	];
 	NextHSlot(SkillInfoHBox_2, LOCTEXT("SkillAPCost", "AP Cost:"))
 	[
-		SNew(SBox).MinDesiredHeight(20.f).MinDesiredWidth(400.f)
+		SNew(SBox)
 		[
 			SNew(SSpinBox<float>)
 				.MinValue(0.0f)
@@ -131,7 +133,7 @@ void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
 	];
 	NextHSlot(SkillInfoHBox_2, LOCTEXT("SkillHPCost", "HP Cost:"))
 	[
-		SNew(SBox).MinDesiredHeight(20.f).MinDesiredWidth(400.f)
+		SNew(SBox)
 		[
 			SNew(SSpinBox<float>)
 				.MinValue(0.0f)
@@ -144,7 +146,7 @@ void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
 	];
 	NextHSlot(SkillInfoHBox_3, LOCTEXT("SkillVisibleRange", "Visible Range:"))
 	[
-		SNew(SBox).MinDesiredHeight(20.f).MinDesiredWidth(400.f)
+		SNew(SBox)
 		[
 			SNew(SSpinBox<float>)
 			.MinValue(0.0f)
@@ -157,7 +159,7 @@ void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
 	];
 	NextHSlot(SkillInfoHBox_3, LOCTEXT("SkillEffectRange", "Effect Range:"))
 	[
-		SNew(SBox).MinDesiredHeight(20.f).MinDesiredWidth(400.f)
+		SNew(SBox)
 		[
 			SNew(SSpinBox<float>)
 				.MinValue(0.0f)
@@ -174,7 +176,7 @@ void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
 	];
 	NextVSlot(WidgetVerticalBox, LOCTEXT("SkillDescription", "Description:"))
 	[
-		SNew(SBox).MinDesiredHeight(60.f).MinDesiredWidth(600.f)
+		SNew(SBox)
 		[
 			SNew(SMultiLineEditableTextBox)
 			.HintText(LOCTEXT("SkillDescriptionEditBox", "Type in skill description..."))
@@ -188,7 +190,6 @@ void SSkillBaseInfoWidget::Construct(const FArguments& InArgs)
 	[
 		SkillInfoHBox_3.ToSharedRef()
 	];
-
 
 	ChildSlot
 	[

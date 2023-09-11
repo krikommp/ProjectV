@@ -27,50 +27,59 @@ void SSkillInfoWidget::Construct(const FArguments& InArgs)
 		];
 	};
 
-	auto NextVSlot = [](TSharedPtr<SVerticalBox> VerticalBox, const FText& InLabel)
+	auto NextVSlot = [](TSharedPtr<SVerticalBox> VerticalBox, const FText& InLabel = FText::GetEmpty())
 	{
 		TSharedRef<SVerticalBox> VBox = SNew(SVerticalBox);
 
 		VerticalBox->AddSlot()
-		           .VAlign(VAlign_Top)
-		           .Padding(10.0f, 10.0f)
-		           .AutoHeight()
+				   .VAlign(VAlign_Top)
+				   .Padding(10.0f, 10.0f)
+				   .AutoHeight()
 		[
 			VBox
 		];
 
-		VBox->AddSlot()
-		    .VAlign(VAlign_Top)
-		    .AutoHeight()
-		[
-			SNew(STextBlock)
-			.Text(InLabel)
-		];
+		if (!InLabel.IsEmpty())
+		{
+			VBox->AddSlot()
+				.VAlign(VAlign_Top)
+				.AutoHeight()
+			[
+				SNew(STextBlock)
+				.Text(InLabel)
+			];
+		}
 
 		SVerticalBox::FScopedWidgetSlotArguments NewSlot = VBox->AddSlot();
 		NewSlot.VAlign(VAlign_Top)
-		       .AutoHeight();
+			   .AutoHeight();
 		return MoveTemp(NewSlot);
 	};
 
-	auto NextHSlot = [](TSharedPtr<SHorizontalBox> HorizontalBox, const FText& InLabel)
+	auto NextHSlot = [](TSharedPtr<SHorizontalBox> HorizontalBox, const FText& InLabel = FText::GetEmpty(),
+						EHorizontalAlignment HAlign = HAlign_Fill)
 	{
 		TSharedRef<SVerticalBox> VBox = SNew(SVerticalBox);
-		
+
 		HorizontalBox->AddSlot()
-		.HAlign(HAlign_Fill)
-		.FillWidth(1.0f)
+					 .HAlign(HAlign)
+					 .FillWidth(1.0f)
+					 .Padding(HorizontalBox->NumSlots() == 0 ? 0.0f : 10.0f, 0.0f)
 		[
 			VBox
 		];
 
-		VBox->AddSlot()
-			.VAlign(VAlign_Top)
-			.AutoHeight()
-		[
-			SNew(STextBlock)
-			.Text(InLabel)
-		];
+
+		if (!InLabel.IsEmpty())
+		{
+			VBox->AddSlot()
+				.VAlign(VAlign_Top)
+				.AutoHeight()
+			[
+				SNew(STextBlock)
+				.Text(InLabel)
+			];
+		}
 
 		SVerticalBox::FScopedWidgetSlotArguments NewSlot = VBox->AddSlot();
 		NewSlot.VAlign(VAlign_Top)

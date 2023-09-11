@@ -8,10 +8,10 @@
 /**
  * 
  */
-class PROJECTVEDITOR_API SkillDamageWidget : public SCompoundWidget
+class PROJECTVEDITOR_API SSkillDamageWidget : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SkillDamageWidget)
+	SLATE_BEGIN_ARGS(SSkillDamageWidget)
 		{
 		}
 
@@ -19,4 +19,12 @@ public:
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
+
+private:
+	TSharedPtr<STextBlock> DamageTypeBlock;
+	TSharedPtr<STextBlock> DamageAttributeBlock;
+	TSharedPtr<STextBlock> DamageCriticalBlock;
+	TArray<TSharedPtr<FString>> DamageTypeItems;
+	TArray<TSharedPtr<FString>> DamageAttributeItems;
+	TArray<TSharedPtr<FString>> DamageCriticalItems;
 };

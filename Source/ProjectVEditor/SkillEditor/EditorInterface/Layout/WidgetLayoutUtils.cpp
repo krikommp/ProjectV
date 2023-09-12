@@ -70,3 +70,50 @@ SVerticalBox::FScopedWidgetSlotArguments NextHSlot(TSharedPtr<SHorizontalBox> Ho
 		   .AutoHeight();
 	return MoveTemp(NewSlot);
 }
+
+SHorizontalBox::FScopedWidgetSlotArguments NextVCheckSlot(TSharedPtr<SVerticalBox> VerticalBox,
+	const FText& InLabel)
+{
+	TSharedRef<SHorizontalBox> HBox = SNew(SHorizontalBox);
+	TSharedRef<SHorizontalBox> HContentBox = SNew(SHorizontalBox);
+	HContentBox->SetEnabled(false);
+
+	HContentBox->AddSlot()
+	.HAlign(HAlign_Left)
+	.VAlign(VAlign_Center)
+	[
+		SNew(STextBlock)
+		.Text(InLabel)
+	];
+
+	HBox->AddSlot()
+	.HAlign(HAlign_Left)
+	.Padding(12.f)
+	.AutoWidth()
+	[
+		SNew(SCheckBox)
+		.IsChecked_Lambda([HContentBox] { return HContentBox->IsEnabled() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; })
+		.OnCheckStateChanged_Lambda([HContentBox](ECheckBoxState NewState) { HContentBox->SetEnabled(NewState == ECheckBoxState::Checked); })
+	];
+	HBox->AddSlot()
+	.HAlign(HAlign_Fill)
+	.Padding(24.f, 16.f, 12.f, 16.f)
+	.AutoWidth()
+	[
+		HContentBox
+	];
+
+	VerticalBox->AddSlot()
+	.VAlign(VAlign_Top)
+	.AutoHeight()
+	[
+		HBox
+	];
+
+	SHorizontalBox::FScopedWidgetSlotArguments NewSlot = HContentBox->AddSlot();
+	NewSlot.HAlign(HAlign_Center)
+	.VAlign(VAlign_Top)
+	.Padding(24.f, 16.f, 12.f, 16.f)
+	.AutoWidth();
+	return MoveTemp(NewSlot);
+}

@@ -104,6 +104,7 @@ void SSkillCommonSettingSection::Construct(const FArguments& InArgs)
 	NextVSlot(WidgetVerticalBox, LOCTEXT("SkillDescription", "Description:"))
 	[
 		SNew(SBox)
+		.HeightOverride(100.0f)
 		[
 			SNew(SMultiLineEditableTextBox)
 			.HintText(LOCTEXT("SkillDescriptionEditBox", "Type in skill description..."))

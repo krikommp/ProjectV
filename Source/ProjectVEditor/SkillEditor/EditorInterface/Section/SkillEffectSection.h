@@ -6,6 +6,7 @@
 #include "Widgets/SCompoundWidget.h"
 
 class SSkillEffectSection;
+class SSkillEffectWindow;
 namespace SkillEffect_Internal
 {
 	class FRowItemInfo
@@ -46,6 +47,7 @@ class PROJECTVEDITOR_API SSkillEffectSection : public SCompoundWidget
 {
 	using ItemType = SkillEffect_Internal::FRowItemInfo;
 	using ListViewType = SListView<TSharedPtr<ItemType>>;
+	using WindowType = SSkillEffectWindow;
 public:
 	SLATE_BEGIN_ARGS(SSkillEffectSection)
 		{
@@ -55,8 +57,10 @@ public:
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
+	~SSkillEffectSection();
 
 	TSharedRef<ITableRow> GenerateRow(TSharedPtr<ItemType> InItem, const TSharedRef<STableViewBase>& OwnerTable);
+	void OnItemClicked(TSharedPtr<ItemType> InItem);
 private:
 	TArray< TSharedPtr<ItemType> > Items;
 	TSharedPtr< ListViewType > ListWidget;

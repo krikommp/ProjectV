@@ -3,39 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SCommonEditorViewportToolbarBase.h"
-#include "SEditorViewport.h"
 #include "Widgets/SCompoundWidget.h"
 
 /**
  * 
  */
-class PROJECTVEDITOR_API SkillEffectWindow : public SEditorViewport, public ICommonEditorViewportToolbarInfoProvider
+class PROJECTVEDITOR_API SSkillEffectWindow : public SWindow
 {
 public:
-	SLATE_BEGIN_ARGS(SkillEffectWindow)
+	SLATE_BEGIN_ARGS(SSkillEffectWindow)
 		{
 		}
-
+	SLATE_ATTRIBUTE( TSharedPtr<SWindow>, ParentWindow )
 	SLATE_END_ARGS()
 
+	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
-	SkillEffectWindow();
-	virtual ~SkillEffectWindow() override;
-
-	// ICommonEditorViewportToolbarInfoProvider interface
-	virtual TSharedRef<class SEditorViewport> GetViewportWidget() override;
-	virtual TSharedPtr<FExtender> GetExtenders() const override;
-	virtual void OnFloatingButtonClicked() override;
-	// End of ICommonEditorViewportToolbarInfoProvider interface
-
-	// SEditorViewport interface
-	virtual TSharedPtr<SWidget> MakeViewportToolbar() override;
-	// End of SEditorViewport interface
-
-	protected:
-	/** SEditorViewport interface */
-	virtual TSharedRef<FEditorViewportClient> MakeEditorViewportClient() override;
-
-	TSharedPtr<FPreviewScene> PreviewScene;
+protected:
+	TWeakPtr<SWindow> ParentWindowPtr;
 };

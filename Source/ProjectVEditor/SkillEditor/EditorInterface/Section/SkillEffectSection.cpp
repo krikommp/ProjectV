@@ -6,6 +6,7 @@
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
 #include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
+#include "SkillEditor/EditorInterface/Window/SkillEffectWindow.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillEffectSection"
@@ -67,10 +68,10 @@ namespace SkillEffect_Internal
 void SSkillEffectSection::Construct(const FArguments& InArgs)
 {
 	using ThisType = TDecay<decltype(*this)>::Type;
-	
+
 	TSharedPtr<SVerticalBox> WidgetVerticalBox = SNew(SVerticalBox);
 	TSharedPtr<SHorizontalBox> SkillEffectHBox_1 = SNew(SHorizontalBox);
-	
+
 	Items.Add(MakeShareable(new SkillEffect_Internal::FRowItemInfo(TEXT("附加状态"), TEXT("普通攻击 100%"))));
 	Items.Add(MakeShareable(new SkillEffect_Internal::FRowItemInfo()));
 	Items.Add(MakeShareable(new SkillEffect_Internal::FRowItemInfo()));
@@ -84,22 +85,23 @@ void SSkillEffectSection::Construct(const FArguments& InArgs)
 	.OnGenerateRow(this, &ThisType::GenerateRow)
 	.ItemHeight(22.0f)
 	.SelectionMode(ESelectionMode::SingleToggle)
-	.ListViewStyle( FAppStyle::Get(), "SimpleListView" )
+	.ListViewStyle(FAppStyle::Get(), "SimpleListView")
+	.OnMouseButtonDoubleClick(this, &ThisType::OnItemClicked)
 	.HeaderRow
-	(
-		SNew(SHeaderRow)
-		+ SHeaderRow::Column(ViewRows::TypeNameColumn)
-		.DefaultLabel(LOCTEXT("SkillEffectTypeNameLabel", "Type"))
+	                                    (
+		                                    SNew(SHeaderRow)
+		                                    + SHeaderRow::Column(ViewRows::TypeNameColumn)
+		                                    .DefaultLabel(LOCTEXT("SkillEffectTypeNameLabel", "Type"))
 
-		+ SHeaderRow::Column(ViewRows::DescriptionColumn)
-		.DefaultLabel(LOCTEXT("SkillEffectDescriptionLabel", "Description"))
-	);
+		                                    + SHeaderRow::Column(ViewRows::DescriptionColumn)
+		                                    .DefaultLabel(LOCTEXT("SkillEffectDescriptionLabel", "Description"))
+	                                    );
 
 	NextHSlot(SkillEffectHBox_1)
 	[
 		SNew(SButton)
 		.ButtonStyle(FAppStyle::Get(), "Button")
-		.TextStyle( FAppStyle::Get(), "DialogButtonText" )
+		.TextStyle(FAppStyle::Get(), "DialogButtonText")
 		.HAlign(HAlign_Center)
 		.VAlign(VAlign_Center)
 		.Text(LOCTEXT("SkillEffectAppandButtonLabel", "Append a new effect"))
@@ -109,7 +111,7 @@ void SSkillEffectSection::Construct(const FArguments& InArgs)
 	[
 		SNew(SButton)
 		.ButtonStyle(FAppStyle::Get(), "Button")
-		.TextStyle( FAppStyle::Get(), "DialogButtonText" )
+		.TextStyle(FAppStyle::Get(), "DialogButtonText")
 		.HAlign(HAlign_Center)
 		.VAlign(VAlign_Center)
 		.Text(LOCTEXT("SkillEffectDeleteButtonLabel", "Delete selected effect"))
@@ -135,8 +137,12 @@ void SSkillEffectSection::Construct(const FArguments& InArgs)
 	];
 }
 
+SSkillEffectSection::~SSkillEffectSection()
+{
+}
+
 TSharedRef<ITableRow> SSkillEffectSection::GenerateRow(TSharedPtr<ItemType> InItem,
-	const TSharedRef<STableViewBase>& OwnerTable)
+                                                       const TSharedRef<STableViewBase>& OwnerTable)
 {
 	check(InItem.IsValid());
 
@@ -145,6 +151,21 @@ TSharedRef<ITableRow> SSkillEffectSection::GenerateRow(TSharedPtr<ItemType> InIt
 	return SNew(SRowWidget, OwnerTable)
 		.Item(InItem)
 		.OwnerWidget(SharedThis(this));
+}
+
+void SSkillEffectSection::OnItemClicked(TSharedPtr<ItemType> InItem)
+{
+	TSharedPtr<SWindow> RootWindow = FGlobalTabmanager::Get()->GetRootWindow();
+	TSharedPtr<WindowType> Window = SNew(WindowType)
+		.ParentWindow(RootWindow);
+	
+	if (RootWindow.IsValid())
+	{
+		FSlateApplication::Get().AddWindowAsNativeChild(Window.ToSharedRef(), RootWindow.ToSharedRef());
+	}else
+	{
+		FSlateApplication::Get().AddWindow(Window.ToSharedRef());
+	}
 }
 #undef LOCTEXT_NAMESPACE
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

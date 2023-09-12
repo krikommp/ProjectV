@@ -7,6 +7,7 @@
 #include "SkillEditor/EditorInterface/Section/SkillCommonSettingSection.h"
 #include "SkillEditor/EditorInterface/Section/SkillDamageSection.h"
 #include "SkillEditor/EditorInterface/Section/SkillEffectSection.h"
+#include "SkillEditor/EditorInterface/Section/SkillNotesSection.h"
 #include "SkillEditor/EditorInterface/Section/SkillPerformanceSection.h"
 #include "SkillEditor/EditorInterface/Section/SkillRequirementSection.h"
 #include "SkillEditor/EditorInterface/Section/SkillSpeechSection.h"
@@ -77,6 +78,13 @@ void SSkillEditorLayout::Construct(const FArguments& InArgs)
 				  .VAlign(VAlign_Top)
 				[
 					SNew(SSkillEffectSection)
+				]
+				+ SVerticalBox::Slot()
+				  .AutoHeight()
+				  .Padding(0.0f, 10.0f)
+				  .VAlign(VAlign_Top)
+				[
+					SNew(SSkillNotesSection)
 				]
 			]
 		]

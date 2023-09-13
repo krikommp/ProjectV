@@ -5,6 +5,7 @@
 
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
+#include "Skill/SkillBaseAsset.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Input/SSpinBox.h"
 #include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
@@ -13,8 +14,10 @@
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillCommonSettingSection"
 
-void SSkillCommonSettingSection::Construct(const FArguments& InArgs)
+void SSkillCommonSettingSection::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillBaseAsset> InSkillAsset)
 {
+	SkillAsset = InSkillAsset;
+	
 	TSharedPtr<SVerticalBox> WidgetVerticalBox = SNew(SVerticalBox);
 	TSharedPtr<SHorizontalBox> SkillInfoHBox_1 = SNew(SHorizontalBox);
 	TSharedPtr<SHorizontalBox> SkillInfoHBox_2 = SNew(SHorizontalBox);
@@ -50,7 +53,7 @@ void SSkillCommonSettingSection::Construct(const FArguments& InArgs)
 				{
 					using WindowType = SSkillIconWindow;
 					TSharedPtr<SWindow> RootWindow = FGlobalTabmanager::Get()->GetRootWindow();
-					TSharedPtr<WindowType> Window = SNew(WindowType);
+					TSharedPtr<WindowType> Window = SNew(WindowType, SkillAsset);
 					if (RootWindow.IsValid())
 					{
 						FSlateApplication::Get().AddWindowAsNativeChild(Window.ToSharedRef(), RootWindow.ToSharedRef());
@@ -64,7 +67,18 @@ void SSkillCommonSettingSection::Construct(const FArguments& InArgs)
 				.Content()
 				[
 					SNew(SImage)
-					.Image(FCoreStyle::Get().GetBrush("Checkerboard"))
+					.Image_Lambda([this]()
+					{
+						if (SkillAsset->Icon == nullptr)
+							return FCoreStyle::Get().GetBrush("Checkerboard");
+						else
+						{
+							FSlateBrush* PreviewBrush = new FSlateBrush;
+							PreviewBrush->SetResourceObject(SkillAsset->Icon);
+							PreviewBrush->DrawAs = ESlateBrushDrawType::Image;
+							return const_cast<const FSlateBrush*>(PreviewBrush);
+						}
+					})
 				]
 			]
 		]

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
+class USkillBaseAsset;
 /**
  * 
  */
@@ -18,8 +19,11 @@ public:
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs);
+	void Construct(const FArguments& InArgs, TWeakObjectPtr<USkillBaseAsset> InSkillAsset);
 
 protected:
-	FReply OnImageClicked(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent);
+	FReply OnImageClicked(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, const int32 TexIndex);
+
+	TWeakObjectPtr<USkillBaseAsset> SkillAsset;
+	TArray<TObjectPtr<UTexture2D>> IconTexArray;
 };

@@ -69,7 +69,7 @@ void FSkillAssetEditorToolkit::Initialize(const EToolkitMode::Type Mode,
 	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->CloseOtherEditors(Asset, this);
 	SkillBaseAsset = Asset;
 
-	SkillEditWidget = SNew(SSkillEditorLayout);
+	SkillEditWidget = SNew(SSkillEditorLayout, SkillBaseAsset);
 
 	TSharedRef<FTabManager::FLayout> Layout = FTabManager::NewLayout("SkillAssetEditor_Layout")
 		->AddArea(

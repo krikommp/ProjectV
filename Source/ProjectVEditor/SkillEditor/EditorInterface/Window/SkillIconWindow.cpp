@@ -5,17 +5,19 @@
 
 #include "SlateOptMacros.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "Skill/SkillBaseAsset.h"
 #include "Widgets/Layout/SGridPanel.h"
 #include "Widgets/Layout/SScrollBox.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillIconWindow"
 
-void SSkillIconWindow::Construct(const FArguments& InArgs)
+void SSkillIconWindow::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillBaseAsset> InSkillAsset)
 {
 	using ThisType = TDecay<decltype(*this)>::Type;
-	TArray<TObjectPtr<UTexture2D>> IconTexArray;
-
+	
+	SkillAsset = InSkillAsset;
+	
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<
 		FAssetRegistryModule>("AssetRegistry");
 	FARFilter Filter;
@@ -43,7 +45,7 @@ void SSkillIconWindow::Construct(const FArguments& InArgs)
 
 		TSharedRef<SImage> ImageWidget = SNew(SImage)
 			.Image(PreviewBrush)
-			.OnMouseButtonDown_Raw(this, &ThisType::OnImageClicked);
+			.OnMouseButtonDown_Raw(this, &ThisType::OnImageClicked, i);
 
 		const int32 RowIndex = i / RowCount;
 		const int32 ColumnIndex = i % Cols;
@@ -81,8 +83,13 @@ void SSkillIconWindow::Construct(const FArguments& InArgs)
 		]);
 }
 
-FReply SSkillIconWindow::OnImageClicked(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SSkillIconWindow::OnImageClicked(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent, const int32 TexIndex)
 {
+	if (SkillAsset.IsValid() && IconTexArray.IsValidIndex(TexIndex))
+	{
+		SkillAsset->Icon = IconTexArray[TexIndex];
+	}
+	
 	RequestDestroyWindow();
 	return FReply::Handled();
 }

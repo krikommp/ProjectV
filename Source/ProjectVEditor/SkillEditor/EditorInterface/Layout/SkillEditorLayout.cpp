@@ -16,8 +16,9 @@
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillEditorLayout"
 
-void SSkillEditorLayout::Construct(const FArguments& InArgs)
+void SSkillEditorLayout::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillBaseAsset> InSkillAsset)
 {
+	SkillAsset = InSkillAsset;
 	ChildSlot
 	[
 		SNew(SScrollBox)
@@ -35,7 +36,7 @@ void SSkillEditorLayout::Construct(const FArguments& InArgs)
 				  .Padding(0.0f, 10.0f)
 				  .VAlign(VAlign_Top)
 				[
-					SNew(SSkillCommonSettingSection)
+					SNew(SSkillCommonSettingSection, SkillAsset)
 				]
 				+ SVerticalBox::Slot()
 				  .AutoHeight()

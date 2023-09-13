@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
+class USkillBaseAsset;
 /**
  * SSkillCommonSettingSection
  *
@@ -20,5 +21,7 @@ public:
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs);
+	void Construct(const FArguments& InArgs, TWeakObjectPtr<USkillBaseAsset> InSkillAsset);
+protected:
+	TWeakObjectPtr<USkillBaseAsset> SkillAsset;
 };

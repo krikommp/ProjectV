@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
+class USkillBaseAsset;
 class SSkillEffectSection;
 class SSkillEffectWindow;
 namespace SkillEffect_Internal
@@ -61,6 +62,8 @@ public:
 
 	TSharedRef<ITableRow> GenerateRow(TSharedPtr<ItemType> InItem, const TSharedRef<STableViewBase>& OwnerTable);
 	void OnItemClicked(TSharedPtr<ItemType> InItem);
+protected:
+	TWeakObjectPtr<USkillBaseAsset> SkillAsset;
 private:
 	TArray< TSharedPtr<ItemType> > Items;
 	TSharedPtr< ListViewType > ListWidget;

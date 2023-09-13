@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
-enum class ESkillEffectWindowType
+enum class ESkillEffectHeaderTitle
 {
 	Recover,
 	State,
@@ -24,11 +24,12 @@ public:
 		{
 		}
 	SLATE_ATTRIBUTE( TSharedPtr<SWindow>, ParentWindow )
+	SLATE_ATTRIBUTE( ESkillEffectHeaderTitle, HeaderTitle )
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
 protected:
 	TWeakPtr<SWindow> ParentWindowPtr;
-	TAttribute<ESkillEffectWindowType> WindowType;
+	TAttribute<ESkillEffectHeaderTitle> HeaderTitle;
 };

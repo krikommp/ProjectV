@@ -8,9 +8,11 @@
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Input/SSpinBox.h"
 #include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
+#include "SkillEditor/EditorInterface/Window/SkillIconWindow.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillCommonSettingSection"
+
 void SSkillCommonSettingSection::Construct(const FArguments& InArgs)
 {
 	TSharedPtr<SVerticalBox> WidgetVerticalBox = SNew(SVerticalBox);
@@ -37,12 +39,34 @@ void SSkillCommonSettingSection::Construct(const FArguments& InArgs)
 	];
 	NextHSlot(SkillInfoHBox_1, FText::GetEmpty(), HAlign_Left)
 	[
-		SNew(SBox).HeightOverride(64.f).WidthOverride(64.f)
+		SNew(SBox).HeightOverride(96.f).WidthOverride(96.f)
 		[
 			SNew(SBorder)
-			.BorderImage(
-				new FSlateRoundedBoxBrush(FAppStyle::Get().GetSlateColor("Colors.AccentBlue"),
-				                          6.0f))
+			.BorderImage(new FSlateRoundedBoxBrush(FAppStyle::Get().GetSlateColor("Colors.Panel"), 6.0f))
+			[
+				SNew(SButton)
+				.ButtonStyle(FAppStyle::Get(), "SimpleButton")
+				.OnClicked_Lambda([=]()
+				{
+					using WindowType = SSkillIconWindow;
+					TSharedPtr<SWindow> RootWindow = FGlobalTabmanager::Get()->GetRootWindow();
+					TSharedPtr<WindowType> Window = SNew(WindowType);
+					if (RootWindow.IsValid())
+					{
+						FSlateApplication::Get().AddWindowAsNativeChild(Window.ToSharedRef(), RootWindow.ToSharedRef());
+					}
+					else
+					{
+						FSlateApplication::Get().AddWindow(Window.ToSharedRef());
+					}
+					return FReply::Handled();
+				})
+				.Content()
+				[
+					SNew(SImage)
+					.Image(FCoreStyle::Get().GetBrush("Checkerboard"))
+				]
+			]
 		]
 	];
 	NextHSlot(SkillInfoHBox_2, LOCTEXT("SkillAPCost", "AP Cost:"))

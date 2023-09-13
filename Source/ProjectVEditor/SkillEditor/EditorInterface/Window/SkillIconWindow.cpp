@@ -31,14 +31,9 @@ void SSkillIconWindow::Construct(const FArguments& InArgs)
 		IconTexArray.Add(LoadedAsset);
 	}
 
-	TSharedRef<SGridPanel> GridPanel = SNew(SGridPanel)
-		.FillColumn(0, 0.0f)
-		.FillColumn(1, 0.0f)
-		.FillColumn(2, 0.0f)
-		.FillColumn(3, 0.0f)
-		.FillColumn(4, 0.0f)
-		.FillColumn(5, 0.0f);
+	TSharedRef<SGridPanel> GridPanel = SNew(SGridPanel);
 
+	constexpr int32 RowCount = 6, Cols = 6;
 	for (int32 i = 0; i < IconTexArray.Num(); i++)
 	{
 		FSlateBrush* PreviewBrush = new FSlateBrush;
@@ -50,8 +45,8 @@ void SSkillIconWindow::Construct(const FArguments& InArgs)
 			.Image(PreviewBrush)
 			.OnMouseButtonDown_Raw(this, &ThisType::OnImageClicked);
 
-		int32 RowIndex = i / 6;
-		int32 ColumnIndex = i % 6;
+		const int32 RowIndex = i / RowCount;
+		const int32 ColumnIndex = i % Cols;
 
 		GridPanel->AddSlot(ColumnIndex, RowIndex)
 		         .Padding(4)

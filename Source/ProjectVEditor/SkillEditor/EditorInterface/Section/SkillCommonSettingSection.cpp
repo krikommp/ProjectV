@@ -30,6 +30,8 @@ void SSkillCommonSettingSection::Construct(const FArguments& InArgs, TWeakObject
 		[
 			SNew(SEditableTextBox)
 			.HintText(LOCTEXT("SkillNameEditBox", "Type in skill name..."))
+			.Text_Lambda([this](){ return SkillAsset->Name; })
+			.OnTextChanged_Lambda([this](const FText& NewText){ SkillAsset->Name = NewText; })
 		]
 	];
 	NextHSlot(SkillInfoHBox_1, LOCTEXT("SkillIcon", "Icon:"))
@@ -37,7 +39,9 @@ void SSkillCommonSettingSection::Construct(const FArguments& InArgs, TWeakObject
 		SNew(SBox)
 		[
 			SNew(SEditableTextBox)
+			.IsEnabled(false)
 			.HintText(LOCTEXT("SkillIconEditBox", "Type in skill icon..."))
+			.Text_Lambda([this](){ return FText::FromString(SkillAsset->Icon->GetName()); })
 		]
 	];
 	NextHSlot(SkillInfoHBox_1, FText::GetEmpty(), HAlign_Left)
@@ -146,6 +150,8 @@ void SSkillCommonSettingSection::Construct(const FArguments& InArgs, TWeakObject
 		[
 			SNew(SMultiLineEditableTextBox)
 			.HintText(LOCTEXT("SkillDescriptionEditBox", "Type in skill description..."))
+			.Text_Lambda([this]() { return SkillAsset->Description; })
+			.OnTextChanged_Lambda([this](const FText& NewText) { SkillAsset->Description = NewText; })
 		]
 	];
 	NextVSlot(WidgetVerticalBox)

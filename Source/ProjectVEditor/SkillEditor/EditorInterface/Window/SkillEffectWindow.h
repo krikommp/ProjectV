@@ -32,4 +32,5 @@ public:
 protected:
 	TWeakPtr<SWindow> ParentWindowPtr;
 	TAttribute<ESkillEffectHeaderTitle> HeaderTitle;
+	TArray<TSharedPtr<SHorizontalBox>> RecoverContentBoxArray;
 };

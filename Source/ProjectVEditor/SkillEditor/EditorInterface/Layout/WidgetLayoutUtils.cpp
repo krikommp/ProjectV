@@ -71,12 +71,16 @@ SVerticalBox::FScopedWidgetSlotArguments NextHSlot(TSharedPtr<SHorizontalBox> Ho
 	return MoveTemp(NewSlot);
 }
 
-SHorizontalBox::FScopedWidgetSlotArguments NextVCheckSlot(TSharedPtr<SVerticalBox> VerticalBox,
-	const FText& InLabel)
+SHorizontalBox::FScopedWidgetSlotArguments NextVCheckSlot(
+	TSharedPtr<SVerticalBox> VerticalBox,
+	TArray<TSharedPtr<SHorizontalBox>>& ContentBoxArray,
+	const FText& InLabel
+	)
 {
 	TSharedRef<SHorizontalBox> HBox = SNew(SHorizontalBox);
 	TSharedRef<SHorizontalBox> HContentBox = SNew(SHorizontalBox);
 	HContentBox->SetEnabled(false);
+	ContentBoxArray.Add(HContentBox);
 
 	HContentBox->AddSlot()
 	.HAlign(HAlign_Left)
@@ -93,7 +97,18 @@ SHorizontalBox::FScopedWidgetSlotArguments NextVCheckSlot(TSharedPtr<SVerticalBo
 	[
 		SNew(SCheckBox)
 		.IsChecked_Lambda([HContentBox] { return HContentBox->IsEnabled() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; })
-		.OnCheckStateChanged_Lambda([HContentBox](ECheckBoxState NewState) { HContentBox->SetEnabled(NewState == ECheckBoxState::Checked); })
+		.OnCheckStateChanged_Lambda([HContentBox, &ContentBoxArray](ECheckBoxState NewState)
+		{
+			if (NewState == ECheckBoxState::Checked)
+			{
+				for (auto& Box : ContentBoxArray)
+				{
+					if (Box != HContentBox)
+						Box->SetEnabled(false);
+				}
+			}
+			HContentBox->SetEnabled(NewState == ECheckBoxState::Checked);
+		})
 	];
 	HBox->AddSlot()
 	.HAlign(HAlign_Fill)

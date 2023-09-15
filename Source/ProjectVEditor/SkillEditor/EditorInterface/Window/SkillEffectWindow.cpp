@@ -88,7 +88,9 @@ TSharedRef<SWidget> SSkillEffectWindow::CreateRecoverContent()
 			.Delta(1.0f)
 		]
 	];
-	NextVCheckSlot(RecoverContent, LOCTEXT("Recover HP Label", "Recover HP"))
+	NextVCheckSlot(RecoverContent,
+		RecoverContentBoxArray,
+	LOCTEXT("Recover HP Label", "Recover HP"))
 	[
 		SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
@@ -113,7 +115,9 @@ TSharedRef<SWidget> SSkillEffectWindow::CreateRecoverContent()
 			HPLinkedHBox
 		]
 	];
-	NextVCheckSlot(RecoverContent, LOCTEXT("Recover MP Label", "Recover MP"))
+	NextVCheckSlot(RecoverContent,
+		RecoverContentBoxArray,
+		LOCTEXT("Recover MP Label", "Recover MP"))
 	[
 		SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
@@ -138,7 +142,9 @@ TSharedRef<SWidget> SSkillEffectWindow::CreateRecoverContent()
 			MPLinkedHBox
 		]
 	];
-	NextVCheckSlot(RecoverContent, LOCTEXT("Recover TP Label", "Gain TP"))
+	NextVCheckSlot(RecoverContent,
+		RecoverContentBoxArray,
+		LOCTEXT("Recover TP Label", "Gain TP"))
 	[
 		SNew(SBox)
 		.WidthOverride(200.0f)

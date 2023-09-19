@@ -16,7 +16,7 @@
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillEditorLayout"
 
-void SSkillEditorLayout::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillBaseAsset> InSkillAsset)
+void SSkillEditorLayout::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillAsset> InSkillAsset)
 {
 	SkillAsset = InSkillAsset;
 	ChildSlot

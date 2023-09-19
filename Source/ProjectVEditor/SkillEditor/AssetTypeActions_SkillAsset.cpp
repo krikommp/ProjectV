@@ -1,7 +1,7 @@
 ﻿#include "AssetTypeActions_SkillAsset.h"
 
 #include "SkillAssetEditorToolkit.h"
-#include "Skill/SkillBaseAsset.h"
+#include "..\..\ProjectVGame\Skill\SkillAsset.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
 
@@ -22,7 +22,7 @@ FColor FAssetTypeActions_SkillAsset::GetTypeColor() const
 
 UClass* FAssetTypeActions_SkillAsset::GetSupportedClass() const
 {
-	return USkillBaseAsset::StaticClass();
+	return USkillAsset::StaticClass();
 }
 
 void FAssetTypeActions_SkillAsset::OpenAssetEditor(const TArray<UObject*>& InObjects,
@@ -32,7 +32,7 @@ void FAssetTypeActions_SkillAsset::OpenAssetEditor(const TArray<UObject*>& InObj
 
 	for (auto ObjIt = InObjects.CreateConstIterator(); ObjIt; ++ObjIt)
 	{
-		auto Asset = Cast<USkillBaseAsset>(*ObjIt);
+		auto Asset = Cast<USkillAsset>(*ObjIt);
 		if (Asset != NULL)
 		{
 			TSharedRef< FSkillAssetEditorToolkit > NewToolkit(new FSkillAssetEditorToolkit());

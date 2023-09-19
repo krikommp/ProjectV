@@ -29,6 +29,14 @@ Scorei=0.8∗Ai−0.2∗Di
 
 
 skill system:
-1. 可攻击范围，在可视范围的基础上定义的技能可供选择的攻击范围
-2. 技能影响的范围，对于单攻技能，只影响一个单位，对于多功技能，影响多个
-3. 
+skill: GAS系统里面的 Ability，用于描述技能信息，人物动画，同时也是 SkillEffect 的容器
+	效果栏（这里将会记录当技能被应用时，会触发的几种 Effect）：
+		Recover: 使用技能后触发恢复效果 => 对应一个 RecoverEffect
+		State: 添加自定义的 Effect, 也可以根据 Tag 来将某个被应用的 Effect 移除。 只有非即时的 Effect 才会被移除
+		Param: 添加自定义 Tag, 这里会生成一个 Tag Effect， 不进行任何操作，单纯附加Tag, 这些 Tag 都至少需要维持一个回合
+		Other: 暂略
+SkillEffect: GAS 系统里的 Effect, 用于应用 skil 将会造成的效果
+	动画： 用于重载 Idle 动画
+	特效： 用于表示 Effect 生效时显示的效果
+	NormalAttack: 这是一个内置的 Effect, 用于从 Skill 上取得伤害计算公式，并应用伤害
+

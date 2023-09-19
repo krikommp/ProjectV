@@ -5,14 +5,14 @@
 
 #include "SlateOptMacros.h"
 #include "AssetRegistry/AssetRegistryModule.h"
-#include "Skill/SkillBaseAsset.h"
+#include "..\..\..\..\ProjectVGame\Skill\SkillAsset.h"
 #include "Widgets/Layout/SGridPanel.h"
 #include "Widgets/Layout/SScrollBox.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillIconWindow"
 
-void SSkillIconWindow::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillBaseAsset> InSkillAsset)
+void SSkillIconWindow::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillAsset> InSkillAsset)
 {
 	using ThisType = TDecay<decltype(*this)>::Type;
 	

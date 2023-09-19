@@ -5,7 +5,7 @@
 
 #include "SlateOptMacros.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
-#include "Skill/SkillBaseAsset.h"
+#include "..\..\..\..\ProjectVGame\Skill\SkillAsset.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Input/SSpinBox.h"
 #include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
@@ -14,7 +14,7 @@
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillCommonSettingSection"
 
-void SSkillCommonSettingSection::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillBaseAsset> InSkillAsset)
+void SSkillCommonSettingSection::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillAsset> InSkillAsset)
 {
 	SkillAsset = InSkillAsset;
 	
@@ -41,7 +41,7 @@ void SSkillCommonSettingSection::Construct(const FArguments& InArgs, TWeakObject
 			SNew(SEditableTextBox)
 			.IsEnabled(false)
 			.HintText(LOCTEXT("SkillIconEditBox", "Type in skill icon..."))
-			.Text_Lambda([this](){ return FText::FromString(SkillAsset->Icon->GetName()); })
+			.Text_Lambda([this](){ return SkillAsset->Icon != nullptr ? FText::FromString(SkillAsset->Icon->GetName()) : FText::GetEmpty(); })
 		]
 	];
 	NextHSlot(SkillInfoHBox_1, FText::GetEmpty(), HAlign_Left)

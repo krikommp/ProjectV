@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
-class USkillBaseAsset;
+class USkillAsset;
 /**
  * 
  */
@@ -21,7 +21,7 @@ public:
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
 protected:
-	TWeakObjectPtr<USkillBaseAsset> SkillAsset;
+	TWeakObjectPtr<USkillAsset> SkillAsset;
 private:
 	TSharedPtr<STextBlock> WeaponTypeTitleBlock_1;
 	TSharedPtr<STextBlock> WeaponTypeTitleBlock_2;

@@ -1,7 +1,7 @@
 ﻿#include "SkillAssetEditorToolkit.h"
 
 #include "EditorInterface/Layout/SkillEditorLayout.h"
-#include "Skill/SkillBaseAsset.h"
+#include "..\..\ProjectVGame\Skill\SkillAsset.h"
 
 #define LOCTEXT_NAMESPACE "FSkillAssetEditorToolkit"
 
@@ -64,7 +64,7 @@ FString FSkillAssetEditorToolkit::GetReferencerName() const
 }
 
 void FSkillAssetEditorToolkit::Initialize(const EToolkitMode::Type Mode,
-                                          const TSharedPtr<IToolkitHost>& InitToolkitHost, USkillBaseAsset* Asset)
+                                          const TSharedPtr<IToolkitHost>& InitToolkitHost, USkillAsset* Asset)
 {
 	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->CloseOtherEditors(Asset, this);
 	SkillBaseAsset = Asset;

@@ -24,7 +24,7 @@ public:
 	virtual FString GetReferencerName() const override;
 	//~ Begin FSerializableObject interface
 	
-	void Initialize(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, class USkillBaseAsset* Asset);
+	void Initialize(const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, class USkillAsset* Asset);
 
 protected:
 	TSharedRef<SDockTab> SpawnTab_Edit(const FSpawnTabArgs& Args);
@@ -32,6 +32,6 @@ protected:
 	static const FName EditTabID;
 
 public:
-	TObjectPtr<USkillBaseAsset> SkillBaseAsset;
+	TObjectPtr<USkillAsset> SkillBaseAsset;
 	TSharedPtr<SSkillEditorLayout> SkillEditWidget;
 };

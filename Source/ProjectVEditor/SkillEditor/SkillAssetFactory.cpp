@@ -3,19 +3,19 @@
 
 #include "SkillAssetFactory.h"
 
-#include "Skill/SkillBaseAsset.h"
+#include "..\..\ProjectVGame\Skill\SkillAsset.h"
 
 USkillAssetFactory::USkillAssetFactory(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
 	bCreateNew = true;
 	bEditAfterNew = true;
-	SupportedClass = USkillBaseAsset::StaticClass();
+	SupportedClass = USkillAsset::StaticClass();
 }
 
 UObject* USkillAssetFactory::FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags,
 	UObject* Context, FFeedbackContext* Warn, FName CallingContext)
 {
-	USkillBaseAsset* MyAsset = NewObject<USkillBaseAsset>(InParent, InName, Flags | RF_Transactional);
+	USkillAsset* MyAsset = NewObject<USkillAsset>(InParent, InName, Flags | RF_Transactional);
 	return MyAsset;
 }

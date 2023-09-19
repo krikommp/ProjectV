@@ -5,15 +5,15 @@
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/GridGameplayAbility.h"
 #include "UObject/Object.h"
-#include "SkillBaseAsset.generated.h"
+#include "SkillAsset.generated.h"
 
 /**
- * USkillBaseAsset
+ * USkillAsset
  *
  * 基础的技能资源
  */
 UCLASS(HideCategories = Input, Meta = (ShortTooltip = "The base gameplay ability class used by base skill asset."))
-class PROJECTVGAME_API USkillBaseAsset : public UGridGameplayAbility
+class PROJECTVGAME_API USkillAsset : public UGridGameplayAbility
 {
 	GENERATED_UCLASS_BODY()
 

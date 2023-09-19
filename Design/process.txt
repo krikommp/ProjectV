@@ -40,3 +40,25 @@ SkillEffect: GAS 系统里的 Effect, 用于应用 skil 将会造成的效果
 	特效： 用于表示 Effect 生效时显示的效果
 	NormalAttack: 这是一个内置的 Effect, 用于从 Skill 上取得伤害计算公式，并应用伤害
 
+
+Recover:
+GameplayEffect::TArray<FGameplayModifierInfo> Modifiers
+FGameplayModifierInfo
+	Attribute
+	ModifierOp
+	ModifierMagnitude
+
+	 |
+	\ /
+	 v
+FGameplayEffectModifierMagnitude
+	MagnitudeCalculationType
+	SetByCallerMagnitude
+
+	 |
+	\ /
+	 v
+
+FSetByCallerFloat
+	DataName
+	DataTag

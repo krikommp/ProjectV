@@ -138,15 +138,15 @@ TSubclassOf<USkillEffect> SSkillDamageSection::CreateDamageSkillEffectAsset() co
 		USkillEffect::StaticClass(),
 		SkillAsset->GetOutermost(),
 		TEXT(""),
-		BPTYPE_Normal,
+		BPTYPE_Const,
 		UBlueprint::StaticClass(),
 		UBlueprintGeneratedClass::StaticClass());
 
-	FString PackageName = FString::Format(TEXT("/Game/Skills/Effects/{0}/DamageEffect"), { AssetName });
+	FString PackageName = FString::Format(TEXT("/Game/Skills/Effects/{0}/GE_{1}_DamageEffect"), { AssetName, AssetName });
 	UPackage* Package = CreatePackage(*PackageName);
 	Package->FullyLoad();
 	NewBlueprint->Modify();
-	NewBlueprint->Rename(TEXT("DamageEffect"), Package);
+	NewBlueprint->Rename(*FString::Format(TEXT("GE_{0}_DamageEffect"), { AssetName }), Package);
 	FAssetRegistryModule::AssetCreated(NewBlueprint);
 	Package->SetDirtyFlag(false);
 	FSavePackageArgs SavePackageArgs;

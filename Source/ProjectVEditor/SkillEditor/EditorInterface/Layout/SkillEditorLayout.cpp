@@ -71,7 +71,7 @@ void SSkillEditorLayout::Construct(const FArguments& InArgs, TWeakObjectPtr<USki
 				  .Padding(0.0f, 10.0f)
 				  .VAlign(VAlign_Top)
 				[
-					SNew(SSkillDamageSection)
+					SNew(SSkillDamageSection, SkillAsset)
 				]
 				+ SVerticalBox::Slot()
 				  .AutoHeight()

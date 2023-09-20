@@ -3,15 +3,28 @@
 
 #include "SkillDamageSection.h"
 
+#include "GameplayEffectExecutionCalculation.h"
+#include "ISinglePropertyView.h"
 #include "SlateOptMacros.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
+#include "Kismet2/KismetEditorUtilities.h"
 #include "Widgets/Input/SSpinBox.h"
 #include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
+#include "Skill/SkillAsset.h"
+#include "Skill/SkillEffect.h"
+#include "UObject/SavePackage.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 #define LOCTEXT_NAMESPACE "SSkillDamageSection"
-void SSkillDamageSection::Construct(const FArguments& InArgs)
+void SSkillDamageSection::Construct(const FArguments& InArgs, TWeakObjectPtr<USkillAsset> InSkillAsset)
 {
+	using ThisType = TDecay<decltype(*this)>::Type;
+	
+	SkillAsset = InSkillAsset;
+	CreateDamageSkillEffectAsset();
+	InitializeSkillDamageEffect();
+	
 	DamageTypeItems.Add(MakeShareable(new FString(LOCTEXT("SkillDamageTypeItemLabel", "None").ToString())));
 	DamageTypeItems.Add(MakeShareable(new FString(LOCTEXT("SkillDamageTypeItemLabel", "HP Damage").ToString())));
 	DamageTypeItems.Add(MakeShareable(new FString(LOCTEXT("SkillDamageTypeItemLabel", "TP Damage").ToString())));
@@ -68,10 +81,18 @@ void SSkillDamageSection::Construct(const FArguments& InArgs)
 	[
 		SkillDamageHBox_1
 	];
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	FSinglePropertyParams Params;
+	Params.NamePlacement = EPropertyNamePlacement::Hidden;
+			
+	const TSharedPtr<ISinglePropertyView> SinglePropertyView =
+		PropertyEditorModule.CreateSingleProperty(Cast<UObject>(SkillAsset), GET_MEMBER_NAME_CHECKED(USkillAsset, DamageExecution), Params
+	);
+	FSimpleDelegate OnDamageExecuteChanged = FSimpleDelegate::CreateSP(this, &SSkillDamageSection::OnDamageExecuteChanged);
+	SinglePropertyView->SetOnPropertyValueChanged(OnDamageExecuteChanged);
 	NextVSlot(WidgetVerticalBox, LOCTEXT("SkillDamageFormula", "Damage Formula"))
 	[
-		SNew(SEditableTextBox)
-		.HintText(LOCTEXT("SkillDamageFormula", "Damage Formula"))
+		SinglePropertyView.ToSharedRef()
 	];
 	NextVSlot(WidgetVerticalBox, LOCTEXT("SkillDamageCriticalLabel", "Critical"))
 	[
@@ -101,6 +122,61 @@ void SSkillDamageSection::Construct(const FArguments& InArgs)
 			WidgetVerticalBox.ToSharedRef()
 		]
 	];
+}
+
+TSubclassOf<USkillEffect> SSkillDamageSection::CreateDamageSkillEffectAsset() const
+{
+	if (!SkillAsset.IsValid())
+		return nullptr;
+
+	if (SkillAsset->DamageSkillEffect != nullptr)
+		return nullptr;
+
+	auto AssetName = SkillAsset->GetName();
+
+	UBlueprint* NewBlueprint = FKismetEditorUtilities::CreateBlueprint(
+		USkillEffect::StaticClass(),
+		SkillAsset->GetOutermost(),
+		TEXT(""),
+		BPTYPE_Normal,
+		UBlueprint::StaticClass(),
+		UBlueprintGeneratedClass::StaticClass());
+
+	FString PackageName = FString::Format(TEXT("/Game/Skills/Effects/{0}/DamageEffect"), { AssetName });
+	UPackage* Package = CreatePackage(*PackageName);
+	Package->FullyLoad();
+	NewBlueprint->Modify();
+	NewBlueprint->Rename(TEXT("DamageEffect"), Package);
+	FAssetRegistryModule::AssetCreated(NewBlueprint);
+	Package->SetDirtyFlag(false);
+	FSavePackageArgs SavePackageArgs;
+	SavePackageArgs.TopLevelFlags = EObjectFlags::RF_Public | EObjectFlags::RF_Standalone;
+	UPackage::SavePackage(Package, NewBlueprint, *PackageName, SavePackageArgs);
+
+	SkillAsset->DamageSkillEffect = NewBlueprint->GeneratedClass;
+
+	return SkillAsset->DamageSkillEffect;
+}
+
+void SSkillDamageSection::InitializeSkillDamageEffect() const
+{
+	if (!SkillAsset.IsValid())
+		return;
+
+	if (SkillAsset->DamageSkillEffect == nullptr)
+		return;
+
+	USkillEffect* SkillEffect = SkillAsset->DamageSkillEffect->GetDefaultObject<USkillEffect>();
+	SkillEffect->Executions.Empty();
+
+	FGameplayEffectExecutionDefinition ExecutionDefinition;
+	ExecutionDefinition.CalculationClass = SkillAsset->DamageExecution;
+	SkillEffect->Executions.Add(ExecutionDefinition);
+}
+
+void SSkillDamageSection::OnDamageExecuteChanged()
+{
+	InitializeSkillDamageEffect();
 }
 #undef LOCTEXT_NAMESPACE
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

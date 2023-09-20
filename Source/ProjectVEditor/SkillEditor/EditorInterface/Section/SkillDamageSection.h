@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
+class USkillEffect;
 class USkillAsset;
 /**
  * 
@@ -17,9 +18,6 @@ public:
 		}
 
 	SLATE_END_ARGS()
-
-	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs);
 protected:
 	TWeakObjectPtr<USkillAsset> SkillAsset;
 private:
@@ -29,4 +27,13 @@ private:
 	TArray<TSharedPtr<FString>> DamageTypeItems;
 	TArray<TSharedPtr<FString>> DamageAttributeItems;
 	TArray<TSharedPtr<FString>> DamageCriticalItems;
+
+public:
+	/** Constructs this widget with InArgs */
+	void Construct(const FArguments& InArgs, TWeakObjectPtr<USkillAsset> InSkillAsset);
+	
+private:
+	TSubclassOf<USkillEffect> CreateDamageSkillEffectAsset() const;
+	void InitializeSkillDamageEffect() const;
+	void OnDamageExecuteChanged();
 };

@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Skill/SkillEffect.h"
 #include "UObject/Object.h"
-#include "SkillEffect_ApplyDamage.generated.h"
+#include "SkillEffect_Recover.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTVGAME_API USkillEffect_ApplyDamage : public UObject
+class PROJECTVGAME_API USkillEffect_Recover : public USkillEffect
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 };

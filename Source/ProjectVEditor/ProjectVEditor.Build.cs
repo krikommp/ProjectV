@@ -40,7 +40,8 @@ public class ProjectVEditor : ModuleRules
 				"ProceduralMeshComponent",
 				"AdvancedPreviewScene",
 				"ProjectVGame",
-				"ImageWrapper"
+				"ImageWrapper",
+				"GameplayAbilities",
 			});
 		
 		DynamicallyLoadedModuleNames.AddRange(

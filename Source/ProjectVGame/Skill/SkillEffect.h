@@ -16,6 +16,11 @@ class PROJECTVGAME_API USkillEffect : public UGridGameplayEffect
 	GENERATED_UCLASS_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	// 技能效果名字
+	UPROPERTY(BlueprintReadOnly, Category=Base)
 	FName Name;
+
+	// 技能效果是否被激活
+	UPROPERTY()
+	bool bActive;
 };

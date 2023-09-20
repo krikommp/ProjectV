@@ -4,6 +4,6 @@
 #include "SkillEffect.h"
 
 USkillEffect::USkillEffect(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer), bActive(false)
 {
 }

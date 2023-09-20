@@ -7,6 +7,8 @@
 #include "UObject/Object.h"
 #include "SkillAsset.generated.h"
 
+class USkillEffect;
+
 /**
  * USkillAsset
  *
@@ -24,4 +26,16 @@ public:
 	FText Description;
 	UPROPERTY(BlueprintReadOnly, Category=Base)
 	TObjectPtr<UTexture2D> Icon;
+
+	// 应用 Recover 效果时需要激活的技能效果
+	UPROPERTY(EditAnywhere, Category=Effect)
+	TSubclassOf<USkillEffect> RecoverSkillEffect;
+
+	// 应用 Damage 效果时需要激活的技能效果
+	UPROPERTY(EditAnywhere, Category=Effect)
+	TSubclassOf<USkillEffect> DamageSkillEffect;
+
+	// Damage 计算类
+	UPROPERTY(EditAnywhere, Category=Execution)
+	TSubclassOf<UGameplayEffectExecutionCalculation> DamageExecution;
 };

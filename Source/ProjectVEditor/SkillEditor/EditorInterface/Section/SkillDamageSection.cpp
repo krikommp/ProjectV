@@ -3,13 +3,11 @@
 
 #include "SkillDamageSection.h"
 
-#include "GameplayEffectExecutionCalculation.h"
 #include "ISinglePropertyView.h"
 #include "SlateOptMacros.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Brushes/SlateRoundedBoxBrush.h"
 #include "Kismet2/KismetEditorUtilities.h"
-#include "Widgets/Input/SSpinBox.h"
 #include "SkillEditor/EditorInterface/Layout/WidgetLayoutUtils.h"
 #include "Skill/SkillAsset.h"
 #include "Skill/SkillEffect.h"
@@ -88,7 +86,7 @@ void SSkillDamageSection::Construct(const FArguments& InArgs, TWeakObjectPtr<USk
 	const TSharedPtr<ISinglePropertyView> SinglePropertyView =
 		PropertyEditorModule.CreateSingleProperty(Cast<UObject>(SkillAsset), GET_MEMBER_NAME_CHECKED(USkillAsset, DamageExecution), Params
 	);
-	FSimpleDelegate OnDamageExecuteChanged = FSimpleDelegate::CreateSP(this, &SSkillDamageSection::OnDamageExecuteChanged);
+	FSimpleDelegate OnDamageExecuteChanged = FSimpleDelegate::CreateSP(this, &ThisType::OnDamageExecuteChanged);
 	SinglePropertyView->SetOnPropertyValueChanged(OnDamageExecuteChanged);
 	NextVSlot(WidgetVerticalBox, LOCTEXT("SkillDamageFormula", "Damage Formula"))
 	[
@@ -124,13 +122,13 @@ void SSkillDamageSection::Construct(const FArguments& InArgs, TWeakObjectPtr<USk
 	];
 }
 
-TSubclassOf<USkillEffect> SSkillDamageSection::CreateDamageSkillEffectAsset() const
+void SSkillDamageSection::CreateDamageSkillEffectAsset() const
 {
 	if (!SkillAsset.IsValid())
-		return nullptr;
+		return;
 
 	if (SkillAsset->DamageSkillEffect != nullptr)
-		return nullptr;
+		return;
 
 	auto AssetName = SkillAsset->GetName();
 
@@ -154,8 +152,6 @@ TSubclassOf<USkillEffect> SSkillDamageSection::CreateDamageSkillEffectAsset() co
 	UPackage::SavePackage(Package, NewBlueprint, *PackageName, SavePackageArgs);
 
 	SkillAsset->DamageSkillEffect = NewBlueprint->GeneratedClass;
-
-	return SkillAsset->DamageSkillEffect;
 }
 
 void SSkillDamageSection::InitializeSkillDamageEffect() const

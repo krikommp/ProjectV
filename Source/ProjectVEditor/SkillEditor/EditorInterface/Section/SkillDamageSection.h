@@ -33,7 +33,7 @@ public:
 	void Construct(const FArguments& InArgs, TWeakObjectPtr<USkillAsset> InSkillAsset);
 	
 private:
-	TSubclassOf<USkillEffect> CreateDamageSkillEffectAsset() const;
+	void CreateDamageSkillEffectAsset() const;
 	void InitializeSkillDamageEffect() const;
 	void OnDamageExecuteChanged();
 };

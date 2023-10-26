@@ -3,6 +3,7 @@
 
 #include "SkillDamageSection.h"
 
+#include "GameplayEffectExecutionCalculation.h"
 #include "ISinglePropertyView.h"
 #include "SlateOptMacros.h"
 #include "AssetRegistry/AssetRegistryModule.h"
@@ -160,6 +161,9 @@ void SSkillDamageSection::InitializeSkillDamageEffect() const
 		return;
 
 	if (SkillAsset->DamageSkillEffect == nullptr)
+		return;
+
+	if (SkillAsset->DamageExecution == nullptr)
 		return;
 
 	USkillEffect* SkillEffect = SkillAsset->DamageSkillEffect->GetDefaultObject<USkillEffect>();
